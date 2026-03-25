@@ -1,328 +1,523 @@
-:root {
-    /* JSEK -like palette (blue + cyan) */
-    --JSEK-blue: #0B5ED7;
-    --JSEK-cyan: #0EA5E9;
-    --JSEK-navy: #0B1B33;
-
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #475569;
-
-    --radius: 18px;
-    --shadow: 0 18px 45px rgba(0, 0, 0, .18);
-}
-
+/* --- 1. General Reset & Spacing --- */
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
+html,
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 26px 14px;
-    /* Background gradient */
-    background:
-        radial-gradient(1200px 700px at 20% 10%, rgba(14, 165, 233, .35), transparent 55%),
-        radial-gradient(900px 600px at 80% 90%, rgba(11, 94, 215, .35), transparent 55%),
-        linear-gradient(135deg, #071428, #0b2a57, #0ea5e9);
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    position: relative;
     overflow-x: hidden;
-    position: relative;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Repeating electronics icons in the background */
-body::before {
-    content: "";
-    position: absolute;
-    inset: -40px;
-    opacity: .18;
+.blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.5;
     pointer-events: none;
-    background-repeat: repeat;
-    background-size: 260px 260px;
-    background-position: 0 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'%3E%3Crect x='20' y='28' width='92' height='58' rx='8'/%3E%3Cpath d='M14 94h104l-10 20H24z'/%3E%3Crect x='160' y='24' width='56' height='92' rx='10'/%3E%3Ccircle cx='188' cy='104' r='3'/%3E%3Cpath d='M66 168c0-22 18-40 40-40s40 18 40 40'/%3E%3Crect x='56' y='168' width='18' height='38' rx='8'/%3E%3Crect x='138' y='168' width='18' height='38' rx='8'/%3E%3Crect x='174' y='164' width='44' height='62' rx='18'/%3E%3Cpath d='M196 164v18'/%3E%3Crect x='22' y='190' width='52' height='52' rx='10'/%3E%3Cpath d='M32 216h32M48 200v32'/%3E%3C/g%3E%3C/svg%3E");
+    /* This makes the movement smooth */
+    transition: transform 0.1s ease-out;
 }
 
-.wrap {
-    width: min(1000px, 100%);
-    position: relative;
-    z-index: 1;
+.blob-1 {
+    top: -150px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #6dd5ed, #2193b0);
+    /* Direct move */
+    transform: translate(var(--mouse-x, 0), var(--mouse-y, 0));
 }
 
-.topbar {
+.blob-2 {
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #2193b0, #6dd5ed);
+    /* Reverse move for depth */
+    transform: translate(calc(var(--mouse-x, 0) * -1), calc(var(--mouse-y, 0) * -1));
+}
+
+/* --- 3. Navigation Bar --- */
+.navbar {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 14px;
-    color: #fff;
-    flex-wrap: wrap;
-}
-
-.brand {
-    display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    letter-spacing: .3px;
+    padding: 25px 80px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--JSEK-blue), var(--JSEK-cyan));
-    box-shadow: 0 10px 25px rgba(0, 0, 0, .22);
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    user-select: none;
-}
-
-.subtitle {
-    color: rgba(255, 255, 255, .78);
-    font-size: 14px;
-    font-weight: 400;
-    margin-top: 2px;
-}
-
-.badge {
-    padding: 8px 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .12);
-    border: 1px solid rgba(255, 255, 255, .22);
-    color: #fff;
+    font-size: 1.6rem;
     font-weight: 700;
-    font-size: 13px;
-    user-select: none;
+    letter-spacing: 1px;
+    color: #2c3e50;
 }
 
-.card {
-    background: rgba(255, 255, 255, .92);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
+.logo-accent {
+    color: #2193b0;
+    font-weight: 300;
 }
 
-.hero {
-    padding: 26px 22px;
-    background: linear-gradient(135deg, rgba(11, 94, 215, .10), rgba(14, 165, 233, .12));
-    border-bottom: 1px solid rgba(2, 6, 23, .08);
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.text-link {
+    text-decoration: none;
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.text-link:hover {
+    color: #2193b0;
+    text-shadow: 0 0 10px rgba(33, 147, 176, 0.3);
+    /* Link Glow */
+}
+
+/* --- 4. Hero Section --- */
+.container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 40px;
+    text-align: center;
 }
 
 .hero h1 {
-    margin: 0 0 8px;
-    font-size: clamp(20px, 2.3vw, 30px);
-    color: var(--JSEK-navy);
+    font-size: 3rem;
+    margin-bottom: 15px;
+    font-weight: 200;
+    /* Modern French light weight */
+    letter-spacing: -1px;
 }
 
 .hero p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.6;
-    font-size: 15px;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 60px;
 }
 
-.grid {
+.portal-grid {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 14px;
-    padding: 18px;
+    /* This tells the grid: "Fit as many cards as you can, 
+       but don't make them smaller than 300px." */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
 }
 
-.tile {
-    grid-column: span 6;
-    background: #fff;
-    border: 1px solid rgba(2, 6, 23, .08);
-    border-radius: 16px;
-    padding: 16px;
+.role-card {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 50px 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    /* Glass effect */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
-    gap: 12px;
+    flex-direction: column;
     align-items: center;
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.role-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border: 1px solid rgba(109, 213, 237, 0.6);
+    /* Highlights the border on hover */
+    box-shadow: 0 20px 40px rgba(33, 147, 176, 0.15);
+}
+
+.role-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.role-card p {
+    font-size: 0.95rem;
+    color: #95a5a6;
+    margin-bottom: 40px;
+}
+
+/* --- 6. Spacy, Gradient Glowing Buttons --- */
+.btn-glow,
+.btn-signup {
+    padding: 18px 45px;
+    /* Spacy padding */
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    user-select: none;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(33, 147, 176, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
 
-.tile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(2, 6, 23, .12);
-    border-color: rgba(11, 94, 215, .25);
+.btn-glow:hover,
+.btn-signup:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    box-shadow: 0 10px 25px rgba(33, 147, 176, 0.5);
+    /* Glowing Shadow */
 }
 
-.icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(11, 94, 215, .14), rgba(14, 165, 233, .18));
-    display: grid;
-    place-items: center;
-    color: var(--JSEK-blue);
-    font-weight: 800;
-    flex: 0 0 auto;
+/* Smaller variant for Nav */
+.btn-signup {
+    padding: 12px 30px;
+    font-size: 0.8rem;
 }
 
-.tile h3 {
-    margin: 0 0 4px;
-    font-size: 16px;
-    color: var(--JSEK-navy);
-}
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 20px 30px;
+    }
 
-.tile p {
-    margin: 0;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-}
-
-.actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 0 18px 18px;
-}
-
-.btn {
-    border: 0;
-    padding: 11px 14px;
-    border-radius: 14px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 12px 26px rgba(2, 6, 23, .10);
-}
-
-.btn:active {
-    transform: translateY(1px);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--JSEK-blue), var(--JSEK-cyan));
-    color: #fff;
-}
-
-.btn-ghost {
-    background: #fff;
-    color: var(--JSEK-navy);
-    border: 1px solid rgba(2, 6, 23, .10);
-    box-shadow: none;
-}
-
-.footer {
-    padding: 14px 18px 18px;
-    border-top: 1px solid rgba(2, 6, 23, .08);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-    .tile {
-        grid-column: span 12;
+    .hero h1 {
+        font-size: 2.2rem;
     }
 }
 
-/* The Glowing Gradient Button */
-.btn-glow {
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
-    color: #fff;
-    font-weight: 700;
-    border: none;
-
-    /* Initial Gradient */
-    background: linear-gradient(135deg, var(--JSEK-blue), var(--JSEK-cyan), #6366f1);
-    background-size: 200% 200%;
-    /* Larger background for the sliding effect */
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        background-position 0.5s ease;
+/* Auth Page Specific Layout */
+.auth-page {
+    justify-content: center;
 }
 
-.btn-glow:hover {
-    transform: translateY(-3px) scale(1.02);
-
-    /* This moves the gradient colors for a "flowing" look */
-    background-position: right center;
-
-    /* The Glow Effect: Uses the JSEK-blue with high blur and spread */
-    box-shadow:
-        0 0 20px rgba(11, 94, 215, 0.6),
-        0 0 40px rgba(14, 165, 233, 0.4);
-
-    /* Makes the colors pop slightly more on hover */
-    filter: brightness(1.1);
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    /* Pushes content to center between header and bottom */
+    padding: 40px 20px;
 }
 
-/* Optional: Clicking effect */
-.btn-glow:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 0 10px rgba(11, 94, 215, 0.8);
-}
-
-/* Modern Glowing Links */
-a {
-    color: var(--JSEK-blue);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-a:hover {
-    color: var(--JSEK-cyan);
-    /* The "Text Glow" effect */
-    text-shadow:
-        0 0 8px rgba(14, 165, 233, 0.5),
-        0 0 15px rgba(14, 165, 233, 0.3);
-    filter: brightness(1.2);
-}
-
-/* Optional: Animated underline effect */
-a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -2px;
-    left: 0;
-    background-color: var(--JSEK-cyan);
-    box-shadow: 0 0 10px var(--JSEK-cyan);
-    transition: width 0.3s ease;
-}
-
-a:hover::after {
+.auth-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    padding: 60px 50px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
     width: 100%;
+    max-width: 480px;
+    text-align: center;
 }
 
-/* Matching the button hover to the tile hover */
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(2, 6, 23, 0.12);
-    border-color: rgba(11, 94, 215, 0.25);
-    filter: brightness(1.05);
-    /* Slight brighten for feedback */
+.auth-card h2 {
+    font-size: 2rem;
+    font-weight: 200;
+    margin-bottom: 10px;
 }
 
-/* Specific glowing effect for the primary action button */
-.btn-primary:hover {
-    box-shadow: 0 14px 30px rgba(11, 94, 215, 0.4);
+.auth-card p {
+    color: #7f8c8d;
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+}
+
+/* Form Spacing */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 18px 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #6dd5ed;
+    box-shadow: 0 0 15px rgba(109, 213, 237, 0.3);
+}
+
+.auth-footer {
+    margin-top: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+}
+
+.auth-footer p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+}
+
+.small {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+}
+
+.small {
+    display: block;
+    margin-top: -10px;
+    /* Pulls it closer to the password field */
+    margin-bottom: 25px;
+    font-size: 0.8rem;
+    color: #95a5a6;
+    text-align: right;
+    /* Standard placement for forgot password links */
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(30px, -50px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+body::before {
+    animation: float 15s ease-in-out infinite;
+}
+
+body::after {
+    animation: float 18s ease-in-out infinite reverse;
+}
+
+#typing-text {
+    display: block;
+    /* This height matches 1 line of text. Adjust if your text wraps to 2 lines. */
+    min-height: 1.5em;
+    margin-bottom: 60px;
+    /* Keeps the gap to the boxes consistent */
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+/* The Cursor Blink */
+#typing-text::after {
+    content: "|";
+    margin-left: 5px;
+    color: #2193b0;
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Support Specific Layout */
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 40px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.support-card {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 40px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+}
+
+.support-card h3 {
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Custom Select & Textarea */
+.support-select,
+textarea {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.9);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+/* FAQ Styling */
+.faq-item {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 15px;
+}
+
+.faq-item h4 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #2193b0;
+}
+
+.faq-item p {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    line-height: 1.4;
+}
+
+/* Only apply these rules if the screen is smaller than 768px */
+@media (max-width: 768px) {
+    .blob {
+        width: 300px;
+        /* Smaller blobs for mobile */
+        height: 300px;
+        filter: blur(60px);
+        /* Less blur so it doesn't wash out the screen */
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        /* Smaller title so it doesn't wrap weirdly */
+    }
+}
+
+/* --- Mobile Fixes (Phones & Tablets) --- */
+@media (max-width: 768px) {
+
+    /* Target the container holding the form */
+    .reset-container,
+    .role-card {
+        width: 90%;
+        padding: 20px;
+    }
+
+    /* Target the input field itself */
+    input[type="email"],
+    input[type="text"] {
+        width: 100%;
+        /* Takes up 100% of the container width */
+        max-width: 100%;
+        /* Prevents it from going wider than the screen */
+        box-sizing: border-box;
+        /* VERY IMPORTANT: includes padding in the width */
+        font-size: 14px;
+        /* Slightly smaller text to prevent overflow */
+    }
+
+    /* Target the 'Send Reset Link' button */
+    .btn-glow {
+        width: 100%;
+        padding: 15px 0;
+    }
+
+    /* FIX: Stop the Navbar items from crashing into each other */
+    .navbar {
+        flex-direction: column;
+        padding: 15px;
+        text-align: center;
+        gap: 10px;
+    }
+
+    /* FIX: Make the Hero text smaller so 'Marketplace' doesn't cut off */
+    .hero h1 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+        padding: 0 10px;
+    }
+
+    /* FIX: Home Page - Stack the 4 cards (Buyer, Seller, etc.) vertically */
+    .portal-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .role-card {
+        width: 90%;
+        /* Forces cards to be almost full width */
+        margin: 0 auto;
+    }
+
+    /* FIX: Support Page - Stack the Form and the FAQ vertically */
+    .support-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        padding: 10px;
+    }
+
+    .support-card {
+        width: 100%;
+        padding: 20px;
+        /* Reduces padding so it fits small screens */
+    }
 }

@@ -4,32 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title | JSEK Market place</title>
+    <title>Page Title | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
-    <div class="wrap">
-        <div class="topbar">
-            <div class="brand">
-                <div class="logo">JSEK</div>
-                <div>
-                    <div style="font-size:16px;">JSEK Market place</div>
-                </div>
-            </div>
-        </div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
 
-        <div class="card">
-            <div class="hero">
-                <h1>[Feature Name]</h1>
-                <p>Description of this user story's functionality.</p>
-            </div>
-
-            <div style="padding: 20px;">
-            </div>
+    <header class="navbar">
+        <div class="logo">
+            JSEK <span class="logo-accent">Marketplace</span>
         </div>
-    </div>
+        <div class="nav-links">
+            <a href="index.html" class="text-link">Home</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+            <a href="signup.html" class="btn-signup"
+                style="text-decoration: none; display: inline-block; text-align: center;">Sign Up</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Page Heading</h1>
+            <p>A brief description or subtitle goes here to maintain the spacy look.</p>
+        </section>
+
+        <div class="content-wrapper">
+        </div>
+    </main>
+
+    <script>
+        // Magnetic Background Logic
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+    </script>
 </body>
 
 </html>
