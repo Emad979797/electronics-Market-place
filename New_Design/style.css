@@ -452,6 +452,32 @@ textarea {
 /* --- Mobile Fixes (Phones & Tablets) --- */
 @media (max-width: 768px) {
 
+    /* Target the container holding the form */
+    .reset-container,
+    .role-card {
+        width: 90%;
+        padding: 20px;
+    }
+
+    /* Target the input field itself */
+    input[type="email"],
+    input[type="text"] {
+        width: 100%;
+        /* Takes up 100% of the container width */
+        max-width: 100%;
+        /* Prevents it from going wider than the screen */
+        box-sizing: border-box;
+        /* VERY IMPORTANT: includes padding in the width */
+        font-size: 14px;
+        /* Slightly smaller text to prevent overflow */
+    }
+
+    /* Target the 'Send Reset Link' button */
+    .btn-glow {
+        width: 100%;
+        padding: 15px 0;
+    }
+
     /* FIX: Stop the Navbar items from crashing into each other */
     .navbar {
         flex-direction: column;
