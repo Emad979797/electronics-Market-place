@@ -429,3 +429,19 @@ textarea {
     color: #7f8c8d;
     line-height: 1.4;
 }
+
+/* Only apply these rules if the screen is smaller than 768px */
+@media (max-width: 768px) {
+    .blob {
+        width: 300px;
+        /* Smaller blobs for mobile */
+        height: 300px;
+        filter: blur(60px);
+        /* Less blur so it doesn't wash out the screen */
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        /* Smaller title so it doesn't wrap weirdly */
+    }
+}
