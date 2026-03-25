@@ -120,11 +120,14 @@ body {
     margin-bottom: 60px;
 }
 
-/* --- 5. Portal Grid & Role Cards --- */
 .portal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 40px;
+    /* This tells the grid: "Fit as many cards as you can, 
+       but don't make them smaller than 300px." */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
 }
 
 .role-card {
@@ -443,5 +446,52 @@ textarea {
     h1 {
         font-size: 1.8rem;
         /* Smaller title so it doesn't wrap weirdly */
+    }
+}
+
+/* --- Mobile Fixes (Phones & Tablets) --- */
+@media (max-width: 768px) {
+
+    /* FIX: Stop the Navbar items from crashing into each other */
+    .navbar {
+        flex-direction: column;
+        padding: 15px;
+        text-align: center;
+        gap: 10px;
+    }
+
+    /* FIX: Make the Hero text smaller so 'Marketplace' doesn't cut off */
+    .hero h1 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+        padding: 0 10px;
+    }
+
+    /* FIX: Home Page - Stack the 4 cards (Buyer, Seller, etc.) vertically */
+    .portal-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .role-card {
+        width: 90%;
+        /* Forces cards to be almost full width */
+        margin: 0 auto;
+    }
+
+    /* FIX: Support Page - Stack the Form and the FAQ vertically */
+    .support-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        padding: 10px;
+    }
+
+    .support-card {
+        width: 100%;
+        padding: 20px;
+        /* Reduces padding so it fits small screens */
     }
 }
