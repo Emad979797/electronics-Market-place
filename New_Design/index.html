@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSEK Marketplace | Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header class="navbar">
+        <div class="logo">
+            JSEK <span class="logo-accent">Marketplace</span>
+        </div>
+        <div class="nav-links">
+            <a href="support.html" class="text-link">Technical Support</a>
+            <a href="signup.html" class="btn-signup"
+                style="text-decoration: none; display: inline-block; text-align: center;">Sign Up</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Welcome to the Marketplace</h1>
+            <p id="typing-text"></p>
+        </section>
+
+        <div class="portal-grid">
+            <div class="role-card">
+                <h3>Buyer</h3>
+                <p>Find the best deals on new and used tech.</p>
+                <a href="login.html" class="btn-glow" style="text-decoration: none;">Login as Buyer</a>
+            </div>
+
+            <div class="role-card">
+                <h3>Seller</h3>
+                <p>Quickly list your electronics for cash.</p>
+                <a href="login.html" class="btn-glow" style="text-decoration: none;">Login as Seller</a>
+            </div>
+
+            <div class="role-card">
+                <h3>Vendor</h3>
+                <p>Access professional inventory management.</p>
+                <a href="login.html" class="btn-glow" style="text-decoration: none;">Login as Vendor</a>
+            </div>
+
+            <div class="role-card">
+                <h3>Admin</h3>
+                <p>System maintenance and user oversight.</p>
+                <a href="login.html" class="btn-glow" style="text-decoration: none;">Login as Admin</a>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            // Lowering the divisor to 10 makes the movement much larger
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+
+            // Apply directly to the root so CSS can see it
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+    </script>
+    <script>
+        const message = "Select your portal to start buying or selling electronics";
+        let index = 0;
+        const typingElement = document.getElementById("typing-text");
+
+        function typeWriter() {
+            if (index < message.length) {
+                typingElement.textContent += message.charAt(index);
+                index++;
+                setTimeout(typeWriter, 40); // 40ms is a smooth "high-tech" speed
+            }
+        }
+
+        // Magnetic Background Logic (Keeping your working code)
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+
+        // Start typing when page loads
+        window.addEventListener('load', typeWriter);
+    </script>
+</body>
+
+</html>
