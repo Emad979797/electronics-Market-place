@@ -23,7 +23,7 @@
             <h2>Create Account</h2>
             <p>Join the marketplace to buy and sell electronics.</p>
 
-            <form action="#" class="auth-form">
+            <form action="login.html" class="auth-form">
                 <div class="input-group">
                     <input type="text" placeholder="Full Name" required>
                 </div>
@@ -31,16 +31,44 @@
                     <input type="email" placeholder="Email Address" required>
                 </div>
                 <div class="input-group">
-                    <input type="password" placeholder="Create Password" required>
+                    <input type="password" placeholder="Create Password (min. 8 chars)" minlength="8" required>
                 </div>
                 <button type="submit" class="btn-glow">Register Now</button>
             </form>
-
             <div class="auth-footer">
                 <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
             </div>
         </div>
     </main>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="support.html">Support</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Collaborator Name 1</li>
+                    <li>Collaborator Name 2</li>
+                    <li>Collaborator Name 3</li>
+                    <li>Collaborator Name 4</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>
