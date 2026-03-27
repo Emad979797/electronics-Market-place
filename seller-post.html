@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Post | JSEK Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <h1>Post an Item for Sale</h1>
+            <p>Add your used electronic item details below.</p>
+
+            <form action="#" class="auth-form">
+                <div class="input-group">
+                    <input type="text" placeholder="Item Name" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" placeholder="Category" required>
+                </div>
+
+                <div class="input-group">
+                    <select required>
+                        <option value="">Select Condition</option>
+                        <option value="new">New</option>
+                        <option value="used">Used</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <input type="number" placeholder="Price" required>
+                </div>
+
+                <div class="input-group">
+                    <textarea placeholder="Item Description" rows="5" required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <input type="file" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn-glow">Post Item</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
