@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | JSEK Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header class="navbar">
+        <div class="logo">
+            JSEK <span class="logo-accent">Marketplace</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="text-link">Home Page</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+            <a href="login.html" class="btn-signup"
+                style="text-decoration: none; display: inline-block; text-align: center; margin-left: 20px;">Log Out</a>
+        </div>
+    </header>
+
+    <main class="auth-container"
+        style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+        <div class="auth-card" style="width: 100%; max-width: 500px;">
+
+            <div id="checkout-content">
+                <h2>Secure Checkout</h2>
+                <p>Select your payment method and enter details.</p>
+
+                <form id="payment-form" class="auth-form">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <label
+                            style="flex: 1; text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                            <input type="radio" name="payment" value="card" checked> Credit Card
+                        </label>
+                        <label
+                            style="flex: 1; text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                            <input type="radio" name="payment" value="paypal"> PayPal
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Cardholder Name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" placeholder="Card Number" required>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="input-group" style="flex: 2;">
+                            <input type="text" placeholder="MM/YY" required>
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <input type="text" placeholder="CVV" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-glow">Pay Now</button>
+                </form>
+            </div>
+
+            <div id="payment-success" style="display: none; text-align: center; padding: 20px 0;">
+                <div class="success-icon" style="margin: 0 auto 20px;">✓</div>
+                <h2>Payment Received!</h2>
+                <p>Thank you, we received your payment and sent the receipt to your mailbox.</p>
+                <a href="index.html" class="btn-glow"
+                    style="display: inline-block; text-decoration: none; margin-top: 20px; width: auto; padding: 12px 30px;">Return
+                    Home</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer" style="width: 100%; margin-top: auto; background: white; border-top: 1px solid #eee;">
+        <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Magnetic Background Script
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+
+        // 2. Unified Payment Success Logic
+        // We use 'payment-form' because that is the ID in your HTML
+        document.getElementById('payment-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // This stops the browser alert pop-up
+
+            // Hide the checkout form content
+            const checkoutContent = document.getElementById('checkout-content');
+            if (checkoutContent) {
+                checkoutContent.style.display = 'none';
+            }
+
+            // Show the nice success message instead of an alert
+            const successMsg = document.getElementById('payment-success');
+            if (successMsg) {
+                successMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
+</body>
