@@ -32,10 +32,39 @@
             <p>A brief description or subtitle goes here to maintain the spacy look.</p>
         </section>
 
+        <input 
+  type="text" 
+  id="searchInput" 
+  placeholder="Search for electronics (e.g. MacBook)" 
+  onkeyup="searchProducts()" 
+  class="search-bar">
+
         <div class="content-wrapper">
+            <div class="product-card glass">
+    <h3 class="product-name">MacBook Pro</h3>
+    <p>$2000</p>
+    <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
+</div>
+
+<div class="product-card glass">
+    <h3 class="product-name">iPhone 15</h3>
+    <p>$1200</p>
+    <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
+</div>
+
+<div class="product-card glass">
+    <h3 class="product-name">Samsung TV</h3>
+    <p>$800</p>
+    <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
+</div>
         </div>
     </main>
-
+    
+<div id="cart">
+  <h3>Cart</h3>
+  <ul id="cart-items"></ul>
+  <p>Total: $<span id="total">0</span></p>
+</div>
 
     <script>
         // Magnetic Background Logic
@@ -46,7 +75,61 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
     </script>
-    <footer class="main-footer">
+ 
+ <script>
+let cart = [];
+
+// Add to cart
+function addToCart(name, price) {
+    cart.push({ name, price });
+    updateCart();
+}
+
+// Remove
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+// Update cart
+function updateCart() {
+    let cartList = document.getElementById("cart-items");
+    let total = 0;
+
+    cartList.innerHTML = "";
+
+    cart.forEach((item, index) => {
+        total += item.price;
+
+        let li = document.createElement("li");
+        li.innerHTML = `
+            ${item.name} - $${item.price}
+            <button onclick="removeFromCart(${index})">X</button>
+        `;
+        cartList.appendChild(li);
+    });
+
+    document.getElementById("total").innerText = total;
+}
+
+// Search
+function searchProducts() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let products = document.querySelectorAll(".product-card");
+
+    products.forEach(product => {
+        let name = product.querySelector(".product-name").innerText.toLowerCase();
+
+        if (name.includes(input)) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+    });
+}
+</script>
+
+ <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
