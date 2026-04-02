@@ -28,16 +28,25 @@
                 <h2>Create Account</h2>
                 <p>Join the marketplace to buy and sell electronics.</p>
 
-                <form action="login.html" class="auth-form">
+                <form id="signupForm" class="auth-form">
                     <div class="input-group">
-                        <input type="text" placeholder="Full Name" required>
+                        <input type="text" id="fullName" placeholder="Full Name" required>
                     </div>
                     <div class="input-group">
-                        <input type="email" placeholder="Email Address" required>
+                        <input type="email" id="emailAddress" placeholder="Email Address" required>
                     </div>
                     <div class="input-group">
-                        <input type="password" placeholder="Create Password (min. 8 chars)" minlength="8" required>
+                        <input type="password" id="password" placeholder="Create Password (min. 8 chars)" minlength="8"
+                            required>
                     </div>
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+
+                    <p id="error-message"
+                        style="color: #ff4d4d; font-size: 0.85rem; margin-top: -10px; display: none; text-align: left; padding-left: 5px;">
+                    </p>
+
                     <button type="submit" class="btn-glow">Register Now</button>
                 </form>
                 <div class="auth-footer">
@@ -73,6 +82,54 @@
                 </div>
             </div>
         </footer>
+        <script>
+            document.getElementById('signupForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('fullName').value;
+                const email = document.getElementById('emailAddress').value.toLowerCase();
+                const pass = document.getElementById('password').value;
+                const confirmPass = document.getElementById('confirmPassword').value;
+                const errorDisplay = document.getElementById('error-message');
+
+                // Reset error display
+                errorDisplay.style.display = "none";
+                errorDisplay.style.color = "#ff4d4d";
+
+                // AC 4: Validation Messaging (Check if passwords match)
+                if (pass !== confirmPass) {
+                    errorDisplay.textContent = "Passwords do not match!";
+                    errorDisplay.style.display = "block";
+                    return;
+                }
+
+                // AC 3: Email Uniqueness (Checking Mock Database in LocalStorage)
+                let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+                const userExists = users.some(u => u.email === email);
+
+                if (userExists) {
+                    errorDisplay.textContent = "This email is already registered.";
+                    errorDisplay.style.display = "block";
+                    return;
+                }
+
+                // AC 5: Database Record (Mocking the save to "jsek_users")
+                users.push({ name, email, password: pass });
+                localStorage.setItem('jsek_users', JSON.stringify(users));
+
+                // AC 6: Post-Signup Redirect
+                errorDisplay.style.color = "#2ecc71"; // Success green
+                errorDisplay.textContent = "Account created! Redirecting...";
+                errorDisplay.style.display = "block";
+
+                setTimeout(() => {
+                    // Simulates logging the user in for the session
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUser', JSON.stringify({ name, email }));
+                    window.location.href = 'index.html';
+                }, 2000);
+            });
+        </script>
     </body>
 
 </html>
