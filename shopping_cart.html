@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title | JSEK Marketplace</title>
+    <title>Shopping Cart | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,8 +28,8 @@
 
     <main class="container">
         <section class="hero">
-            <h1>Page Heading</h1>
-            <p>A brief description or subtitle goes here to maintain the spacy look.</p>
+          <h1>Shopping Cart</h1>
+<p>View and manage your selected items.</p>
         </section>
 
         <input 
@@ -58,6 +58,11 @@
     <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
 </div>
         </div>
+        <div id="cart">
+  <h3>Cart</h3>
+  <ul id="cart-items"></ul>
+  <p>Total: $<span id="total">0</span></p>
+</div>
     </main>
     
 <div id="cart">
