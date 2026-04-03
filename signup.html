@@ -1,135 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body class="auth-page">
+<body class="auth-page" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
 
-    <body class="auth-page" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <header class="navbar">
-            <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-            <div class="nav-links">
-                <a href="index.html" class="text-link">Home Page</a>
-                <a href="login.html" class="text-link">Technical Support</a>
+    <header class="navbar">
+        <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+        <div class="nav-links">
+            <a href="index.html" class="text-link">Home Page</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <h2>Create Account</h2>
+            <p>Join the marketplace to buy and sell electronics.</p>
+
+            <form action="login.html" class="auth-form">
+                <div class="input-group">
+                    <input type="text" placeholder="Full Name" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" placeholder="Email Address" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" placeholder="Create Password (min. 8 chars)" minlength="8" required>
+                </div>
+
+                <div class="input-group">
+                    <select id="role" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="buyer">Buyer</option>
+                        <option value="seller">Seller</option>
+                        <option value="vendor">Vendor</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-glow">Register Now</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
             </div>
-        </header>
+        </div>
+    </main>
 
-        <main class="auth-container">
-            <div class="auth-card">
-                <h2>Create Account</h2>
-                <p>Join the marketplace to buy and sell electronics.</p>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
 
-                <form id="signupForm" class="auth-form">
-                    <div class="input-group">
-                        <input type="text" id="fullName" placeholder="Full Name" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="email" id="emailAddress" placeholder="Email Address" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="password" placeholder="Create Password (min. 8 chars)" minlength="8"
-                            required>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-                    </div>
-
-                    <p id="error-message"
-                        style="color: #ff4d4d; font-size: 0.85rem; margin-top: -10px; display: none; text-align: left; padding-left: 5px;">
-                    </p>
-
-                    <button type="submit" class="btn-glow">Register Now</button>
-                </form>
-                <div class="auth-footer">
-                    <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
-                </div>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
-        </main>
-        <a href="support.html" class="quick-help-trigger">? Quick Help</a>
 
-        <footer class="main-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-                    <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home Page</a></li>
-                        <li><a href="support.html">Technical Support</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Our Team</h4>
-                    <ul class="collaborators">
-                        <li>Emad Al Nounou</li>
-                        <li>Julia Cameron</li>
-                        <li>Khaled Al Akili</li>
-                        <li>Shefaa Alaghawani</li>
-                    </ul>
-                </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
             </div>
-        </footer>
-        <script>
-            document.getElementById('signupForm').addEventListener('submit', function (e) {
-                e.preventDefault();
 
-                const name = document.getElementById('fullName').value;
-                const email = document.getElementById('emailAddress').value.toLowerCase();
-                const pass = document.getElementById('password').value;
-                const confirmPass = document.getElementById('confirmPassword').value;
-                const errorDisplay = document.getElementById('error-message');
-
-                // Reset error display
-                errorDisplay.style.display = "none";
-                errorDisplay.style.color = "#ff4d4d";
-
-                // AC 4: Validation Messaging (Check if passwords match)
-                if (pass !== confirmPass) {
-                    errorDisplay.textContent = "Passwords do not match!";
-                    errorDisplay.style.display = "block";
-                    return;
-                }
-
-                // AC 3: Email Uniqueness (Checking Mock Database in LocalStorage)
-                let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-                const userExists = users.some(u => u.email === email);
-
-                if (userExists) {
-                    errorDisplay.textContent = "This email is already registered.";
-                    errorDisplay.style.display = "block";
-                    return;
-                }
-
-                // AC 5: Database Record (Mocking the save to "jsek_users")
-                users.push({ name, email, password: pass });
-                localStorage.setItem('jsek_users', JSON.stringify(users));
-
-                // AC 6: Post-Signup Redirect
-                errorDisplay.style.color = "#2ecc71"; // Success green
-                errorDisplay.textContent = "Account created! Redirecting...";
-                errorDisplay.style.display = "block";
-
-                setTimeout(() => {
-                    // Simulates logging the user in for the session
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('currentUser', JSON.stringify({ name, email }));
-                    window.location.href = 'index.html';
-                }, 2000);
-            });
-        </script>
-    </body>
-
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
 </html>

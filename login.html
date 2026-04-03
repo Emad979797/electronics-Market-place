@@ -7,7 +7,6 @@
     <title>Login | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body class="auth-page">
@@ -79,33 +78,51 @@
             </div>
         </footer>
         <script>
-            document.getElementById('loginForm').addEventListener('submit', function (e) {
-                e.preventDefault();
 
-                const email = document.getElementById('loginEmail').value.toLowerCase();
-                const pass = document.getElementById('loginPassword').value;
-                const errorDisplay = document.getElementById('login-error');
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
 
-                // AC 2: Retrieve the "mock database" you created in signup.html
-                let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+        e.preventDefault();
 
-                // AC 2 & 3: Check if the email exists and the password matches
-                const validUser = users.find(u => u.email === email && u.password === pass);
+        const email = document.getElementById('loginEmail').value.toLowerCase();
+        const pass = document.getElementById('loginPassword').value;
 
-                if (validUser) {
-                    // AC 5: Session Persistence (Save that they are logged in)
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('currentUser', JSON.stringify({ name: validUser.name, email: validUser.email }));
+        const errorDisplay = document.getElementById('login-error');
 
-                    // AC 6: Post-Login Redirect
-                    window.location.href = 'index.html';
-                } else {
-                    // AC 3: Validation Messaging for incorrect credentials
-                    errorDisplay.textContent = "Invalid email or password. Please try again.";
-                    errorDisplay.style.display = "block";
-                }
-            });
-        </script>
+        /* GIVEN DEMO USER */
+
+        const demoUser = {
+        email: "buyer@jsek.com",
+        password: "123456",
+        name: "Demo Buyer",
+        role: "buyer"
+        };
+
+        /* CHECK LOGIN */
+
+        if(email === demoUser.email && pass === demoUser.password){
+
+        localStorage.setItem('isLoggedIn','true');
+
+        localStorage.setItem('currentUser', JSON.stringify({
+        name: demoUser.name,
+        email: demoUser.email,
+        role: demoUser.role
+        }));
+
+        window.location.href = "cart.html";
+
+        }
+
+        else{
+
+        errorDisplay.textContent = "Invalid email or password. Please try again.";
+        errorDisplay.style.display = "block";
+
+        }
+
+        });
+
+        </script>   
     </body>
 
 </html>
