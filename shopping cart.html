@@ -41,24 +41,24 @@
 
   <div class="categories">
     <button onclick="filterCategory('all')">All</button>
-    <button onclick="filterCategory('laptop')">Laptops</button>
-    <button onclick="filterCategory('phone')">Phones</button>
+    <button onclick="filterCategory('laptops')">Laptops</button>
+    <button onclick="filterCategory('phones')">Phones</button>
     <button onclick="filterCategory('gaming')">Gaming</button>
 </div>
         <div class="content-wrapper">
-            <div class="product-card glass">
+           <div class="product-card" data-category="laptops">
     <h3 class="product-name">MacBook Pro</h3>
     <p>$2000</p>
     <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
 </div>
 
-<div class="product-card glass">
+<<div class="product-card" data-category="phones">
     <h3 class="product-name">iPhone 15</h3>
     <p>$1200</p>
     <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
 </div>
 
-<div class="product-card glass">
+<div class="product-card "data-category="gaming">
     <h3 class="product-name">Samsung TV</h3>
     <p>$800</p>
     <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
