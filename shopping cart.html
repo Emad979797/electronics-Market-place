@@ -39,6 +39,12 @@
   onkeyup="searchProducts()" 
   class="search-bar">
 
+  <div class="categories">
+    <button onclick="filterCategory('all')">All</button>
+    <button onclick="filterCategory('laptop')">Laptops</button>
+    <button onclick="filterCategory('phone')">Phones</button>
+    <button onclick="filterCategory('gaming')">Gaming</button>
+</div>
         <div class="content-wrapper">
             <div class="product-card glass">
     <h3 class="product-name">MacBook Pro</h3>
@@ -65,12 +71,6 @@
 </div>
     </main>
     
-<div id="cart">
-  <h3>Cart</h3>
-  <ul id="cart-items"></ul>
-  <p>Total: $<span id="total">0</span></p>
-</div>
-
     <script>
         // Magnetic Background Logic
         document.addEventListener('mousemove', (e) => {
@@ -84,19 +84,21 @@
  <script>
 let cart = [];
 
-// Add to cart
+
 function addToCart(name, price) {
     cart.push({ name, price });
     updateCart();
 }
 
-// Remove
+
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCart();
 }
+function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
 
-// Update cart
 function updateCart() {
     let cartList = document.getElementById("cart-items");
     let total = 0;
@@ -132,6 +134,19 @@ function searchProducts() {
         }
     });
 }
+function filterCategory(category) {
+    let products = document.querySelectorAll(".product-card");
+
+    products.forEach(product => {
+        if (category === "all" || product.dataset.category === category) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+    });
+}
+updateCart();
+
 </script>
 
  <footer class="main-footer">
