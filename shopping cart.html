@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | JSEK Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header class="navbar">
+        <div class="logo">
+            JSEK <span class="logo-accent">Marketplace</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="text-link">Home</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+            <a href="signup.html" class="btn-signup"
+                style="text-decoration: none; display: inline-block; text-align: center;">Sign Up</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+          <h1>Shopping Cart</h1>
+<p>View and manage your selected items.</p>
+        </section>
+
+        <input 
+  type="text" 
+  id="searchInput" 
+  placeholder="Search for electronics (e.g. MacBook)" 
+  onkeyup="searchProducts()" 
+  class="search-bar">
+
+  <div class="categories">
+    <button onclick="filterCategory('all')">All</button>
+    <button onclick="filterCategory('laptop')">Laptops</button>
+    <button onclick="filterCategory('phone')">Phones</button>
+    <button onclick="filterCategory('gaming')">Gaming</button>
+</div>
+        <div class="content-wrapper">
+            <div class="product-card glass">
+    <h3 class="product-name">MacBook Pro</h3>
+    <p>$2000</p>
+    <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
+</div>
+
+<div class="product-card glass">
+    <h3 class="product-name">iPhone 15</h3>
+    <p>$1200</p>
+    <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
+</div>
+
+<div class="product-card glass">
+    <h3 class="product-name">Samsung TV</h3>
+    <p>$800</p>
+    <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
+</div>
+        </div>
+        <div id="cart">
+  <h3>Cart</h3>
+  <ul id="cart-items"></ul>
+  <p>Total: $<span id="total">0</span></p>
+</div>
+    </main>
+    
+    <script>
+        // Magnetic Background Logic
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+    </script>
+ 
+ <script>
+let cart = [];
+
+
+function addToCart(name, price) {
+    cart.push({ name, price });
+    updateCart();
+}
+
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function updateCart() {
+    let cartList = document.getElementById("cart-items");
+    let total = 0;
+
+    cartList.innerHTML = "";
+
+    cart.forEach((item, index) => {
+        total += item.price;
+
+        let li = document.createElement("li");
+        li.innerHTML = `
+            ${item.name} - $${item.price}
+            <button onclick="removeFromCart(${index})">X</button>
+        `;
+        cartList.appendChild(li);
+    });
+
+    document.getElementById("total").innerText = total;
+}
+
+// Search
+function searchProducts() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let products = document.querySelectorAll(".product-card");
+
+    products.forEach(product => {
+        let name = product.querySelector(".product-name").innerText.toLowerCase();
+
+        if (name.includes(input)) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+    });
+}
+function filterCategory(category) {
+    let products = document.querySelectorAll(".product-card");
+
+    products.forEach(product => {
+        if (category === "all" || product.dataset.category === category) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+    });
+}
+updateCart();
+
+</script>
+
+ <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
