@@ -940,24 +940,26 @@ textarea:focus {
     cursor: pointer;
     user-select: none;
 }
+
 .search-bar {
-  width: 100%;
-  padding: 10px;
-  margin: 20px 0;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
 }
 
 #cart {
-  position: fixed;
-  right: 0;
-  top: 80px;
-  width: 250px;
-  background: rgba(255,255,255,0.9);
-  padding: 15px;
-  border-radius: 10px 0 0 10px;
+    position: fixed;
+    right: 0;
+    top: 80px;
+    width: 250px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px 0 0 10px;
 }
+
 body {
     display: flex;
     flex-direction: column;
@@ -970,4 +972,50 @@ body {
 
 .main-footer {
     margin-top: auto;
+}
+
+/* --- Inventory Filter Buttons (Matching Site Theme) --- */
+.filter-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+}
+
+.filter-btn {
+    /* Base styles matching .btn-signup */
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    background: #fff;
+    /* White base */
+    color: #2193b0;
+    /* Brand blue text */
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(33, 147, 176, 0.2);
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(33, 147, 176, 0.15);
+    background-color: #fcfcfc;
+}
+
+/* Selected State: Exactly matches the Log Out button gradient */
+.filter-btn.selected {
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 10px 25px rgba(33, 147, 176, 0.4);
 }

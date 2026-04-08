@@ -65,19 +65,37 @@
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
             const role = document.getElementById('loginRole').value;
             const message = document.getElementById('loginMessage');
 
             // 1. Get users from storage
-            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
 
-            // 2. Add a default "Demo Buyer" and "Demo Admin" if the storage is empty
-            // This ensures buyer@jsek.com always works for your demo
-            if (users.length === 0) {
-                users.push({ email: "buyer@jsek.com", password: "password123", role: "buyer", fullName: "Demo Buyer" });
-                users.push({ email: "admin@jsek.com", password: "admin123", role: "admin", fullName: "Demo Admin" });
+            // 2. Sync demo users
+            const demoBuyerEmail = "buyer@jsek.com";
+            const buyerExists = users.some(u => u.email === demoBuyerEmail);
+
+            if (!buyerExists) {
+                users.push({
+                    email: "buyer@jsek.com",
+                    password: "123456",
+                    role: "buyer",
+                    fullName: "Demo Buyer"
+                });
+                users.push({
+                    email: "admin@jsek.com",
+                    password: "admin123",
+                    role: "admin",
+                    fullName: "Demo Admin"
+                });
+                users.push({
+                    email: "vendor@jsek.com",
+                    password: "123",
+                    role: "vendor",
+                    fullName: "Demo Vendor"
+                });
                 localStorage.setItem('jsek_users', JSON.stringify(users));
             }
 
@@ -92,19 +110,24 @@
                 message.textContent = "Login successful! Redirecting...";
                 message.style.color = "#2ecc71";
 
-                // Save session
+                localStorage.removeItem('currentUser');
                 localStorage.setItem('currentUser', JSON.stringify(validUser));
+                localStorage.setItem('isLoggedIn', 'true');
 
                 setTimeout(() => {
-                    // Redirect based on role
+                    // REDIRECTION LOGIC
                     if (role === 'admin') {
                         window.location.href = "admin-dashboard.html";
+                    } else if (role === 'vendor') {
+                        window.location.href = "vendor_portal.html";
+                    } else if (role === 'buyer') {
+                        window.location.href = "cart.html"; // UPDATED TO cart.html
                     } else {
                         window.location.href = "index.html";
                     }
-                }, 1500);
+                }, 1000);
             } else {
-                message.textContent = "Error: Invalid credentials or incorrect role.";
+                message.textContent = "Error: Invalid email, password, or role.";
                 message.style.color = "#ff4d4d";
             }
         });
