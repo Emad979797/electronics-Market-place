@@ -19,7 +19,7 @@
             JSEK <span class="logo-accent">Marketplace</span>
         </div>
         <div class="nav-links">
-            <a href="index.html" class="text-link">Home</a>
+            <a href="index.html" class="text-link">Home page</a>
             <a href="support.html" class="text-link">Technical Support</a>
             <a href="signup.html" class="btn-signup"
                 style="text-decoration: none; display: inline-block; text-align: center;">Sign Up</a>
@@ -28,58 +28,54 @@
 
     <main class="container">
         <section class="hero">
-          <h1>Shopping Cart</h1>
-<p>View and manage your selected items.</p>
+            <h1>Shopping Cart</h1>
+            <p>View and manage your selected items.</p>
         </section>
 
-        <input 
-  type="text" 
-  id="searchInput" 
-  placeholder="Search for electronics (e.g. MacBook)" 
-  onkeyup="searchProducts()" 
-  class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for electronics (e.g. MacBook)"
+            onkeyup="searchProducts()" class="search-bar">
 
-  <div class="categories">
-    <button onclick="filterCategory('all')">All</button>
-    <button onclick="filterCategory('laptops')">Laptops</button>
-    <button onclick="filterCategory('phones')">Phones</button>
-    <button onclick="filterCategory('gaming')">Gaming</button>
-</div>
-        <div class="content-wrapper">
-           <div class="product-card" data-category="laptops">
-    <button onclick="filterCategory('laptop')">Laptops</button>
-    <button onclick="filterCategory('phone')">Phones</button>
-    <button onclick="filterCategory('gaming')">Gaming</button>
-</div>
-        <div class="content-wrapper">
-            <div class="product-card glass">
-    <h3 class="product-name">MacBook Pro</h3>
-    <p>$2000</p>
-    <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
-</div>
-
-<<div class="product-card" data-category="phones">
-<div class="product-card glass">
-    <h3 class="product-name">iPhone 15</h3>
-    <p>$1200</p>
-    <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
-</div>
-
-<div class="product-card "data-category="gaming">
-<div class="product-card glass">
-    <h3 class="product-name">Samsung TV</h3>
-    <p>$800</p>
-    <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
-</div>
+        <div class="categories">
+            <button onclick="filterCategory('all')">All</button>
+            <button onclick="filterCategory('laptops')">Laptops</button>
+            <button onclick="filterCategory('phones')">Phones</button>
+            <button onclick="filterCategory('gaming')">Gaming</button>
         </div>
-        <div id="cart" class="product-card glass">
-        <div id="cart">
-  <h3>Cart</h3>
-  <ul id="cart-items"></ul>
-  <p>Total: $<span id="total">0</span></p>
-</div>
+        <div class="content-wrapper">
+            <div class="product-card" data-category="laptops">
+                <button onclick="filterCategory('laptop')">Laptops</button>
+                <button onclick="filterCategory('phone')">Phones</button>
+                <button onclick="filterCategory('gaming')">Gaming</button>
+            </div>
+            <div class="content-wrapper">
+                <div class="product-card glass">
+                    <h3 class="product-name">MacBook Pro</h3>
+                    <p>$2000</p>
+                    <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
+                </div>
+
+                <<div class="product-card" data-category="phones">
+                    <div class="product-card glass">
+                        <h3 class="product-name">iPhone 15</h3>
+                        <p>$1200</p>
+                        <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
+                    </div>
+
+                    <div class="product-card " data-category="gaming">
+                        <div class="product-card glass">
+                            <h3 class="product-name">Samsung TV</h3>
+                            <p>$800</p>
+                            <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div id="cart" class="product-card glass">
+                        <div id="cart">
+                            <h3>Cart</h3>
+                            <ul id="cart-items"></ul>
+                            <p>Total: $<span id="total">0</span></p>
+                        </div>
     </main>
-    
+
     <script>
         // Magnetic Background Logic
         document.addEventListener('mousemove', (e) => {
@@ -89,76 +85,76 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
     </script>
- 
- <script>
-let cart = [];
+
+    <script>
+        let cart = [];
 
 
-function addToCart(name, price) {
-    cart.push({ name, price });
-    updateCart();
-}
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+        }
 
 
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCart();
-}
-function saveCart() {
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+        function saveCart() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
 
-function updateCart() {
-    let cartList = document.getElementById("cart-items");
-    let total = 0;
+        function updateCart() {
+            let cartList = document.getElementById("cart-items");
+            let total = 0;
 
-    cartList.innerHTML = "";
+            cartList.innerHTML = "";
 
-    cart.forEach((item, index) => {
-        total += item.price;
+            cart.forEach((item, index) => {
+                total += item.price;
 
-        let li = document.createElement("li");
-        li.innerHTML = `
+                let li = document.createElement("li");
+                li.innerHTML = `
             ${item.name} - $${item.price}
             <button onclick="removeFromCart(${index})">X</button>
         `;
-        cartList.appendChild(li);
-    });
+                cartList.appendChild(li);
+            });
 
-    document.getElementById("total").innerText = total;
-}
-
-// Search
-function searchProducts() {
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let products = document.querySelectorAll(".product-card");
-
-    products.forEach(product => {
-        let name = product.querySelector(".product-name").innerText.toLowerCase();
-
-        if (name.includes(input)) {
-            product.style.display = "block";
-        } else {
-            product.style.display = "none";
+            document.getElementById("total").innerText = total;
         }
-    });
-}
-function filterCategory(category) {
-    let products = document.querySelectorAll(".product-card");
 
-    products.forEach(product => {
-        if (category === "all" || product.dataset.category === category) {
-            product.style.display = "block";
-        } else {
-            product.style.display = "none";
+        // Search
+        function searchProducts() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let products = document.querySelectorAll(".product-card");
+
+            products.forEach(product => {
+                let name = product.querySelector(".product-name").innerText.toLowerCase();
+
+                if (name.includes(input)) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
         }
-    });
-}
-updateCart();
+        function filterCategory(category) {
+            let products = document.querySelectorAll(".product-card");
 
-</script>
+            products.forEach(product => {
+                if (category === "all" || product.dataset.category === category) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
+        }
+        updateCart();
 
- <footer class="main-footer">
+    </script>
+
+    <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
