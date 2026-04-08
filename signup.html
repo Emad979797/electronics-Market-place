@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,17 +26,19 @@
             <h2>Create Account</h2>
             <p>Join the marketplace to buy and sell electronics.</p>
 
-            <form action="login.html" class="auth-form">
+            <form id="signupForm" class="auth-form" autocomplete="off">
+
                 <div class="input-group">
-                    <input type="text" placeholder="Full Name" required>
+                    <input type="text" id="fullName" placeholder="Full Name" autocomplete="off" required>
                 </div>
 
                 <div class="input-group">
-                    <input type="email" placeholder="Email Address" required>
+                    <input type="email" id="email" placeholder="Email Address" autocomplete="one-time-code" required>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" placeholder="Create Password (min. 8 chars)" minlength="8" required>
+                    <input type="password" id="password" placeholder="Create Password (min. 8 chars)" minlength="8"
+                        autocomplete="new-password" required>
                 </div>
 
                 <div class="input-group">
@@ -49,6 +52,8 @@
 
                 <button type="submit" class="btn-glow">Register Now</button>
             </form>
+
+            <div id="message" style="margin-top: 15px; font-weight: 600; font-size: 0.9rem;"></div>
 
             <div class="auth-footer">
                 <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
@@ -84,5 +89,42 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const message = document.getElementById('message');
+
+            // Get existing users
+            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+
+            // Check if email is already registered
+            const userExists = users.some(user => user.email === email);
+
+            if (userExists) {
+                message.textContent = "Error: This email is already registered.";
+                message.style.color = "#ff4d4d"; // Red color
+            } else {
+                // Save new user (including role)
+                const newUser = { fullName, email, password, role };
+                users.push(newUser);
+                localStorage.setItem('jsek_users', JSON.stringify(users));
+
+                message.textContent = "Registration successful! Redirecting to login...";
+                message.style.color = "#2ecc71"; // Green color
+
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 2000);
+            }
+        });
+    </script>
 </body>
+
 </html>
