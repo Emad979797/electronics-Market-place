@@ -8,6 +8,28 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
+        /* Base styles matching signup.html */
+        :root {
+            --jsek-blue: #3ba0ba;
+            --jsek-cyan: #5bc0de;
+            --jsek-dark-cyan: #2a92ad;
+            --jsek-green: #2ecc71;
+            --jsek-text-main: #333333;
+            --jsek-text-muted: #666666;
+            --jsek-bg: #fcfcfc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--jsek-text-main);
+            background-color: var(--jsek-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Profile Select feature styles */
         .recent-accounts {
             margin-bottom: 20px;
             text-align: left;
@@ -15,7 +37,7 @@
 
         .account-chip {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 8px;
@@ -28,13 +50,18 @@
 
         .account-chip:hover {
             background: rgba(46, 204, 113, 0.1);
-            border-color: #2ecc71;
+            border-color: var(--jsek-green);
+        }
+
+        .account-chip.selected {
+            background: rgba(46, 204, 113, 0.15);
+            border: 2px solid var(--jsek-green);
         }
 
         .account-avatar {
             width: 30px;
             height: 30px;
-            background: #2ecc71;
+            background: linear-gradient(135deg, var(--jsek-cyan), var(--jsek-dark-cyan));
             border-radius: 50%;
             margin-right: 12px;
             display: flex;
@@ -42,6 +69,59 @@
             justify-content: center;
             color: white;
             font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(42, 146, 173, 0.2);
+        }
+
+        /* Input styling */
+        #loginEmail {
+            letter-spacing: 2px;
+            color: var(--jsek-dark-cyan);
+        }
+
+        .btn-jsek-login {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--jsek-cyan), var(--jsek-dark-cyan));
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(42, 146, 173, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-jsek-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 146, 173, 0.4);
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--jsek-cyan);
+            outline: none;
+        }
+
+        /* RESTORED LINK COLORS: Matching --jsek-text-muted (#666666) */
+        .auth-footer p {
+            color: var(--jsek-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .auth-footer .text-link {
+            color: var(--jsek-text-muted) !important;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .auth-footer .text-link:hover {
+            color: var(--jsek-text-main) !important;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -62,25 +142,34 @@
         <div class="auth-card">
             <h2>Member Login</h2>
 
-            <div id="recentAccountsContainer" class="recent-accounts" style="display: none;">
+            <div id="recentAccountsContainer" class="recent-accounts">
                 <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Continue as:</p>
-                <div id="accountsList"></div>
+                <div id="accountsList">
+                    <div class="account-chip" onclick="autofill(this, 'admin1@jsek.ca', 'admin')">
+                        <div class="account-avatar">1</div>
+                        <div style="font-weight:600; font-size:0.85rem; color: var(--jsek-text-main);">Admin 1</div>
+                    </div>
+                    <div class="account-chip" onclick="autofill(this, 'admin2@jsek.ca', 'admin')">
+                        <div class="account-avatar">2</div>
+                        <div style="font-weight:600; font-size:0.85rem; color: var(--jsek-text-main);">Admin 2</div>
+                    </div>
+                </div>
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
             </div>
 
-            <p>Enter your credentials to access your account.</p>
+            <p style="color: var(--jsek-text-muted);">Enter your credentials to access your account.</p>
 
             <form id="loginForm" class="auth-form" autocomplete="off">
                 <div class="input-group">
-                    <input type="email" id="loginEmail" placeholder="Email Address" required
-                        autocomplete="one-time-code">
+                    <input type="password" id="loginEmail" placeholder="Email Address (Hidden)" required
+                        autocomplete="one-time-code" style="color: var(--jsek-text-main);">
                 </div>
                 <div class="input-group">
                     <input type="password" id="loginPassword" placeholder="Password" required
-                        autocomplete="new-password">
+                        autocomplete="new-password" style="color: var(--jsek-text-main);">
                 </div>
                 <div class="input-group">
-                    <select id="loginRole" required>
+                    <select id="loginRole" required style="color: var(--jsek-text-main); cursor: pointer;">
                         <option value="">Login as...</option>
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller</option>
@@ -92,14 +181,14 @@
                 <div class="input-group"
                     style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-left: 2px;">
                     <input type="checkbox" id="rememberMe"
-                        style="width: 16px; height: 16px; cursor: pointer; accent-color: #2ecc71;">
+                        style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--jsek-cyan);">
                     <label for="rememberMe"
-                        style="color: #333333; font-size: 0.9rem; font-weight: 400; cursor: pointer; user-select: none;">
+                        style="color: var(--jsek-text-muted); font-size: 0.9rem; font-weight: 400; cursor: pointer; user-select: none;">
                         Remember Me
                     </label>
                 </div>
 
-                <button type="submit" class="btn-glow">Login Now</button>
+                <button type="submit" class="btn-jsek-login">Login Now</button>
             </form>
 
             <div id="loginMessage" style="margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 1.2rem;">
@@ -113,75 +202,87 @@
         </div>
     </main>
 
-    <script>
-        let loginAttempts = 0;
-        const MAX_ATTEMPTS = 5;
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
 
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
         window.onload = function () {
-            const saved = JSON.parse(localStorage.getItem('jsek_saved_credentials')) || [];
-            if (saved.length > 0) {
-                document.getElementById('recentAccountsContainer').style.display = 'block';
-                saved.forEach(acc => {
-                    const chip = document.createElement('div');
-                    chip.className = 'account-chip';
-                    chip.innerHTML = `<div class="account-avatar">${acc.name.charAt(0)}</div>
-                        <div><div style="font-weight:600; font-size:0.85rem;">${acc.name}</div>
-                        <div style="font-size:0.75rem; color:#666;">${acc.email}</div></div>`;
-                    chip.onclick = () => {
-                        document.getElementById('loginEmail').value = acc.email;
-                        document.getElementById('loginPassword').value = acc.password;
-                        document.getElementById('loginRole').value = acc.role;
-                    };
-                    document.getElementById('accountsList').appendChild(chip);
-                });
-            }
+            let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            const demoAccounts = [
+                { email: "admin1@jsek.ca", password: "password123", role: "admin", fullName: "Admin 1" },
+                { email: "admin2@jsek.ca", password: "password123", role: "admin", fullName: "Admin 2" }
+            ];
+            demoAccounts.forEach(demo => {
+                if (!users.some(u => u.email === demo.email)) users.push(demo);
+            });
+            localStorage.setItem('jsek_users', JSON.stringify(users));
         };
+
+        function autofill(element, email, role) {
+            document.querySelectorAll('.account-chip').forEach(chip => chip.classList.remove('selected'));
+            element.classList.add('selected');
+
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginRole').value = role;
+            document.getElementById('loginPassword').value = "";
+            document.getElementById('loginPassword').focus();
+
+            const message = document.getElementById('loginMessage');
+            message.textContent = "Profile identity loaded securely.";
+            message.style.color = "var(--jsek-dark-cyan)";
+        }
 
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-            const role = document.getElementById('loginRole').value;
+            const role = document.getElementById('loginRole').value.toLowerCase();
             const message = document.getElementById('loginMessage');
-            const rememberMe = document.getElementById('rememberMe').checked;
 
-            if (loginAttempts >= MAX_ATTEMPTS) {
-                message.textContent = "Too many failed attempts. Locked.";
-                message.style.color = "#ff4d4d";
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-
-            // Sync demo users
-            if (!users.some(u => u.email === "admin@jsek.com")) {
-                users.push({ email: "admin@jsek.com", password: "admin123", role: "admin", fullName: "Demo Admin" });
-                localStorage.setItem('jsek_users', JSON.stringify(users));
-            }
-
-            const validUser = users.find(u => u.email === email && u.password === password && u.role === role);
+            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            const validUser = users.find(u =>
+                u.email === email && u.password === password && u.role.toLowerCase() === role
+            );
 
             if (validUser) {
-                let saved = JSON.parse(localStorage.getItem('jsek_saved_credentials')) || [];
-                if (!saved.some(s => s.email === email)) {
-                    saved.push({ email, password, name: validUser.fullName || "User", role });
-                    localStorage.setItem('jsek_saved_credentials', JSON.stringify(saved));
-                }
-
-                message.textContent = "Success! Redirecting...";
-                message.style.color = "#2ecc71";
+                message.textContent = "Authorized. Redirecting...";
+                message.style.color = "var(--jsek-green)";
                 localStorage.setItem('currentUser', JSON.stringify(validUser));
                 localStorage.setItem('isLoggedIn', 'true');
-
                 setTimeout(() => {
                     if (role === 'admin') window.location.assign("admin_dashboard.html");
-                    else if (role === 'buyer') window.location.assign("cart.html");
                     else window.location.assign("index.html");
                 }, 1000);
             } else {
-                loginAttempts++;
-                message.textContent = "Error: Invalid credentials.";
-                message.style.color = "#ff4d4d";
+                message.textContent = "Security Denied: Check password or role.";
+                message.style.color = "#fa5252";
+                document.getElementById('loginPassword').value = "";
             }
         });
     </script>
