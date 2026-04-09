@@ -1019,3 +1019,44 @@ body {
     border-color: transparent;
     box-shadow: 0 10px 25px rgba(33, 147, 176, 0.4);
 }
+
+/* Glassmorphism Filter Buttons */
+.categories {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.categories button {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 50px;
+    /* Pill shape */
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.categories button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--accent-color, #00d4ff);
+    /* Matches your logo accent */
+}
+
+/* Active State to show which category is selected */
+.categories button.active {
+    background: white;
+    color: #121212;
+    font-weight: 600;
+    border-color: white;
+}
