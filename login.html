@@ -265,12 +265,26 @@
             const role = document.getElementById('loginRole').value.toLowerCase();
             const message = document.getElementById('loginMessage');
 
+            // --- BRUTE FORCE PROTECTION LOGIC START ---
+            const MAX_ATTEMPTS = 5;
+            let loginAttempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
+
+            if (loginAttempts >= MAX_ATTEMPTS) {
+                message.textContent = "Too many failed attempts. Account temporarily locked.";
+                message.style.color = "#fa5252";
+                return; // Stop the form from processing further
+            }
+            // --- BRUTE FORCE PROTECTION LOGIC END ---
+
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             const validUser = users.find(u =>
                 u.email === email && u.password === password && u.role.toLowerCase() === role
             );
 
             if (validUser) {
+                // SUCCESS: Reset attempts counter
+                localStorage.setItem('loginAttempts', 0);
+
                 message.textContent = "Authorized. Redirecting...";
                 message.style.color = "var(--jsek-green)";
                 localStorage.setItem('currentUser', JSON.stringify(validUser));
@@ -280,7 +294,17 @@
                     else window.location.assign("index.html");
                 }, 1000);
             } else {
-                message.textContent = "Security Denied: Check password or role.";
+                // FAILURE: Increment attempts counter
+                loginAttempts++;
+                localStorage.setItem('loginAttempts', loginAttempts);
+
+                const remaining = MAX_ATTEMPTS - loginAttempts;
+                if (loginAttempts >= MAX_ATTEMPTS) {
+                    message.textContent = "Security Denied: Too many failed attempts. Locked.";
+                } else {
+                    message.textContent = `Security Denied: Check password or role. (${remaining} attempts left)`;
+                }
+
                 message.style.color = "#fa5252";
                 document.getElementById('loginPassword').value = "";
             }
