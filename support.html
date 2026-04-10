@@ -26,6 +26,31 @@
         <section class="hero">
             <h1>Technical Support</h1>
             <p>How can we help you today? Our team is available 24/7.</p>
+
+            <div id="lockout-container" class="glass"
+                style="display: none; margin: 30px auto; max-width: 600px; padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 77, 77, 0.2); background: rgba(0, 0, 0, 0.2); text-align: center; box-shadow: 0 8px 32px rgba(255, 77, 77, 0.1);">
+
+                <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px;">
+                    <span
+                        style="font-size: 1.5rem; color: #ff4d4d; filter: drop-shadow(0 0 5px rgba(255, 77, 77, 0.5));">🔒</span>
+                    <h3 id="lockout-header"
+                        style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem;">
+                        Access Temporarily Restricted
+                    </h3>
+                </div>
+
+                <p id="lockout-message" style="margin-bottom: 25px; color: #ddd; font-size: 0.95rem; line-height: 1.5;">
+                    You can submit your inquiry below or try to login again in
+                    <span id="timer"
+                        style="font-weight: 700; font-size: 1.3rem; color: #6dd5ed; text-shadow: 0 0 10px rgba(109, 213, 237, 0.5);">10</span>s
+                </p>
+
+                <a href="login.html" id="retry-btn" class="btn-glow"
+                    style="display: none; text-decoration: none; padding: 12px 25px; font-size: 0.9rem; border-radius: 30px; display: inline-block;">
+                    Try Login Again Now
+                </a>
+            </div>
         </section>
 
         <div class="support-grid">
@@ -39,7 +64,6 @@
                         <div class="input-group">
                             <input type="email" placeholder="Email Address" required>
                         </div>
-
                         <div class="input-group">
                             <select required>
                                 <option value="" disabled selected>Select Issue Category</option>
@@ -49,11 +73,9 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-
                         <div class="input-group">
                             <textarea placeholder="Describe your issue in detail..." required></textarea>
                         </div>
-
                         <button type="submit" class="btn-glow">Submit Ticket</button>
                     </form>
                 </div>
@@ -92,7 +114,6 @@
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
-
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
@@ -100,7 +121,6 @@
                     <li><a href="support.html">Technical Support</a></li>
                 </ul>
             </div>
-
             <div class="footer-section">
                 <h4>Our Team</h4>
                 <ul class="collaborators">
@@ -114,21 +134,46 @@
     </footer>
 
     <script>
+        // Form Submission Logic
         document.getElementById('supportTicket').addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevents page reload/redirect
-
-            // Hide the entire form content block
+            e.preventDefault();
             const formContent = document.getElementById('form-content');
-            if (formContent) {
-                formContent.style.display = 'none';
-            }
-
-            // Show the success message and icon
+            if (formContent) formContent.style.display = 'none';
             const successMsg = document.getElementById('success-message');
-            if (successMsg) {
-                successMsg.style.display = 'block';
-            }
+            if (successMsg) successMsg.style.display = 'block';
         });
+
+        // LOCKOUT COUNTDOWN LOGIC
+        window.onload = function () {
+            const lockoutUntil = localStorage.getItem('jsek_lockout_until');
+            const container = document.getElementById('lockout-container');
+            const timerDisplay = document.getElementById('timer');
+            const retryBtn = document.getElementById('retry-btn');
+            const messageText = document.getElementById('lockout-message');
+            const headerText = document.getElementById('lockout-header');
+
+            if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
+                container.style.display = "block";
+                retryBtn.style.display = "none";
+
+                const updateTimer = setInterval(() => {
+                    const remaining = Math.ceil((parseInt(lockoutUntil) - Date.now()) / 1000);
+
+                    if (remaining <= 0) {
+                        clearInterval(updateTimer);
+                        headerText.textContent = "Cooldown Finished";
+                        headerText.style.color = "#2ecc71";
+                        messageText.innerHTML = "You can submit your inquiry or try to login again now:";
+                        retryBtn.style.display = "inline-block";
+
+                        localStorage.removeItem('jsek_lockout_until');
+                        localStorage.setItem('jsek_attempts', '0');
+                    } else {
+                        timerDisplay.textContent = remaining;
+                    }
+                }, 1000);
+            }
+        };
     </script>
 </body>
 

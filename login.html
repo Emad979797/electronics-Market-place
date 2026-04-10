@@ -197,11 +197,21 @@
 
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
+
+            // 1. Get values and trim whitespace
             const emailInput = document.getElementById('loginEmail').value.trim();
             const passwordInput = document.getElementById('loginPassword').value;
             const dropdownRole = document.getElementById('loginRole').value.toLowerCase().trim();
             const portalRole = (sessionStorage.getItem('requiredPortal') || "").toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
+
+            // 2. EMPTY FIELD CHECK (The Fix)
+            // This stops the code BEFORE it touches the attempts counter.
+            if (!emailInput || !passwordInput || !dropdownRole) {
+                msg.textContent = "Please fill in all fields before logging in.";
+                msg.style.color = "#ff9800"; // Orange for a warning, not a "failure"
+                return; // Exit the function immediately
+            }
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             const user = users.find(u => u.email === emailInput && u.password === passwordInput);
@@ -229,14 +239,19 @@
                 }, 1000);
 
             } else {
+                // 3. Increment attempts ONLY if fields were actually filled but were incorrect
                 let attempts = parseInt(localStorage.getItem('jsek_attempts') || '0') + 1;
                 localStorage.setItem('jsek_attempts', attempts);
+
                 if (attempts >= MAX_ATTEMPTS) {
                     localStorage.setItem('jsek_lockout_until', (Date.now() + LOCKOUT_MS).toString());
                     msg.textContent = "Account Blocked! Redirecting...";
                     setTimeout(() => window.location.assign("support.html"), 1500);
                 } else {
-                    msg.textContent = `Invalid credentials. ${MAX_ATTEMPTS - attempts} attempts left.`;
+                    const remaining = MAX_ATTEMPTS - attempts;
+                    const attemptWord = remaining === 1 ? "attempt" : "attempts";
+
+                    msg.textContent = `Invalid credentials. ${remaining} ${attemptWord} left.`;
                     msg.style.color = "#ff4d4d";
                 }
             }
