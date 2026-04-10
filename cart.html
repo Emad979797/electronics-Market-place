@@ -2,224 +2,192 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shopping Cart | JSEK Marketplace</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | JSEK Marketplace</title>
 
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body class="auth-page">
 
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-
-<header class="navbar">
-<div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-
-<div class="nav-links">
-<a href="index.html" class="text-link">Home Page</a>
-<a href="support.html" class="text-link">Technical Support</a>
-<button class="btn-signup" onclick="logout()">Log Out</button>
-</div>
-</header>
-
-<main class="auth-container">
-
-<div class="auth-card" style="max-width:900px;">
-
-<h2>Electronics Store</h2>
-<p id="userInfo"></p>
-
-<!-- PRODUCTS -->
-
-<div class="portal-grid">
-
-<div class="role-card">
-
-<img src="laptop.jpg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
-
-<h3>Laptop</h3>
-<p>$800</p>
-
-<button class="btn-glow" onclick="addToCart('Laptop',800)">Add to Cart</button>
-
-</div>
-
-<div class="role-card">
-
-<img src="phone.jpeg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
-
-<h3>Smart Phone</h3>
-<p>$500</p>
-
-<button class="btn-glow" onclick="addToCart('Smart Phone',500)">Add to Cart</button>
-
-</div>
-
-<div class="role-card">
-
-<img src="headphones.jpeg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
-
-<h3>Headphones</h3>
-<p>$120</p>
-
-<button class="btn-glow" onclick="addToCart('Headphones',120)">Add to Cart</button>
-
-</div>
-
-<div class="role-card">
-
-<img src="smartwatch.jpg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
-
-<h3>Smart Watch</h3>
-<p>$200</p>
-
-<button class="btn-glow" onclick="addToCart('Smart Watch',200)">Add to Cart</button>
-
-</div>
-
-</div>
-
-<!-- CART -->
-
-<div style="margin-top:40px;text-align:left">
-
-<h3>Your Cart</h3>
-
-<ul id="cartItems"></ul>
-
-<h4>Total: $<span id="totalPrice">0</span></h4>
-
-</div>
-
-</div>
-
-</main>
-
-<a href="support.html" class="quick-help-trigger">? Quick Help</a>
-
-<footer class="main-footer">
-
-<div class="footer-content">
-
-<div class="footer-section">
-<div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-<p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
-</div>
-
-<div class="footer-section">
-<h4>Quick Links</h4>
-<ul>
-<li><a href="index.html">Home Page</a></li>
-<li><a href="support.html">Technical Support</a></li>
-</ul>
-</div>
-
-<div class="footer-section">
-<h4>Our Team</h4>
-<ul class="collaborators">
-<li>Emad Al Nounou</li>
-<li>Julia Cameron</li>
-<li>Khaled Al Akili</li>
-<li>Shefaa Alaghawani</li>
-</ul>
-</div>
-
-</div>
-
-</footer>
-
-<script>
-
-/* GIVEN LOGIN CREDENTIALS */
-
-const validUser = {
-email: "buyer@jsek.com",
-password: "123456",
-role: "buyer",
-name: "Demo Buyer"
-};
-
-/* LOGIN SESSION CHECK */
-
-const loggedUser = JSON.parse(localStorage.getItem("currentUser"));
-
-if(!loggedUser){
-alert("Please login first.");
-window.location.href = "login.html";
-}
-
-/* ROLE CHECK */
-
-if(loggedUser.role !== "buyer"){
-alert("Only buyers can access the shopping cart.");
-window.location.href = "index.html";
-}
-
-/* DISPLAY USER */
-
-document.getElementById("userInfo").innerHTML =
-`Logged in as <strong>${loggedUser.name}</strong> (${loggedUser.email})`;
-
-/* LOGOUT */
-
-function logout(){
-
-localStorage.removeItem("currentUser");
-localStorage.removeItem("isLoggedIn");
-
-window.location.href = "login.html";
-
-}
-
-/* CART LOGIC */
-
-let cart = [];
-
-function addToCart(name,price){
-
-cart.push({name,price});
-updateCart();
-
-}
-
-function removeItem(index){
-
-cart.splice(index,1);
-updateCart();
-
-}
-
-function updateCart(){
-
-const cartList = document.getElementById("cartItems");
-const totalDisplay = document.getElementById("totalPrice");
-
-cartList.innerHTML = "";
-let total = 0;
-
-cart.forEach((item,index)=>{
-
-total += item.price;
-
-const li = document.createElement("li");
-
-li.innerHTML =
-`${item.name} - $${item.price}
-<button class="btn-edit" onclick="removeItem(${index})">Remove</button>`;
-
-cartList.appendChild(li);
-
-});
-
-totalDisplay.textContent = total;
-
-}
-
-</script>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header class="navbar">
+        <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+
+        <div class="nav-links">
+            <a href="index.html" class="text-link">Home Page</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+            <button class="btn-signup" onclick="logout()">Log Out</button>
+        </div>
+    </header>
+
+    <main class="auth-container">
+
+        <div class="auth-card" style="max-width:900px;">
+
+            <h2>Electronics Store</h2>
+            <p id="userInfo"></p>
+
+            <div class="portal-grid">
+
+                <div class="role-card">
+                    <img src="laptop.jpg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
+                    <h3>Laptop</h3>
+                    <p>$800</p>
+                    <button class="btn-glow" onclick="addToCart('Laptop',800)">Add to Cart</button>
+                </div>
+
+                <div class="role-card">
+                    <img src="phone.jpeg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
+                    <h3>Smart Phone</h3>
+                    <p>$500</p>
+                    <button class="btn-glow" onclick="addToCart('Smart Phone',500)">Add to Cart</button>
+                </div>
+
+                <div class="role-card">
+                    <img src="headphones.jpeg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
+                    <h3>Headphones</h3>
+                    <p>$120</p>
+                    <button class="btn-glow" onclick="addToCart('Headphones',120)">Add to Cart</button>
+                </div>
+
+                <div class="role-card">
+                    <img src="smartwatch.jpg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
+                    <h3>Smart Watch</h3>
+                    <p>$200</p>
+                    <button class="btn-glow" onclick="addToCart('Smart Watch',200)">Add to Cart</button>
+                </div>
+
+            </div>
+
+            <div style="margin-top:40px;text-align:left">
+                <h3>Your Cart</h3>
+                <ul id="cartItems"></ul>
+                <h4>Total: $<span id="totalPrice">0</span></h4>
+            </div>
+
+        </div>
+
+    </main>
+
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* GIVEN LOGIN CREDENTIALS */
+        const validUser = {
+            email: "buyer@jsek.com",
+            password: "123456",
+            role: "buyer"
+        };
+
+        /* LOGIN SESSION CHECK */
+        let loggedUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        // 1. If no session exists, redirect
+        if (!loggedUser) {
+            alert("Please login first.");
+            window.location.href = "login.html";
+        }
+
+        // 2. REPAIR: Sync with Login Page variables (fullName vs name)
+        if (loggedUser && loggedUser.email === validUser.email) {
+            // Force role to buyer if it's our demo account
+            if (!loggedUser.role) loggedUser.role = "buyer";
+            localStorage.setItem("currentUser", JSON.stringify(loggedUser));
+        }
+
+        /* 3. ROLE CHECK */
+        if (loggedUser.role !== "buyer") {
+            alert("Access Denied: Only buyers can access the shopping cart.");
+            window.location.href = "index.html";
+        }
+
+        /* DISPLAY USER - Handles both 'fullName' and 'name' properties */
+        const displayName = loggedUser.fullName || loggedUser.name || 'Demo Buyer';
+        document.getElementById("userInfo").innerHTML =
+            `Logged in as <strong>${displayName}</strong> (${loggedUser.email})`;
+
+        /* LOGOUT */
+        function logout() {
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("isLoggedIn");
+            window.location.href = "login.html";
+        }
+
+        /* CART LOGIC */
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById("cartItems");
+            const totalDisplay = document.getElementById("totalPrice");
+
+            cartList.innerHTML = "";
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                const li = document.createElement("li");
+                li.style.marginBottom = "10px";
+                li.style.listStyle = "none";
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                li.style.padding = "10px";
+                li.style.background = "#f8f9fa";
+                li.style.borderRadius = "8px";
+
+                li.innerHTML =
+                    `<span>${item.name} - <strong>$${item.price}</strong></span>
+                    <button class="btn-edit" style="color: #fa5252; border-color: #fa5252; cursor: pointer;" onclick="removeItem(${index})">Remove</button>`;
+
+                cartList.appendChild(li);
+            });
+
+            totalDisplay.textContent = total;
+        }
+    </script>
 
 </body>
+
 </html>

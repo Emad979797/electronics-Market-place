@@ -5,8 +5,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management | JSEK Marketplace</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles from your style.css logic */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfc;
+        }
+
+        /* NEW: Filter Button Styling */
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            background: #eee;
+            padding: 6px;
+            border-radius: 50px;
+        }
+
+        .filter-btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            background: transparent;
+            color: #555;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hover effect */
+        .filter-btn:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+        /* Active/Selected State */
+        .filter-btn.selected {
+            background-color: #000;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Table Status Pills */
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pill.high {
+            background: #e6fcf5;
+            color: #0ca678;
+        }
+
+        .status-pill.low {
+            background: #fff9db;
+            color: #f08c00;
+        }
+
+        .status-pill.out {
+            background: #fff5f5;
+            color: #fa5252;
+        }
+
+        .btn-edit {
+            padding: 6px 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: #f8f9fa;
+            border-color: #bbb;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
@@ -29,8 +118,6 @@
     <main
         style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center; flex: 1; width: 100%; box-sizing: border-box;">
 
-
-
         <section class="inventory-header">
             <h1 style="font-size: 36px; margin-bottom: 10px;">Inventory Management</h1>
             <p style="font-size: 18px; color: #666; margin-bottom: 30px;">Monitor your stock levels and update listings.
@@ -38,8 +125,16 @@
         </section>
 
         <section class="inventory-container">
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <button class="filter-btn selected" id="btn-all" onclick="filterStatus('all')">All Products</button>
+                    <button class="filter-btn" id="btn-active" onclick="filterStatus('active')">Active</button>
+                    <button class="filter-btn" id="btn-sold" onclick="filterStatus('sold')">Sold</button>
+                </div>
+            </div>
+
             <table class="inventory-table"
-                style="margin: 0 auto; width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+                style="margin: 0 auto; width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                 <thead>
                     <tr style="background-color: #f8f9fa; border-bottom: 2px solid #eee;">
                         <th style="padding: 15px; text-align: center;">Product Name</th>
@@ -51,7 +146,7 @@
                     </tr>
                 </thead>
                 <tbody style="color: #444;">
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr data-status="active" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; text-align: center;">iPhone 15 Pro</td>
                         <td style="padding: 15px; text-align: center;">Smartphones</td>
                         <td style="padding: 15px; text-align: center;">$999</td>
@@ -64,7 +159,7 @@
                         </td>
                     </tr>
 
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr data-status="active" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; text-align: center;">MacBook Air M3</td>
                         <td style="padding: 15px; text-align: center;">Laptops</td>
                         <td style="padding: 15px; text-align: center;">$1,099</td>
@@ -76,7 +171,7 @@
                             <button class="btn-edit" onclick="alert('Editing: MacBook Air M3...')">Edit</button>
                         </td>
                     </tr>
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr data-status="active" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; text-align: center;">PlayStation 5</td>
                         <td style="padding: 15px; text-align: center;">Gaming</td>
                         <td style="padding: 15px; text-align: center;">$499</td>
@@ -89,7 +184,7 @@
                         </td>
                     </tr>
 
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr data-status="active" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; text-align: center;">Logitech G-Pro Mouse</td>
                         <td style="padding: 15px; text-align: center;">Accessories</td>
                         <td style="padding: 15px; text-align: center;">$120</td>
@@ -102,7 +197,7 @@
                         </td>
                     </tr>
 
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr data-status="sold" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; text-align: center;">Sony WH-1000XM5</td>
                         <td style="padding: 15px; text-align: center;">Audio</td>
                         <td style="padding: 15px; text-align: center;">$350</td>
@@ -147,7 +242,7 @@
     </footer>
 
     <script>
-        // 1. Your Existing Mouse Animation Logic
+        // 1. Mouse Animation
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -155,21 +250,16 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // 2. New Inventory Logic for MP-16
+        // 2. Inventory Status Logic
         function updateInventoryPills() {
-            // This loop checks all 5 products using the IDs we added
             for (let i = 1; i <= 5; i++) {
                 const stockElement = document.getElementById(`stock-val-${i}`);
                 const pillElement = document.getElementById(`pill-${i}`);
 
                 if (stockElement && pillElement) {
-                    // Convert the text (e.g., "45") into a real number
                     const count = parseInt(stockElement.innerText);
-
-                    // Reset the pill classes before applying the new one
                     pillElement.classList.remove('high', 'low', 'out');
 
-                    // Apply Logic: High Stock (10+), Low Stock (1-9), Out of Stock (0)
                     if (count >= 10) {
                         pillElement.innerText = "In Stock";
                         pillElement.classList.add('high');
@@ -184,7 +274,30 @@
             }
         }
 
-        // 3. Run the logic automatically when the page opens
+        // 3. Updated Filter Function with Visual Toggle
+        function filterStatus(type) {
+            const rows = document.querySelectorAll("tbody tr");
+            const buttons = document.querySelectorAll(".filter-btn");
+
+            // Update button active states
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.id === `btn-${type}`) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            // Filter the table rows
+            rows.forEach(row => {
+                const status = row.dataset.status;
+                if (type === "all" || status === type) {
+                    row.style.display = "table-row";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
         window.onload = updateInventoryPills;
     </script>
 </body>

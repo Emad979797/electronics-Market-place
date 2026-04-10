@@ -940,24 +940,26 @@ textarea:focus {
     cursor: pointer;
     user-select: none;
 }
+
 .search-bar {
-  width: 100%;
-  padding: 10px;
-  margin: 20px 0;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
 }
 
 #cart {
-  position: fixed;
-  right: 0;
-  top: 80px;
-  width: 250px;
-  background: rgba(255,255,255,0.9);
-  padding: 15px;
-  border-radius: 10px 0 0 10px;
+    position: fixed;
+    right: 0;
+    top: 80px;
+    width: 250px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px 0 0 10px;
 }
+
 body {
     display: flex;
     flex-direction: column;
@@ -970,4 +972,91 @@ body {
 
 .main-footer {
     margin-top: auto;
+}
+
+/* --- Inventory Filter Buttons (Matching Site Theme) --- */
+.filter-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+}
+
+.filter-btn {
+    /* Base styles matching .btn-signup */
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    background: #fff;
+    /* White base */
+    color: #2193b0;
+    /* Brand blue text */
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(33, 147, 176, 0.2);
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(33, 147, 176, 0.15);
+    background-color: #fcfcfc;
+}
+
+/* Selected State: Exactly matches the Log Out button gradient */
+.filter-btn.selected {
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 10px 25px rgba(33, 147, 176, 0.4);
+}
+
+/* Glassmorphism Filter Buttons */
+.categories {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.categories button {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 50px;
+    /* Pill shape */
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.categories button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--accent-color, #00d4ff);
+    /* Matches your logo accent */
+}
+
+/* Active State to show which category is selected */
+.categories button.active {
+    background: white;
+    color: #121212;
+    font-weight: 600;
+    border-color: white;
 }
