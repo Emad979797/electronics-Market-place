@@ -24,6 +24,7 @@ body {
     min-height: 100vh;
 }
 
+
 .blob {
     position: fixed;
     border-radius: 50%;
@@ -257,20 +258,29 @@ body {
     gap: 20px;
 }
 
-.auth-form input {
+.auth-form input,
+.auth-form select,
+textarea {
     width: 100%;
-    padding: 18px 25px;
-    border-radius: 15px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 16px 22px;
+    border-radius: 12px;
+    /* Changed from thick black/gray to a delicate light border */
+    border: 1px solid rgba(0, 0, 0, 0.1);
     background: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    /* Smooth transition for the glow effect */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.auth-form input:focus {
+.auth-form input:focus,
+.auth-form select:focus,
+textarea:focus {
     outline: none;
-    border-color: #6dd5ed;
-    box-shadow: 0 0 15px rgba(109, 213, 237, 0.3);
+    border-color: #2193b0;
+    background: #fff;
+    /* This creates the "delicate" bright look you wanted */
+    box-shadow: 0 0 0 4px rgba(33, 147, 176, 0.1);
 }
 
 .auth-footer {
@@ -531,12 +541,14 @@ textarea {
 
 /* Highlights the input red if the AC (like minlength) isn't met */
 .input-group input:invalid:focus {
-    border: 2px solid #ff4d4d;
+    border-color: #ff4d4d;
+    /* A soft red glow instead of a thick red border */
+    box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.1);
 }
 
 /* Highlights the input green when the AC is satisfied */
 .input-group input:valid {
-    border: 2px solid #2ecc71;
+    border-color: rgba(46, 204, 113, 0.4);
 }
 
 .quick-help {
@@ -939,178 +951,4 @@ textarea:focus {
     color: #666;
     cursor: pointer;
     user-select: none;
-}
-
-.search-bar {
-    width: 100%;
-    padding: 10px;
-    margin: 20px 0;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-}
-
-#cart {
-    position: fixed;
-    right: 0;
-    top: 80px;
-    width: 250px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 10px 0 0 10px;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.container {
-    flex: 1;
-}
-
-.main-footer {
-    margin-top: auto;
-}
-
-/* --- Inventory Filter Buttons (Matching Site Theme) --- */
-.filter-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
-}
-
-.filter-group {
-    display: flex;
-    gap: 15px;
-    padding: 10px;
-}
-
-.filter-btn {
-    /* Base styles matching .btn-signup */
-    padding: 12px 30px;
-    border: none;
-    border-radius: 50px;
-    background: #fff;
-    /* White base */
-    color: #2193b0;
-    /* Brand blue text */
-    font-weight: 600;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    border: 1px solid rgba(33, 147, 176, 0.2);
-}
-
-.filter-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(33, 147, 176, 0.15);
-    background-color: #fcfcfc;
-}
-
-/* Selected State: Exactly matches the Log Out button gradient */
-.filter-btn.selected {
-    background: linear-gradient(135deg, #6dd5ed, #2193b0);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 10px 25px rgba(33, 147, 176, 0.4);
-}
-
-/* Glassmorphism Filter Buttons */
-.categories {
-    display: flex;
-    gap: 12px;
-    margin: 25px 0;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.categories button {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 10px 24px;
-    border-radius: 50px;
-    /* Pill shape */
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.categories button:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px var(--accent-color, #00d4ff);
-    /* Matches your logo accent */
-}
-
-/* Active State to show which category is selected */
-.categories button.active {
-    background: white;
-    color: #121212;
-    font-weight: 600;
-    border-color: white;
-}
-/* Improved Button & Category Layout */
-.categories {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap; /* Prevents buttons from breaking on mobile */
-}
-
-.categories button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 25px;
-    border-radius: 50px;
-    color: white !important;
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.categories button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Ensure Add to Cart buttons sit at the bottom of cards */
-.btn-glow {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(45deg, #007bff, #00d4ff);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-top: auto; /* Pushes button to bottom if card height varies */
-}
-
-.btn-glow:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.6);
-}
-
-/* Fix for the card container to allow button alignment */
-.product-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%; /* Keeps cards uniform */
-    padding: 20px;
 }

@@ -7,126 +7,9 @@
     <title>Login | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
-    <style>
-        /* Base styles matching signup.html */
-        :root {
-            --jsek-blue: #3ba0ba;
-            --jsek-cyan: #5bc0de;
-            --jsek-dark-cyan: #2a92ad;
-            --jsek-green: #2ecc71;
-            --jsek-text-main: #333333;
-            --jsek-text-muted: #666666;
-            --jsek-bg: #fcfcfc;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--jsek-text-main);
-            background-color: var(--jsek-bg);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Profile Select feature styles */
-        .recent-accounts {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .account-chip {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-            color: #333;
-        }
-
-        .account-chip:hover {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: var(--jsek-green);
-        }
-
-        .account-chip.selected {
-            background: rgba(46, 204, 113, 0.15);
-            border: 2px solid var(--jsek-green);
-        }
-
-        .account-avatar {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, var(--jsek-cyan), var(--jsek-dark-cyan));
-            border-radius: 50%;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px rgba(42, 146, 173, 0.2);
-        }
-
-        /* Input styling */
-        #loginEmail {
-            letter-spacing: 2px;
-            color: var(--jsek-dark-cyan);
-        }
-
-        .btn-jsek-login {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, var(--jsek-cyan), var(--jsek-dark-cyan));
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(42, 146, 173, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-jsek-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(42, 146, 173, 0.4);
-        }
-
-        input:focus,
-        select:focus {
-            border-color: var(--jsek-cyan);
-            outline: none;
-        }
-
-        /* RESTORED LINK COLORS: Matching --jsek-text-muted (#666666) */
-        .auth-footer p {
-            color: var(--jsek-text-muted);
-            font-size: 0.9rem;
-        }
-
-        .auth-footer .text-link {
-            color: var(--jsek-text-muted) !important;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .auth-footer .text-link:hover {
-            color: var(--jsek-text-main) !important;
-            text-decoration: underline;
-        }
-    </style>
 </head>
 
-<body class="auth-page" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<body class="auth-page">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 
@@ -135,74 +18,65 @@
         <div class="nav-links">
             <a href="index.html" class="text-link">Home Page</a>
             <a href="support.html" class="text-link">Technical Support</a>
+            <a href="signup.html" class="btn-signup" style="text-decoration: none;">Sign Up</a>
         </div>
     </header>
 
-    <main class="auth-container">
+    <main class="auth-container"
+        style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px;">
         <div class="auth-card">
             <h2>Member Login</h2>
+            <form id="loginForm" class="auth-form" novalidate>
 
-            <div id="recentAccountsContainer" class="recent-accounts">
-                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Continue as:</p>
-                <div id="accountsList">
-                    <div class="account-chip" onclick="autofill(this, 'admin1@jsek.ca', 'admin')">
-                        <div class="account-avatar">1</div>
-                        <div style="font-weight:600; font-size:0.85rem; color: var(--jsek-text-main);">Admin 1</div>
-                    </div>
-                    <div class="account-chip" onclick="autofill(this, 'admin2@jsek.ca', 'admin')">
-                        <div class="account-avatar">2</div>
-                        <div style="font-weight:600; font-size:0.85rem; color: var(--jsek-text-main);">Admin 2</div>
+                <div class="input-group" style="text-align: left; margin-bottom: 20px;">
+                    <label id="portalLabel"
+                        style="font-size: 0.8rem; color: #7f8c8d; font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 1px;">
+                        Continue as:
+                    </label>
+                    <div id="accountsList"
+                        style="display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; padding-right: 5px;">
                     </div>
                 </div>
-                <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
-            </div>
 
-            <p style="color: var(--jsek-text-muted);">Enter your credentials to access your account.</p>
-
-            <form id="loginForm" class="auth-form" autocomplete="off">
                 <div class="input-group">
                     <input type="password" id="loginEmail" placeholder="Email Address (Hidden)" required
-                        autocomplete="one-time-code" style="color: var(--jsek-text-main);">
+                        autocomplete="off">
                 </div>
                 <div class="input-group">
                     <input type="password" id="loginPassword" placeholder="Password" required
-                        autocomplete="new-password" style="color: var(--jsek-text-main);">
+                        autocomplete="new-password">
                 </div>
                 <div class="input-group">
-                    <select id="loginRole" required style="color: var(--jsek-text-main); cursor: pointer;">
-                        <option value="">Login as...</option>
+                    <select id="loginRole" required>
+                        <option value="">Confirm Login Role</option>
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller</option>
                         <option value="vendor">Vendor</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
-
-                <div class="input-group"
-                    style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-left: 2px;">
-                    <input type="checkbox" id="rememberMe"
-                        style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--jsek-cyan);">
-                    <label for="rememberMe"
-                        style="color: var(--jsek-text-muted); font-size: 0.9rem; font-weight: 400; cursor: pointer; user-select: none;">
-                        Remember Me
-                    </label>
+                <div class="input-group" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+                    <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px; accent-color: #2193b0;">
+                    <label for="rememberMe" style="font-size: 0.9rem; color: #7f8c8d;">Remember me</label>
                 </div>
-
-                <button type="submit" class="btn-jsek-login">Login Now</button>
+                <button type="submit" id="loginBtn" class="btn-glow">Login Now</button>
             </form>
 
-            <div id="loginMessage" style="margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 1.2rem;">
+            <div id="loginMessage"
+                style="margin-top: 15px; font-weight: 600; font-size: 0.85rem; text-align: center; min-height: 1.2rem; transition: 0.3s;">
             </div>
 
-            <div class="auth-footer">
-                <p><a href="forgot-password.html" class="text-link"
-                        style="font-size: 0.85rem; display: block; margin-bottom: 10px;">Forgot Password?</a></p>
-                <p>Don't have an account? <a href="signup.html" class="text-link">Sign up here</a></p>
+            <div class="auth-footer"
+                style="margin-top: 25px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 20px;">
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">
+                    <a href="forgot-password.html" class="text-link">Forgot your password?</a>
+                </p>
+                <p style="font-size: 0.85rem; color: #7f8c8d;">
+                    Don't have an account? <a href="signup.html" class="text-link">Sign up here</a>
+                </p>
             </div>
         </div>
     </main>
-
-    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
 
     <footer class="main-footer">
         <div class="footer-content">
@@ -210,18 +84,9 @@
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
-
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home Page</a></li>
-                    <li><a href="support.html">Technical Support</a></li>
-                </ul>
-            </div>
-
             <div class="footer-section">
                 <h4>Our Team</h4>
-                <ul class="collaborators">
+                <ul class="collaborators" style="list-style: none; padding: 0;">
                     <li>Emad Al Nounou</li>
                     <li>Julia Cameron</li>
                     <li>Khaled Al Akili</li>
@@ -232,81 +97,148 @@
     </footer>
 
     <script>
+        // Interactive background logic
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 10;
+            const y = (window.innerHeight / 2 - e.pageY) / 10;
+            document.documentElement.style.setProperty('--mouse-x', x + 'px');
+            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+        });
+
+        const MAX_ATTEMPTS = 3;
+        const LOCKOUT_MS = 7000;
         window.onload = function () {
-            let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const demoAccounts = [
-                { email: "admin1@jsek.ca", password: "password123", role: "admin", fullName: "Admin 1" },
-                { email: "admin2@jsek.ca", password: "password123", role: "admin", fullName: "Admin 2" }
-            ];
-            demoAccounts.forEach(demo => {
-                if (!users.some(u => u.email === demo.email)) users.push(demo);
-            });
-            localStorage.setItem('jsek_users', JSON.stringify(users));
+            const roleSelect = document.getElementById('loginRole');
+            const portalLabel = document.getElementById('portalLabel');
+            // Select the container holding the accounts list to show/hide it
+            const accountsContainer = document.getElementById('accountsList').parentElement;
+
+            document.getElementById('loginForm').reset();
+
+            // 1. Check for role in URL (this comes from your signup redirect)
+            const urlParams = new URLSearchParams(window.location.search);
+            let forcedRole = urlParams.get('role');
+
+            // 2. If a role is in the URL, force the session to update to this new role
+            if (forcedRole) {
+                forcedRole = forcedRole.toLowerCase().trim();
+                sessionStorage.setItem('requiredPortal', forcedRole);
+            } else {
+                // Otherwise, check if a portal role was already saved in the session
+                forcedRole = sessionStorage.getItem('requiredPortal');
+            }
+
+            if (forcedRole) {
+                const cleanedRole = forcedRole.toLowerCase().trim();
+
+                // Set the dropdown and lock it
+                roleSelect.value = cleanedRole;
+                roleSelect.disabled = true;
+
+                // Update the label text
+                if (portalLabel) portalLabel.textContent = `Continue as ${cleanedRole}:`;
+
+                // Show ONLY accounts matching this specific role
+                renderAccountList(cleanedRole);
+                if (accountsContainer) accountsContainer.style.display = "block";
+            } else {
+                // If no role is detected at all, hide the "Continue as" section
+                if (accountsContainer) accountsContainer.style.display = "none";
+            }
+
+            // Lockout security check
+            const lockoutUntil = localStorage.getItem('jsek_lockout_until');
+            if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
+                window.location.replace("support.html");
+            } else if (lockoutUntil) {
+                localStorage.removeItem('jsek_lockout_until');
+                localStorage.setItem('jsek_attempts', '0');
+            }
         };
 
-        function autofill(element, email, role) {
-            document.querySelectorAll('.account-chip').forEach(chip => chip.classList.remove('selected'));
-            element.classList.add('selected');
+        function renderAccountList(filterRole) {
+            const listContainer = document.getElementById('accountsList');
+            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            listContainer.innerHTML = "";
 
-            document.getElementById('loginEmail').value = email;
-            document.getElementById('loginRole').value = role;
-            document.getElementById('loginPassword').value = "";
-            document.getElementById('loginPassword').focus();
+            // STRICT FILTERING: Match the role exactly
+            const filtered = users.filter(u =>
+                u.role.toLowerCase().trim() === filterRole.toLowerCase().trim()
+            );
 
-            const message = document.getElementById('loginMessage');
-            message.textContent = "Profile identity loaded securely.";
-            message.style.color = "var(--jsek-dark-cyan)";
+            if (filtered.length === 0) {
+                // Hide container if no users exist for this specific role
+                document.getElementById('accountsList').parentElement.style.display = "none";
+                return;
+            }
+
+            filtered.forEach((user) => {
+                const chip = document.createElement('div');
+                chip.style = "padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; border-radius: 8px; border-bottom: 1px solid rgba(0,0,0,0.03);";
+
+                chip.onclick = () => {
+                    document.getElementById('loginEmail').value = user.email;
+                    document.getElementById('loginPassword').focus();
+                };
+
+                chip.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 32px; height: 32px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">
+                        ${user.fullName.charAt(0)}
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.85rem; color: #2c3e50;">${user.fullName}</div>
+                        <div style="font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
+                    </div>
+                </div>`;
+                listContainer.appendChild(chip);
+            });
         }
 
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            const role = document.getElementById('loginRole').value.toLowerCase();
-            const message = document.getElementById('loginMessage');
-
-            // --- BRUTE FORCE PROTECTION LOGIC START ---
-            const MAX_ATTEMPTS = 5;
-            let loginAttempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
-
-            if (loginAttempts >= MAX_ATTEMPTS) {
-                message.textContent = "Too many failed attempts. Account temporarily locked.";
-                message.style.color = "#fa5252";
-                return; // Stop the form from processing further
-            }
-            // --- BRUTE FORCE PROTECTION LOGIC END ---
+            const emailInput = document.getElementById('loginEmail').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value;
+            const dropdownRole = document.getElementById('loginRole').value.toLowerCase().trim();
+            const portalRole = (sessionStorage.getItem('requiredPortal') || "").toLowerCase().trim();
+            const msg = document.getElementById('loginMessage');
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const validUser = users.find(u =>
-                u.email === email && u.password === password && u.role.toLowerCase() === role
-            );
+            const user = users.find(u => u.email === emailInput && u.password === passwordInput);
 
-            if (validUser) {
-                // SUCCESS: Reset attempts counter
-                localStorage.setItem('loginAttempts', 0);
+            if (user) {
+                const accountRole = user.role.toLowerCase().trim();
 
-                message.textContent = "Authorized. Redirecting...";
-                message.style.color = "var(--jsek-green)";
-                localStorage.setItem('currentUser', JSON.stringify(validUser));
-                localStorage.setItem('isLoggedIn', 'true');
-                setTimeout(() => {
-                    if (role === 'admin') window.location.assign("admin_dashboard.html");
-                    else window.location.assign("index.html");
-                }, 1000);
-            } else {
-                // FAILURE: Increment attempts counter
-                loginAttempts++;
-                localStorage.setItem('loginAttempts', loginAttempts);
-
-                const remaining = MAX_ATTEMPTS - loginAttempts;
-                if (loginAttempts >= MAX_ATTEMPTS) {
-                    message.textContent = "Security Denied: Too many failed attempts. Locked.";
-                } else {
-                    message.textContent = `Security Denied: Check password or role. (${remaining} attempts left)`;
+                // Check Portal & Dropdown against Account Role
+                if ((portalRole && accountRole !== portalRole) || (accountRole !== dropdownRole)) {
+                    msg.textContent = `Access Denied: This is a ${user.role} account.`;
+                    msg.style.color = "#ff4d4d";
+                    return;
                 }
 
-                message.style.color = "#fa5252";
-                document.getElementById('loginPassword').value = "";
+                localStorage.setItem('jsek_attempts', '0');
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                msg.textContent = "Authorized. Redirecting...";
+                msg.style.color = "#2ecc71";
+
+                setTimeout(() => {
+                    if (accountRole === 'admin') window.location.assign("admin_dashboard.html");
+                    else if (accountRole === 'seller') window.location.assign("seller_dashboard.html");
+                    else window.location.assign("index.html");
+                }, 1000);
+
+            } else {
+                let attempts = parseInt(localStorage.getItem('jsek_attempts') || '0') + 1;
+                localStorage.setItem('jsek_attempts', attempts);
+                if (attempts >= MAX_ATTEMPTS) {
+                    localStorage.setItem('jsek_lockout_until', (Date.now() + LOCKOUT_MS).toString());
+                    msg.textContent = "Account Blocked! Redirecting...";
+                    setTimeout(() => window.location.assign("support.html"), 1500);
+                } else {
+                    msg.textContent = `Invalid credentials. ${MAX_ATTEMPTS - attempts} attempts left.`;
+                    msg.style.color = "#ff4d4d";
+                }
             }
         });
     </script>
