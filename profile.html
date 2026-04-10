@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | JSEK Marketplace</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .profile-box {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 15px;
+            width: 320px;
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        #profilePreview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00c6ff;
+            background-color: #ccc;
+            display: block;
+            margin: 0 auto;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            background: #00c6ff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0096c7;
+        }
+
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>User Profile</h1>
+
+    <div class="profile-box">
+
+        <!-- DEFAULT IMAGE -->
+        <img id="profilePreview"
+             src="https://via.placeholder.com/120/cccccc/000000?text=User">
+
+        <br>
+
+        <input type="file" id="imageUpload" accept="image/*">
+
+        <br>
+
+        <input type="text" id="name" placeholder="Enter your name">
+        <input type="email" id="email" placeholder="Enter your email">
+        <input type="text" id="phone" placeholder="Enter your phone">
+
+        <br>
+
+        <button onclick="saveProfile()">Save Profile</button>
+
+        <p id="message"></p>
+
+    </div>
+
+<script>
+
+let profileImage = "";
+
+// IMAGE PREVIEW (FIXED)
+document.getElementById("imageUpload").addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            profileImage = e.target.result;
+            document.getElementById("profilePreview").src = profileImage;
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+
+// SAVE PROFILE
+function saveProfile() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let phone = document.getElementById("phone").value;
+    let message = document.getElementById("message");
+
+    // VALIDATION
+    if (!name || !email || !phone) {
+        message.style.color = "red";
+        message.innerText = "Please fill all fields";
+        return;
+    }
+
+    if (!email.includes("@")) {
+        message.style.color = "red";
+        message.innerText = "Invalid email";
+        return;
+    }
+
+    // SAVE DATA
+    const profile = {
+        name: name,
+        email: email,
+        phone: phone,
+        image: profileImage
+    };
+
+    localStorage.setItem("userProfile", JSON.stringify(profile));
+
+    message.style.color = "lightgreen";
+    message.innerText = "Profile saved successfully!";
+}
+
+// LOAD PROFILE ON PAGE LOAD
+window.onload = function () {
+    const saved = localStorage.getItem("userProfile");
+
+    if (saved) {
+        const profile = JSON.parse(saved);
+
+        document.getElementById("name").value = profile.name;
+        document.getElementById("email").value = profile.email;
+        document.getElementById("phone").value = profile.phone;
+
+        if (profile.image) {
+            document.getElementById("profilePreview").src = profile.image;
+            profileImage = profile.image;
+        }
+    }
+};
+
+</script>
+
+</body>
+</html>
+```
