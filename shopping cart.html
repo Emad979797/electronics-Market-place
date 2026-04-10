@@ -8,53 +8,81 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
-        /* Standardized Image Sizing */
+        /* 1. BUTTON VISIBILITY FIX */
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .categories button {
+            background: rgba(255, 255, 255, 0.8); /* Higher opacity for better contrast */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #333333; /* Dark text for high visibility */
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .categories button:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Active state for the selected category */
+        .categories button.active {
+            background: #00d4ff;
+            color: #ffffff; /* White text for the blue active button */
+            border-color: #00d4ff;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        /* 2. IMAGE FORMATTING */
         .product-image {
             width: 100%;
-            max-width: 220px; 
-            height: 160px;    
+            height: 180px; 
             object-fit: contain; 
-            border-radius: 12px;
-            margin: 0 auto 15px auto;
-            display: block;
             background: rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
-
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px 0;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
         }
 
         .product-card {
-            text-align: center;
-            padding: 25px;
+            transition: all 0.4s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
         }
 
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        /* 3. SEARCH & EMPTY STATE */
         #no-results {
-            padding: 50px;
-            font-size: 1.1rem;
-            color: #aaa;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 400px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
             text-align: center;
-            font-style: italic;
-        }
-
-        /* Cart Styling */
-        #cart {
-            margin-top: 40px;
-            padding: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
+    
 </head>
 
 <body>
@@ -62,14 +90,11 @@
     <div class="blob blob-2"></div>
 
     <header class="navbar">
-        <div class="logo">
-            JSEK <span class="logo-accent">Marketplace</span>
-        </div>
+        <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
         <div class="nav-links">
             <a href="index.html" class="text-link">Home</a>
-            <a href="support.html" class="text-link">Technical Support</a>
-            <a href="signup.html" class="btn-signup"
-                style="text-decoration: none; display: inline-block; text-align: center;">Sign Up</a>
+            <a href="support.html" class="text-link">Support</a>
+            <a href="signup.html" class="btn-signup">Sign Up</a>
         </div>
     </header>
 
@@ -83,49 +108,50 @@
             onkeyup="searchProducts()" class="search-bar">
 
         <div class="categories">
-            <button onclick="filterCategory('all')">All</button>
-            <button onclick="filterCategory('laptop')">Laptops</button>
-            <button onclick="filterCategory('phone')">Phones</button>
-            <button onclick="filterCategory('gaming')">Gaming</button>
+            <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
+            <button class="filter-btn" onclick="filterCategory('laptop', this)">Laptops</button>
+            <button class="filter-btn" onclick="filterCategory('phone', this)">Phones</button>
+            <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
         </div>
 
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="products-grid">
             <div class="product-card glass" data-category="laptop">
                 <img src="MacBook Pro.jpg" alt="MacBook Pro" class="product-image">
                 <h3 class="product-name">MacBook Pro</h3>
-                <p>$2000</p>
+                <p class="price">$2000</p>
                 <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
             </div>
 
             <div class="product-card glass" data-category="phone">
                 <img src="phones.jpg" alt="iPhone 15" class="product-image">
                 <h3 class="product-name">iPhone 15</h3>
-                <p>$1200</p>
+                <p class="price">$1200</p>
                 <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
             </div>
 
             <div class="product-card glass" data-category="gaming">
                 <img src="samsung.jpg" alt="Samsung TV" class="product-image">
                 <h3 class="product-name">Samsung TV</h3>
-                <p>$800</p>
+                <p class="price">$800</p>
                 <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
             </div>
         </div>
 
         <div id="no-results" style="display: none;">
-            <p>No products found</p>
+            <p style="color: #00d4ff; font-size: 1.2rem;">🔍 No products found</p>
+            <p style="color: #888;">Try searching for something else</p>
         </div>
 
-        <div id="cart" class="glass">
+        <div id="cart" class="glass" style="margin-top: 50px; padding: 25px;">
             <h3>Your Cart</h3>
             <ul id="cart-items" style="list-style: none; padding: 0;"></ul>
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;">
-            <p><strong>Total: $<span id="total">0</span></strong></p>
+            <p style="font-size: 1.2rem;"><strong>Total: $<span id="total">0</span></strong></p>
         </div>
     </main>
 
     <script>
-        // Magnetic Background Logic
+        // Magnetic Background Effect
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 25;
             const y = (window.innerHeight / 2 - e.pageY) / 25;
@@ -133,41 +159,7 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        let cart = [];
-
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            updateCart();
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
-
-        function updateCart() {
-            let cartList = document.getElementById("cart-items");
-            let total = 0;
-            cartList.innerHTML = "";
-
-            cart.forEach((item, index) => {
-                total += item.price;
-                let li = document.createElement("li");
-                li.style.display = "flex";
-                li.style.justifyContent = "space-between";
-                li.style.padding = "10px 0";
-                li.innerHTML = `
-                    <span>${item.name} - $${item.price}</span>
-                    <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-weight:bold;">✕</button>
-                `;
-                cartList.appendChild(li);
-            });
-
-            document.getElementById("total").innerText = total;
-            localStorage.setItem("cart", JSON.stringify(cart));
-        }
-
-        // Search logic with No Results check
+        // Search Logic
         function searchProducts() {
             let input = document.getElementById("searchInput").value.toLowerCase();
             let products = document.querySelectorAll(".product-card");
@@ -185,10 +177,14 @@
             document.getElementById("no-results").style.display = found ? "none" : "block";
         }
 
-        // Category logic with No Results check
-        function filterCategory(category) {
+        // Filtering Logic
+        function filterCategory(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+
             let products = document.querySelectorAll(".product-card");
             let found = false;
+
             products.forEach(product => {
                 if (category === "all" || product.dataset.category === category) {
                     product.style.display = "flex";
@@ -200,31 +196,38 @@
             document.getElementById("no-results").style.display = found ? "none" : "block";
         }
 
-        window.onload = () => {
-            const saved = localStorage.getItem("cart");
-            if (saved) {
-                cart = JSON.parse(saved);
-                updateCart();
-            }
-        };
-    </script>
+        // Cart Data Management
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    <footer class="main-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Our Team</h4>
-                <ul class="collaborators" style="list-style: none; padding: 0;">
-                    <li>Emad Al Nounou</li>
-                    <li>Julia Cameron</li>
-                    <li>Khaled Al Akili</li>
-                    <li>Shefaa Alaghawani</li>
-                </ul>
-            </div>
-        </div>
-    </footer>
+        function updateCart() {
+            let cartList = document.getElementById("cart-items");
+            let total = 0;
+            cartList.innerHTML = "";
+            cart.forEach((item, index) => {
+                total += item.price;
+                let li = document.createElement("li");
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.padding = "10px 0";
+                li.innerHTML = `<span>${item.name} - $${item.price}</span> 
+                <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-weight:bold;">✕</button>`;
+                cartList.appendChild(li);
+            });
+            document.getElementById("total").innerText = total;
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        window.onload = updateCart;
+    </script>
 </body>
 </html>
