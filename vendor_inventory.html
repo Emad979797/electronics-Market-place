@@ -103,15 +103,11 @@
     <div class="blob blob-2"></div>
 
     <header class="navbar">
-        <div class="logo">
-            JSEK <span class="logo-accent">Marketplace</span>
-        </div>
+        <div class="logo">JSEK <span class="logo-accent">Inventory</span></div>
         <div class="nav-links">
-            <a href="index.html" class="text-link" style="margin-left: 20px;">Home Page</a>
-            <a href="vendor_portal.html" class="text-link" style="margin-left: 20px;">Back to Vendor's Portal</a>
-            <a href="support.html" class="text-link">Technical Support</a>
-            <a href="login.html" class="btn-signup"
-                style="text-decoration: none; display: inline-block; text-align: center; margin-left: 20px;">Log Out</a>
+            <a href="vendor_dashboard.html" class="text-link" style="margin-left: 20px;">Back to Vendor's Portal</a>
+            <span id="userGreeting" style="margin-left: 20px; font-weight: 600; font-size: 14px; color: #666;"></span>
+            <a href="#" onclick="logout()" class="btn-signup" style="margin-left: 20px; cursor: pointer;">Log Out</a>
         </div>
     </header>
 
@@ -299,6 +295,29 @@
         }
 
         window.onload = updateInventoryPills;
+    </script>
+    <script>
+        // 1. Get user data from local storage
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+        // 2. Safety Check: If not logged in or wrong role, boot to login
+        if (isLoggedIn !== 'true' || !currentUser || currentUser.role.toLowerCase() !== 'vendor') {
+            window.location.assign("login.html");
+        } else {
+            // 3. Display the name in the header
+            const greetingElement = document.getElementById('userGreeting');
+            if (greetingElement) {
+                greetingElement.textContent = `Vendor: ${currentUser.fullName}`;
+            }
+        }
+
+        // 4. Logout Function
+        function logout() {
+            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.removeItem('currentUser');
+            window.location.assign("login.html");
+        }
     </script>
 </body>
 

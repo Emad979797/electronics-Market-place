@@ -39,25 +39,22 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="loginEmail" placeholder="Email Address (Hidden)" required
-                        autocomplete="off">
+                    <label for="loginEmail"></label><input type="email" id="loginEmail"
+                        placeholder="Email Address (Hidden)" required autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <input type="password" id="loginPassword" placeholder="Password" required
-                        autocomplete="new-password">
+                    <label for="loginPassword"></label><input type="password" id="loginPassword" placeholder="Password"
+                        required autocomplete="new-password">
                 </div>
-                <div class="input-group">
-                    <select id="loginRole" required>
-                        <option value="">Confirm Login Role</option>
-                        <option value="buyer">Buyer</option>
-                        <option value="seller">Seller</option>
-                        <option value="vendor">Vendor</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div class="input-group" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
-                    <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px; accent-color: #2193b0;">
-                    <label for="rememberMe" style="font-size: 0.9rem; color: #7f8c8d;">Remember me</label>
+                <div class="input-group custom-dropdown-container">
+                    <div id="customSelect" class="custom-select-trigger">Confirm Login Role</div>
+                    <div id="customOptions" class="custom-options">
+                        <div class="option" data-value="buyer">Buyer</div>
+                        <div class="option" data-value="seller">Seller</div>
+                        <div class="option" data-value="vendor">Vendor</div>
+                        <div class="option" data-value="admin">Admin</div>
+                    </div>
+                    <input type="hidden" id="loginRole" value="">
                 </div>
                 <button type="submit" id="loginBtn" class="btn-glow">Login Now</button>
             </form>
@@ -77,12 +74,19 @@
             </div>
         </div>
     </main>
-
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
             </div>
             <div class="footer-section">
                 <h4>Our Team</h4>
@@ -95,9 +99,8 @@
             </div>
         </div>
     </footer>
-
     <script>
-        // Interactive background logic
+        // 1. Magnetic Background Logic
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -107,153 +110,148 @@
 
         const MAX_ATTEMPTS = 3;
         const LOCKOUT_MS = 7000;
+
         window.onload = function () {
-            const roleSelect = document.getElementById('loginRole');
+            const hiddenRoleInput = document.getElementById('loginRole');
             const portalLabel = document.getElementById('portalLabel');
-            // Select the container holding the accounts list to show/hide it
-            const accountsContainer = document.getElementById('accountsList').parentElement;
+            const customTrigger = document.getElementById('customSelect');
 
             document.getElementById('loginForm').reset();
 
-            // 1. Check for role in URL (this comes from your signup redirect)
             const urlParams = new URLSearchParams(window.location.search);
-            let forcedRole = urlParams.get('role');
+            let urlRole = urlParams.get('role');
 
-            // 2. If a role is in the URL, force the session to update to this new role
-            if (forcedRole) {
-                forcedRole = forcedRole.toLowerCase().trim();
-                sessionStorage.setItem('requiredPortal', forcedRole);
-            } else {
-                // Otherwise, check if a portal role was already saved in the session
-                forcedRole = sessionStorage.getItem('requiredPortal');
+            if (urlRole) {
+                urlRole = urlRole.toLowerCase().trim();
+                sessionStorage.setItem('requiredPortal', urlRole);
             }
 
-            if (forcedRole) {
-                const cleanedRole = forcedRole.toLowerCase().trim();
+            let targetRole = sessionStorage.getItem('requiredPortal');
 
-                // Set the dropdown and lock it
-                roleSelect.value = cleanedRole;
-                roleSelect.disabled = true;
+            if (targetRole) {
+                targetRole = targetRole.toLowerCase().trim();
+                hiddenRoleInput.value = targetRole;
+                customTrigger.textContent = targetRole.charAt(0).toUpperCase() + targetRole.slice(1);
+                // Disable the custom dropdown if a portal is forced
+                customTrigger.style.pointerEvents = "none";
+                customTrigger.style.background = "#f9f9f9";
 
-                // Update the label text
-                if (portalLabel) portalLabel.textContent = `Continue as ${cleanedRole}:`;
-
-                // Show ONLY accounts matching this specific role
-                renderAccountList(cleanedRole);
-                if (accountsContainer) accountsContainer.style.display = "block";
+                if (portalLabel) portalLabel.textContent = `Continue as ${targetRole}:`;
+                renderAccountList(targetRole);
             } else {
-                // If no role is detected at all, hide the "Continue as" section
-                if (accountsContainer) accountsContainer.style.display = "none";
+                if (portalLabel) portalLabel.textContent = "Select a saved account:";
+                renderAccountList('all');
             }
 
-            // Lockout security check
             const lockoutUntil = localStorage.getItem('jsek_lockout_until');
             if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
                 window.location.replace("support.html");
-            } else if (lockoutUntil) {
-                localStorage.removeItem('jsek_lockout_until');
-                localStorage.setItem('jsek_attempts', '0');
             }
         };
 
+        // HANDLES DYNAMIC ACCOUNT CHIPS
         function renderAccountList(filterRole) {
             const listContainer = document.getElementById('accountsList');
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             listContainer.innerHTML = "";
 
-            // STRICT FILTERING: Match the role exactly
-            const filtered = users.filter(u =>
-                u.role.toLowerCase().trim() === filterRole.toLowerCase().trim()
-            );
+            const filtered = users.filter(u => {
+                const userRole = u.role.toLowerCase().trim();
+                return filterRole === 'all' || userRole === filterRole;
+            });
 
             if (filtered.length === 0) {
-                // Hide container if no users exist for this specific role
                 document.getElementById('accountsList').parentElement.style.display = "none";
                 return;
             }
 
+            document.getElementById('accountsList').parentElement.style.display = "block";
+
             filtered.forEach((user) => {
                 const chip = document.createElement('div');
-                chip.style = "padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; border-radius: 8px; border-bottom: 1px solid rgba(0,0,0,0.03);";
+                chip.className = "account-chip";
 
                 chip.onclick = () => {
                     document.getElementById('loginEmail').value = user.email;
+                    document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                    document.getElementById('loginRole').value = user.role.toLowerCase().trim();
                     document.getElementById('loginPassword').focus();
                 };
 
                 chip.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 32px; height: 32px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">
-                        ${user.fullName.charAt(0)}
-                    </div>
-                    <div>
-                        <div style="font-weight: 600; font-size: 0.85rem; color: #2c3e50;">${user.fullName}</div>
-                        <div style="font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
-                    </div>
-                </div>`;
+            <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">
+                ${user.fullName.charAt(0)}
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 0.9rem; color: #2c3e50;">${user.fullName}</div>
+                <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
+            </div>`;
                 listContainer.appendChild(chip);
             });
         }
 
+        // DROPDOWN UI LOGIC
+        document.addEventListener('DOMContentLoaded', function () {
+            const trigger = document.getElementById('customSelect');
+            const optionsMenu = document.getElementById('customOptions');
+            const hiddenInput = document.getElementById('loginRole');
+            const options = document.querySelectorAll('.option');
+
+            trigger.addEventListener('click', () => {
+                optionsMenu.classList.toggle('show');
+                trigger.classList.toggle('active');
+            });
+
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    hiddenInput.value = option.getAttribute('data-value');
+                    trigger.textContent = option.textContent;
+                    optionsMenu.classList.remove('show');
+                    trigger.classList.remove('active');
+                });
+            });
+
+            window.addEventListener('click', (e) => {
+                if (!trigger.contains(e.target)) {
+                    optionsMenu.classList.remove('show');
+                    trigger.classList.remove('active');
+                }
+            });
+        });
+
+        // LOGIN FORM SUBMISSION
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-
-            // 1. Get values and trim whitespace
-            const emailInput = document.getElementById('loginEmail').value.trim();
-            const passwordInput = document.getElementById('loginPassword').value;
-            const dropdownRole = document.getElementById('loginRole').value.toLowerCase().trim();
-            const portalRole = (sessionStorage.getItem('requiredPortal') || "").toLowerCase().trim();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
 
-            // 2. EMPTY FIELD CHECK (The Fix)
-            // This stops the code BEFORE it touches the attempts counter.
-            if (!emailInput || !passwordInput || !dropdownRole) {
-                msg.textContent = "Please fill in all fields before logging in.";
-                msg.style.color = "#ff9800"; // Orange for a warning, not a "failure"
-                return; // Exit the function immediately
+            if (!email || !pass || !role) {
+                msg.textContent = "Please fill in all fields.";
+                msg.style.color = "#ff9800";
+                return;
             }
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const user = users.find(u => u.email === emailInput && u.password === passwordInput);
+            const user = users.find(u => u.email === email && u.password === pass);
 
-            if (user) {
-                const accountRole = user.role.toLowerCase().trim();
-
-                // Check Portal & Dropdown against Account Role
-                if ((portalRole && accountRole !== portalRole) || (accountRole !== dropdownRole)) {
-                    msg.textContent = `Access Denied: This is a ${user.role} account.`;
-                    msg.style.color = "#ff4d4d";
-                    return;
-                }
-
-                localStorage.setItem('jsek_attempts', '0');
+            if (user && user.role.toLowerCase().trim() === role) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 msg.textContent = "Authorized. Redirecting...";
                 msg.style.color = "#2ecc71";
-
                 setTimeout(() => {
-                    if (accountRole === 'admin') window.location.assign("admin_dashboard.html");
-                    else if (accountRole === 'seller') window.location.assign("seller_dashboard.html");
+                    const r = user.role.toLowerCase();
+                    if (r === 'admin') window.location.assign("admin_dashboard.html");
+                    else if (r === 'seller') window.location.assign("seller_dashboard.html");
+                    else if (r === 'vendor') window.location.assign("vendor_dashboard.html");
+                    else if (r === 'buyer') window.location.assign("buyer_dashboard.html");
                     else window.location.assign("index.html");
                 }, 1000);
-
             } else {
-                // 3. Increment attempts ONLY if fields were actually filled but were incorrect
-                let attempts = parseInt(localStorage.getItem('jsek_attempts') || '0') + 1;
-                localStorage.setItem('jsek_attempts', attempts);
-
-                if (attempts >= MAX_ATTEMPTS) {
-                    localStorage.setItem('jsek_lockout_until', (Date.now() + LOCKOUT_MS).toString());
-                    msg.textContent = "Account Blocked! Redirecting...";
-                    setTimeout(() => window.location.assign("support.html"), 1500);
-                } else {
-                    const remaining = MAX_ATTEMPTS - attempts;
-                    const attemptWord = remaining === 1 ? "attempt" : "attempts";
-
-                    msg.textContent = `Invalid credentials. ${remaining} ${attemptWord} left.`;
-                    msg.style.color = "#ff4d4d";
-                }
+                msg.textContent = "Invalid credentials.";
+                msg.style.color = "#ff4d4d";
             }
         });
     </script>
