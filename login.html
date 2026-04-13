@@ -66,7 +66,7 @@
             <div class="auth-footer"
                 style="margin-top: 25px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 20px;">
                 <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                    <a href="forgot-password.html" class="text-link">Forgot your password?</a>
+                    <a href="forgot_password.html" class="text-link">Forgot your password?</a>
                 </p>
                 <p style="font-size: 0.85rem; color: #7f8c8d;">
                     Don't have an account? <a href="signup.html" class="text-link">Sign up here</a>
@@ -109,14 +109,17 @@
         });
 
         const MAX_ATTEMPTS = 3;
-        const LOCKOUT_MS = 7000;
 
         window.onload = function () {
             const hiddenRoleInput = document.getElementById('loginRole');
             const portalLabel = document.getElementById('portalLabel');
             const customTrigger = document.getElementById('customSelect');
+            const emailInput = document.getElementById('loginEmail');
 
             document.getElementById('loginForm').reset();
+
+            // Ensure email starts as dots
+            emailInput.type = "password";
 
             const urlParams = new URLSearchParams(window.location.search);
             let urlRole = urlParams.get('role');
@@ -132,7 +135,6 @@
                 targetRole = targetRole.toLowerCase().trim();
                 hiddenRoleInput.value = targetRole;
                 customTrigger.textContent = targetRole.charAt(0).toUpperCase() + targetRole.slice(1);
-                // Disable the custom dropdown if a portal is forced
                 customTrigger.style.pointerEvents = "none";
                 customTrigger.style.background = "#f9f9f9";
 
@@ -141,11 +143,6 @@
             } else {
                 if (portalLabel) portalLabel.textContent = "Select a saved account:";
                 renderAccountList('all');
-            }
-
-            const lockoutUntil = localStorage.getItem('jsek_lockout_until');
-            if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
-                window.location.replace("support.html");
             }
         };
 
@@ -172,20 +169,34 @@
                 chip.className = "account-chip";
 
                 chip.onclick = () => {
-                    document.getElementById('loginEmail').value = user.email;
+                    const emailInput = document.getElementById('loginEmail');
+
+                    // 1. Check if THIS specific user is currently blocked
+                    const lockoutKey = `jsek_lockout_${user.email}`;
+                    const lockoutUntil = localStorage.getItem(lockoutKey);
+
+                    if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
+                        window.location.assign("support.html?user=" + encodeURIComponent(user.email));
+                        return;
+                    }
+
+                    // 2. Populate fields but keep email as dots
+                    emailInput.value = user.email;
+                    emailInput.type = "password";
+
                     document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
                     document.getElementById('loginRole').value = user.role.toLowerCase().trim();
                     document.getElementById('loginPassword').focus();
                 };
 
                 chip.innerHTML = `
-            <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">
-                ${user.fullName.charAt(0)}
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 0.9rem; color: #2c3e50;">${user.fullName}</div>
-                <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
-            </div>`;
+                <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">
+                    ${user.fullName.charAt(0)}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.9rem; color: #2c3e50;">${user.fullName}</div>
+                    <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
+                </div>`;
                 listContainer.appendChild(chip);
             });
         }
@@ -210,48 +221,53 @@
                     trigger.classList.remove('active');
                 });
             });
-
-            window.addEventListener('click', (e) => {
-                if (!trigger.contains(e.target)) {
-                    optionsMenu.classList.remove('show');
-                    trigger.classList.remove('active');
-                }
-            });
         });
 
         // LOGIN FORM SUBMISSION
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput.value.trim();
             const pass = document.getElementById('loginPassword').value;
             const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
 
-            if (!email || !pass || !role) {
-                msg.textContent = "Please fill in all fields.";
-                msg.style.color = "#ff9800";
-                return;
-            }
+            const attemptKey = `jsek_attempts_${email}`;
+            const lockoutKey = `jsek_lockout_${email}`;
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             const user = users.find(u => u.email === email && u.password === pass);
 
             if (user && user.role.toLowerCase().trim() === role) {
+                // SUCCESS: Reveal Email and Redirect
+                emailInput.type = "text";
+                localStorage.removeItem(attemptKey);
+                localStorage.removeItem(lockoutKey);
+
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(user));
+
                 msg.textContent = "Authorized. Redirecting...";
                 msg.style.color = "#2ecc71";
+
                 setTimeout(() => {
-                    const r = user.role.toLowerCase();
-                    if (r === 'admin') window.location.assign("admin_dashboard.html");
-                    else if (r === 'seller') window.location.assign("seller_dashboard.html");
-                    else if (r === 'vendor') window.location.assign("vendor_dashboard.html");
-                    else if (r === 'buyer') window.location.assign("buyer_dashboard.html");
-                    else window.location.assign("index.html");
+                    window.location.assign(role + "_dashboard.html");
                 }, 1000);
             } else {
-                msg.textContent = "Invalid credentials.";
-                msg.style.color = "#ff4d4d";
+                // FAILURE
+                let attempts = parseInt(localStorage.getItem(attemptKey)) || 0;
+                attempts++;
+                localStorage.setItem(attemptKey, attempts);
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    localStorage.setItem(lockoutKey, Date.now() + 10000);
+                    window.location.replace("support.html?user=" + encodeURIComponent(email));
+                } else {
+                    const remaining = MAX_ATTEMPTS - attempts;
+                    const unit = remaining === 1 ? "attempt" : "attempts";
+                    msg.textContent = `Invalid credentials. ${remaining} ${unit} left.`;
+                    msg.style.color = "#ff4d4d";
+                }
             }
         });
     </script>

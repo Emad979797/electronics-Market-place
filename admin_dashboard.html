@@ -132,9 +132,10 @@
     <header class="navbar">
         <div class="logo">JSEK <span class="logo-accent">Admin Portal</span></div>
         <div class="nav-links">
-            <a href="index.html" class="text-link" style="margin-left: 20px;">Home Page</a>
-            <a href="support.html" class="text-link" style="margin-left: 20px;">Technical Support</a>
-            <span id="adminGreeting" style="margin-left: 20px; font-weight: 600; font-size: 14px; color: #666;"></span>
+            <a href="index.html" class="text-link">Home Page</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+
+            <span id="user-display" style="font-weight: 600; color: #2c3e50; margin: 0 15px;"></span>
             <a href="#" onclick="logout()" class="btn-signup" style="margin-left: 20px; cursor: pointer;">Log Out</a>
         </div>
     </header>
@@ -221,7 +222,7 @@
     </footer>
 
     <script>
-        // Magnetic background logic
+        // 1. Magnetic background logic
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -229,15 +230,28 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // Authentication & Data Loading
+        // 2. Authentication & Data Loading
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
+        // Check if authorized
         if (isLoggedIn !== 'true' || !currentUser || currentUser.role.toLowerCase() !== 'admin') {
             window.location.assign("login.html");
         } else {
-            document.getElementById('adminGreeting').textContent = `Admin: ${currentUser.fullName}`;
-            loadUsers();
+            // Run this once the page is ready
+            window.addEventListener('load', () => {
+                displayUserHeader();
+                loadUsers();
+            });
+        }
+
+        // Displays the "Admin: Admin 1" logic in the navbar
+        function displayUserHeader() {
+            const displayElement = document.getElementById('user-display');
+            if (currentUser && displayElement) {
+                const roleFixed = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                displayElement.innerHTML = `${roleFixed}: <span style="color: #2193b0;">${currentUser.fullName}</span>`;
+            }
         }
 
         function loadUsers() {
@@ -248,19 +262,19 @@
 
             users.forEach(user => {
                 tableBody.innerHTML += `
-                    <tr style="border-bottom: 1px solid #eee;" data-role="${user.role.toLowerCase()}">
-                        <td style="padding: 15px; text-align: center;"><strong>${user.fullName || 'User'}</strong></td>
-                        <td style="padding: 15px; text-align: center;">${user.email}</td>
-                        <td style="padding: 15px; text-align: center;">
-                            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666;">${user.role}</span>
-                        </td>
-                        <td style="padding: 15px; text-align: center;">
-                            <span class="status-pill status-online">Online</span>
-                        </td>
-                        <td style="padding: 15px; text-align: center;">
-                            <button class="btn-inspect" onclick="alert('Viewing: ${user.fullName}')">Inspect</button>
-                        </td>
-                    </tr>`;
+                <tr style="border-bottom: 1px solid #eee;" data-role="${user.role.toLowerCase()}">
+                    <td style="padding: 15px; text-align: center;"><strong>${user.fullName || 'User'}</strong></td>
+                    <td style="padding: 15px; text-align: center;">${user.email}</td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666;">${user.role}</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span class="status-pill status-online">Online</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <button class="btn-inspect" onclick="alert('Viewing: ${user.fullName}')">Inspect</button>
+                    </td>
+                </tr>`;
             });
         }
 
@@ -284,11 +298,13 @@
             });
         }
 
+        // Logout Function
         function logout() {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
             window.location.assign("login.html");
         }
+
     </script>
 </body>
 
