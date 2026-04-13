@@ -7,6 +7,54 @@
     <title>Login | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <style>
+        .delete-btn {
+            background: rgba(255, 77, 77, 0.1);
+            border: none;
+            color: #ff4d4d;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ff4d4d;
+            color: white;
+        }
+
+        .account-chip {
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .account-chip:hover {
+            background: #f8f9fa;
+        }
+
+        .custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+    </style>
 </head>
 
 <body class="auth-page">
@@ -27,7 +75,6 @@
         <div class="auth-card">
             <h2>Member Login</h2>
             <form id="loginForm" class="auth-form" novalidate>
-
                 <div class="input-group" style="text-align: left; margin-bottom: 20px;">
                     <label id="portalLabel"
                         style="font-size: 0.8rem; color: #7f8c8d; font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 1px;">
@@ -39,12 +86,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="loginEmail"></label><input type="email" id="loginEmail"
-                        placeholder="Email Address (Hidden)" required autocomplete="off">
+                    <input type="email" id="loginEmail" placeholder="Email Address" required autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <label for="loginPassword"></label><input type="password" id="loginPassword" placeholder="Password"
-                        required autocomplete="new-password">
+                    <input type="password" id="loginPassword" placeholder="Password" required
+                        autocomplete="current-password">
                 </div>
                 <div class="input-group custom-dropdown-container">
                     <div id="customSelect" class="custom-select-trigger">Confirm Login Role</div>
@@ -65,28 +111,34 @@
 
             <div class="auth-footer"
                 style="margin-top: 25px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 20px;">
-                <p style="font-size: 0.85rem; margin-bottom: 12px;">
-                    <a href="forgot_password.html" class="text-link">Forgot your password?</a>
-                </p>
-                <p style="font-size: 0.85rem; color: #7f8c8d;">
-                    Don't have an account? <a href="signup.html" class="text-link">Sign up here</a>
-                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;"><a href="forgot_password.html"
+                        class="text-link">Forgot your password?</a></p>
+                <p style="font-size: 0.85rem; color: #7f8c8d;">Don't have an account? <a href="signup.html"
+                        class="text-link">Sign up here</a></p>
             </div>
         </div>
     </main>
-    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
+
+    <div id="deleteModal" class="custom-modal">
+        <div
+            style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 380px; text-align: center;">
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">Remove Account?</h3>
+            <p id="deleteModalMsg" style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px;"></p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="cancelDelete"
+                    style="background: #f1f2f6; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
+                <button id="confirmDelete"
+                    style="background: #ff4d4d; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; color: white;">Confirm
+                    Delete</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home Page</a></li>
-                    <li><a href="support.html">Technical Support</a></li>
-                </ul>
             </div>
             <div class="footer-section">
                 <h4>Our Team</h4>
@@ -99,8 +151,9 @@
             </div>
         </div>
     </footer>
+
     <script>
-        // 1. Magnetic Background Logic
+        // 1. Magnetic Background Animation
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -109,165 +162,167 @@
         });
 
         const MAX_ATTEMPTS = 3;
+        let userToDelete = null;
 
         window.onload = function () {
             const hiddenRoleInput = document.getElementById('loginRole');
             const portalLabel = document.getElementById('portalLabel');
             const customTrigger = document.getElementById('customSelect');
-            const emailInput = document.getElementById('loginEmail');
 
             document.getElementById('loginForm').reset();
 
-            // Ensure email starts as dots
-            emailInput.type = "password";
-
             const urlParams = new URLSearchParams(window.location.search);
             let urlRole = urlParams.get('role');
-
-            if (urlRole) {
-                urlRole = urlRole.toLowerCase().trim();
-                sessionStorage.setItem('requiredPortal', urlRole);
-            }
+            if (urlRole) sessionStorage.setItem('requiredPortal', urlRole.toLowerCase().trim());
 
             let targetRole = sessionStorage.getItem('requiredPortal');
-
             if (targetRole) {
                 targetRole = targetRole.toLowerCase().trim();
                 hiddenRoleInput.value = targetRole;
                 customTrigger.textContent = targetRole.charAt(0).toUpperCase() + targetRole.slice(1);
                 customTrigger.style.pointerEvents = "none";
                 customTrigger.style.background = "#f9f9f9";
-
-                if (portalLabel) portalLabel.textContent = `Continue as ${targetRole}:`;
+                portalLabel.textContent = `Continue as ${targetRole}:`;
                 renderAccountList(targetRole);
             } else {
-                if (portalLabel) portalLabel.textContent = "Select a saved account:";
+                portalLabel.textContent = "Select a saved account:";
                 renderAccountList('all');
             }
         };
 
-        // HANDLES DYNAMIC ACCOUNT CHIPS
+        // 2. Render Saved Accounts & Account Selection
         function renderAccountList(filterRole) {
             const listContainer = document.getElementById('accountsList');
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             listContainer.innerHTML = "";
-
-            const filtered = users.filter(u => {
-                const userRole = u.role.toLowerCase().trim();
-                return filterRole === 'all' || userRole === filterRole;
-            });
+            const filtered = users.filter(u => filterRole === 'all' || u.role.toLowerCase().trim() === filterRole);
 
             if (filtered.length === 0) {
-                document.getElementById('accountsList').parentElement.style.display = "none";
+                listContainer.parentElement.style.display = "none";
                 return;
             }
 
-            document.getElementById('accountsList').parentElement.style.display = "block";
-
+            listContainer.parentElement.style.display = "block";
             filtered.forEach((user) => {
                 const chip = document.createElement('div');
                 chip.className = "account-chip";
+                chip.style.display = "flex";
+                chip.style.alignItems = "center";
+                chip.style.justifyContent = "space-between";
 
                 chip.onclick = () => {
-                    const emailInput = document.getElementById('loginEmail');
+                    // --- DOTS HIDING LOGIC ---
+                    const emailField = document.getElementById('loginEmail');
+                    emailField.value = user.email;
+                    emailField.type = "password"; // This turns the email into dots!
+                    emailField.readOnly = true;
+                    emailField.style.background = "#f4f7f6";
+                    emailField.style.letterSpacing = "3px"; // Makes the dots look cleaner
 
-                    // 1. Check if THIS specific user is currently blocked
-                    const lockoutKey = `jsek_lockout_${user.email}`;
-                    const lockoutUntil = localStorage.getItem(lockoutKey);
-
-                    if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
-                        window.location.assign("support.html?user=" + encodeURIComponent(user.email));
-                        return;
-                    }
-
-                    // 2. Populate fields but keep email as dots
-                    emailInput.value = user.email;
-                    emailInput.type = "password";
-
-                    document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
                     document.getElementById('loginRole').value = user.role.toLowerCase().trim();
+                    document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
                     document.getElementById('loginPassword').focus();
+
+                    const msg = document.getElementById('loginMessage');
+                    msg.textContent = "Account selected. Password required.";
+                    msg.style.color = "#2193b0";
                 };
 
                 chip.innerHTML = `
-                <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">
-                    ${user.fullName.charAt(0)}
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">${user.fullName.charAt(0)}</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">${user.fullName}</div>
+                    <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase;">${user.role}</div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 0.9rem; color: #2c3e50;">${user.fullName}</div>
-                    <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700;">${user.role}</div>
-                </div>`;
+            </div>
+            <button class="delete-btn" type="button" onclick="openDeleteModal('${user.email}', event)">&times;</button>`;
                 listContainer.appendChild(chip);
             });
         }
 
-        // DROPDOWN UI LOGIC
-        document.addEventListener('DOMContentLoaded', function () {
-            const trigger = document.getElementById('customSelect');
-            const optionsMenu = document.getElementById('customOptions');
-            const hiddenInput = document.getElementById('loginRole');
-            const options = document.querySelectorAll('.option');
+        // 3. Delete Account Logic
+        function openDeleteModal(email, event) {
+            event.stopPropagation();
+            userToDelete = email;
+            document.getElementById('deleteModalMsg').textContent = `Remove ${email} from this device?`;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
 
-            trigger.addEventListener('click', () => {
-                optionsMenu.classList.toggle('show');
-                trigger.classList.toggle('active');
-            });
+        document.getElementById('cancelDelete').onclick = () => document.getElementById('deleteModal').style.display = 'none';
 
-            options.forEach(option => {
-                option.addEventListener('click', () => {
-                    hiddenInput.value = option.getAttribute('data-value');
-                    trigger.textContent = option.textContent;
-                    optionsMenu.classList.remove('show');
-                    trigger.classList.remove('active');
-                });
-            });
+        document.getElementById('confirmDelete').onclick = () => {
+            if (userToDelete) {
+                let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+                users = users.filter(u => u.email !== userToDelete);
+                localStorage.setItem('jsek_users', JSON.stringify(users));
+                renderAccountList(sessionStorage.getItem('requiredPortal') || 'all');
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        };
+
+        // 4. Role Selection Logic
+        document.getElementById('customSelect').onclick = function () {
+            if (this.style.pointerEvents !== "none") document.getElementById('customOptions').classList.toggle('show');
+        };
+
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.onclick = function () {
+                document.getElementById('loginRole').value = this.dataset.value;
+                document.getElementById('customSelect').textContent = this.textContent;
+                document.getElementById('customOptions').classList.remove('show');
+
+                // RESET email to normal if they change role manually
+                const emailField = document.getElementById('loginEmail');
+                emailField.type = "email";
+                emailField.readOnly = false;
+                emailField.style.background = "#fff";
+                emailField.style.letterSpacing = "normal";
+            };
         });
 
-        // LOGIN FORM SUBMISSION
+        // 5. Final Login & Redirect Logic
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const emailInput = document.getElementById('loginEmail');
-            const email = emailInput.value.trim();
+
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
             const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
 
-            const attemptKey = `jsek_attempts_${email}`;
-            const lockoutKey = `jsek_lockout_${email}`;
+            if (!role || role === "" || role === "confirm login role") {
+                msg.textContent = "Please select your role.";
+                msg.style.color = "#ff4d4d";
+                return;
+            }
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const user = users.find(u => u.email === email && u.password === pass);
+            const user = users.find(u =>
+                u.email.toLowerCase().trim() === email &&
+                u.role.toLowerCase().trim() === role
+            );
 
-            if (user && user.role.toLowerCase().trim() === role) {
-                // SUCCESS: Reveal Email and Redirect
-                emailInput.type = "text";
-                localStorage.removeItem(attemptKey);
-                localStorage.removeItem(lockoutKey);
-
+            if (user && user.password === pass) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(user));
 
-                msg.textContent = "Authorized. Redirecting...";
+                msg.textContent = "Login successful!";
                 msg.style.color = "#2ecc71";
 
                 setTimeout(() => {
                     window.location.assign(role + "_dashboard.html");
-                }, 1000);
+                }, 800);
             } else {
-                // FAILURE
-                let attempts = parseInt(localStorage.getItem(attemptKey)) || 0;
-                attempts++;
-                localStorage.setItem(attemptKey, attempts);
+                msg.textContent = "Invalid password.";
+                msg.style.color = "#ff4d4d";
 
-                if (attempts >= MAX_ATTEMPTS) {
-                    localStorage.setItem(lockoutKey, Date.now() + 10000);
-                    window.location.replace("support.html?user=" + encodeURIComponent(email));
-                } else {
-                    const remaining = MAX_ATTEMPTS - attempts;
-                    const unit = remaining === 1 ? "attempt" : "attempts";
-                    msg.textContent = `Invalid credentials. ${remaining} ${unit} left.`;
-                    msg.style.color = "#ff4d4d";
-                }
+                // Re-reveal the email on error so they can check it
+                const emailField = document.getElementById('loginEmail');
+                emailField.type = "email";
+                emailField.readOnly = false;
+                emailField.style.background = "#fff";
+                emailField.style.letterSpacing = "normal";
             }
         });
     </script>

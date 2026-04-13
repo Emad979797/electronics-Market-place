@@ -132,6 +132,9 @@
                 </div>
 
                 <button type="submit" class="btn-glow">Register Now</button>
+                <div id="error-message"
+                    style="color: #e74c3c; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; font-family: 'Inter', sans-serif;">
+                </div>
             </form>
 
             <div class="auth-footer">
@@ -164,41 +167,113 @@
         </div>
     </footer>
     <script>
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // 1. Capture Form Data
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('roleInput').value;
+            const errorDiv = document.getElementById('error-message');
+
+            // 2. Clear previous errors
+            errorDiv.style.display = 'none';
+            errorDiv.innerText = '';
+
+            // 3. DATABASE CHECK
+            // Fetch users and ensure it's always an array
+            let users = [];
+            try {
+                const storedUsers = localStorage.getItem('jsek_users');
+                users = storedUsers ? JSON.parse(storedUsers) : [];
+            } catch (err) {
+                users = [];
+            }
+
+            // 4. THE STRICTURE CHECK (REINFORCED)
+            // We use some() for a quick boolean check and ensure we compare lowercase to lowercase
+            const emailExists = users.some(u => u.email.toLowerCase().trim() === email);
+
+            if (emailExists) {
+                errorDiv.innerText = "This email address is already registered.";
+                errorDiv.style.display = 'block';
+                errorDiv.style.color = "#ff4d4d";
+                // Highlight the email box to show where the error is
+                document.getElementById('email').style.borderColor = "#ff4d4d";
+                return; // STOP EVERYTHING
+            }
+
+            // 5. Password Match Check
+            if (password.length < 8) {
+                errorDiv.innerText = "Password must be at least 8 characters.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorDiv.innerText = "Passwords do not match.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 6. Role Selection Check
+            if (!role) {
+                errorDiv.innerText = "Please select your role.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 7. FINAL SAVE
+            const newUser = {
+                fullName: fullName,
+                email: email,
+                password: password,
+                role: role,
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('jsek_users', JSON.stringify(users));
+
+            // 8. Redirect with a slight delay to ensure storage completes
+            errorDiv.innerText = "Registration successful! Redirecting...";
+            errorDiv.style.color = "#2ecc71";
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = `login.html?role=${role}`;
+            }, 1200);
+        });
+
+        // --- UI HELPER FUNCTIONS ---
         function toggleDropdown() {
             const options = document.getElementById('dropdownOptions');
             const arrow = document.getElementById('drop-arrow');
             const trigger = document.getElementById('roleDropdown');
-
             const isShowing = options.style.display === 'block';
-            options.style.display = isShowing ? 'none' : 'block';
-            arrow.style.transform = isShowing ? 'rotate(180deg)' : 'rotate(0deg)';
 
-            // Toggle focus glow manually - using the same color as the border
-            trigger.style.boxShadow = isShowing ? 'none' : '0 0 0 4px rgba(127, 140, 141, 0.1)';
+            options.style.display = isShowing ? 'none' : 'block';
+            arrow.style.transform = isShowing ? 'rotate(0deg)' : 'rotate(180deg)';
             trigger.style.borderColor = isShowing ? 'rgba(0,0,0,0.1)' : '#7f8c8d';
         }
 
         function selectOption(val) {
-            const textElement = document.getElementById('selected-text');
-            textElement.innerText = val;
-            // Force the font color to dark once selected
-            textElement.style.setProperty('color', '#333', 'important');
+            document.getElementById('selected-text').innerText = val;
+            document.getElementById('selected-text').style.color = '#333';
             document.getElementById('roleInput').value = val.toLowerCase();
-
-            // Close the dropdown
             document.getElementById('dropdownOptions').style.display = 'none';
             document.getElementById('drop-arrow').style.transform = 'rotate(0deg)';
-            document.getElementById('roleDropdown').style.boxShadow = 'none';
-            document.getElementById('roleDropdown').style.borderColor = 'rgba(0,0,0,0.1)';
         }
 
-        // Close when clicking outside
+        // Close on outside click
         window.onclick = function (event) {
             if (!event.target.closest('#roleDropdown') && !event.target.classList.contains('option')) {
-                document.getElementById('dropdownOptions').style.display = 'none';
-                document.getElementById('drop-arrow').style.transform = 'rotate(0deg)';
-                document.getElementById('roleDropdown').style.boxShadow = 'none';
-                document.getElementById('roleDropdown').style.borderColor = 'rgba(0,0,0,0.1)';
+                const options = document.getElementById('dropdownOptions');
+                if (options) options.style.display = 'none';
+                const arrow = document.getElementById('drop-arrow');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         }
     </script>
