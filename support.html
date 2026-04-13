@@ -109,63 +109,68 @@
             </div>
         </div>
     </footer>
-
     <script>
-        // Form Submission Logic
-        document.getElementById('supportTicket').addEventListener('submit', function (e) {
-            e.preventDefault();
-            document.getElementById('form-content').style.display = 'none';
-            document.getElementById('success-message').style.display = 'block';
-        });
-
-        window.onload = function () {
-            // Identify which user was blocked from the URL
+        document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
-            const blockedEmail = urlParams.get('user');
+            const isBlocked = urlParams.get('blocked');
+            const userEmail = decodeURIComponent(urlParams.get('user') || 'your account');
 
-            // Logic to find if ANY user is currently in a lockout state
-            // If the URL has a specific user, we prioritize that. 
-            // If not, we scan localStorage for any active lockout key.
-            let activeLockoutKey = null;
-            if (blockedEmail) {
-                activeLockoutKey = `jsek_lockout_${blockedEmail}`;
-            } else {
-                // Find first available lockout key
-                for (let i = 0; i < localStorage.length; i++) {
-                    let key = localStorage.key(i);
-                    if (key.startsWith('jsek_lockout_')) {
-                        activeLockoutKey = key;
-                        break;
-                    }
-                }
-            }
+            if (isBlocked === 'true') {
+                // 1. Create the alert box
+                const blockContainer = document.createElement('div');
+                blockContainer.id = "blockAlert";
+                blockContainer.style.cssText = `
+                background: #fff5f5;
+                border: 2px solid #ff4d4d;
+                color: #d63031;
+                padding: 25px;
+                border-radius: 15px;
+                margin: 20px auto;
+                max-width: 600px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                font-family: 'Inter', sans-serif;
+            `;
 
-            const lockoutUntil = activeLockoutKey ? localStorage.getItem(activeLockoutKey) : null;
-            const container = document.getElementById('lockout-container');
-            const timerDisplay = document.getElementById('timer');
+                blockContainer.innerHTML = `
+                <div style="font-size: 1.4rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span>⚠️</span> Account Temporarily Blocked
+                </div>
+                <p style="font-size: 1rem; color: #444; line-height: 1.5; margin-bottom: 20px;">
+                    Too many failed login attempts for <br>
+                    <strong style="color: #ff4d4d;">${userEmail}</strong>. <br>
+                    You can submit the inquiry form below, or wait for the security lockout to expire.
+                </p>
+                <div style="background: white; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 1px solid #ff4d4d;">
+                    <span style="font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; display: block;">Try again in</span>
+                    <span id="countdownTimer" style="font-size: 2rem; font-weight: 600; color: #ff4d4d;">10s</span>
+                </div>
+            `;
 
-            if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
-                container.style.display = "block";
+                // 2. Insert it at the very top of the <main> or <body>
+                const target = document.querySelector('main') || document.body;
+                target.prepend(blockContainer);
 
-                const updateTimer = setInterval(() => {
-                    const remaining = Math.ceil((parseInt(lockoutUntil) - Date.now()) / 1000);
+                // 3. Countdown Logic
+                let timeLeft = 10;
+                const timerDisplay = document.getElementById('countdownTimer');
 
-                    if (remaining <= 0) {
-                        clearInterval(updateTimer);
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = timeLeft + "s";
 
-                        // CLEAR COUNTER AND LOCKOUT for a clean start
-                        const userEmail = activeLockoutKey.replace('jsek_lockout_', '');
-                        localStorage.removeItem(activeLockoutKey); // Removes the block
-                        localStorage.removeItem(`jsek_attempts_${userEmail}`); // Resets counter to 0
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        // Reset the attempt counter in local storage so they can actually log in
+                        localStorage.removeItem(`jsek_attempts_${userEmail.toLowerCase()}`);
 
-                        // Automatic Redirect to login
-                        window.location.href = "login.html";
-                    } else {
-                        if (timerDisplay) timerDisplay.textContent = remaining;
+                        // Update the UI to show they can leave
+                        timerDisplay.innerHTML = `<a href="login.html" style="color: #2ecc71; text-decoration: none; font-size: 1.2rem;">Return to Login →</a>`;
+                        timerDisplay.parentElement.style.borderColor = "#2ecc71";
                     }
                 }, 1000);
             }
-        };
+        });
     </script>
 </body>
 

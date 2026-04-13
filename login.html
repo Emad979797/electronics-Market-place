@@ -211,22 +211,19 @@
                 chip.style.justifyContent = "space-between";
 
                 chip.onclick = () => {
-                    // --- DOTS HIDING LOGIC ---
                     const emailField = document.getElementById('loginEmail');
                     emailField.value = user.email;
-                    emailField.type = "password"; // This turns the email into dots!
+                    emailField.type = "password"; // Hides email as DOTS
                     emailField.readOnly = true;
                     emailField.style.background = "#f4f7f6";
-                    emailField.style.letterSpacing = "3px"; // Makes the dots look cleaner
+                    emailField.style.letterSpacing = "3px";
 
                     document.getElementById('loginRole').value = user.role.toLowerCase().trim();
                     document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
 
                     document.getElementById('loginPassword').focus();
-
-                    const msg = document.getElementById('loginMessage');
-                    msg.textContent = "Account selected. Password required.";
-                    msg.style.color = "#2193b0";
+                    document.getElementById('loginMessage').textContent = "Account selected. Password required.";
+                    document.getElementById('loginMessage').style.color = "#2193b0";
                 };
 
                 chip.innerHTML = `
@@ -249,9 +246,7 @@
             document.getElementById('deleteModalMsg').textContent = `Remove ${email} from this device?`;
             document.getElementById('deleteModal').style.display = 'flex';
         }
-
         document.getElementById('cancelDelete').onclick = () => document.getElementById('deleteModal').style.display = 'none';
-
         document.getElementById('confirmDelete').onclick = () => {
             if (userToDelete) {
                 let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
@@ -266,23 +261,24 @@
         document.getElementById('customSelect').onclick = function () {
             if (this.style.pointerEvents !== "none") document.getElementById('customOptions').classList.toggle('show');
         };
-
         document.querySelectorAll('.option').forEach(opt => {
             opt.onclick = function () {
                 document.getElementById('loginRole').value = this.dataset.value;
                 document.getElementById('customSelect').textContent = this.textContent;
                 document.getElementById('customOptions').classList.remove('show');
-
-                // RESET email to normal if they change role manually
-                const emailField = document.getElementById('loginEmail');
-                emailField.type = "email";
-                emailField.readOnly = false;
-                emailField.style.background = "#fff";
-                emailField.style.letterSpacing = "normal";
+                resetEmailField();
             };
         });
 
-        // 5. Final Login & Redirect Logic
+        function resetEmailField() {
+            const emailField = document.getElementById('loginEmail');
+            emailField.type = "email";
+            emailField.readOnly = false;
+            emailField.style.background = "#fff";
+            emailField.style.letterSpacing = "normal";
+        }
+
+        // 5. Final Login & Redirect Logic with COUNTER and GRAMMAR FIX
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -297,6 +293,7 @@
                 return;
             }
 
+            const attemptKey = `jsek_attempts_${email}`;
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
             const user = users.find(u =>
                 u.email.toLowerCase().trim() === email &&
@@ -306,23 +303,26 @@
             if (user && user.password === pass) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(user));
+                localStorage.removeItem(attemptKey);
 
                 msg.textContent = "Login successful!";
                 msg.style.color = "#2ecc71";
-
-                setTimeout(() => {
-                    window.location.assign(role + "_dashboard.html");
-                }, 800);
+                setTimeout(() => { window.location.assign(role + "_dashboard.html"); }, 800);
             } else {
-                msg.textContent = "Invalid password.";
-                msg.style.color = "#ff4d4d";
+                let attempts = (parseInt(localStorage.getItem(attemptKey)) || 0) + 1;
+                localStorage.setItem(attemptKey, attempts);
 
-                // Re-reveal the email on error so they can check it
-                const emailField = document.getElementById('loginEmail');
-                emailField.type = "email";
-                emailField.readOnly = false;
-                emailField.style.background = "#fff";
-                emailField.style.letterSpacing = "normal";
+                if (attempts >= MAX_ATTEMPTS) {
+                    // Added blocked flag for support page
+                    window.location.replace("support.html?user=" + encodeURIComponent(email) + "&blocked=true");
+                } else {
+                    const remaining = MAX_ATTEMPTS - attempts;
+                    // Grammar fix: "attempt" vs "attempts"
+                    const attemptWord = remaining === 1 ? "attempt" : "attempts";
+                    msg.textContent = `Invalid password. ${remaining} ${attemptWord} left.`;
+                    msg.style.color = "#ff4d4d";
+                    resetEmailField();
+                }
             }
         });
     </script>
