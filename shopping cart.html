@@ -8,30 +8,16 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
-        /* 1. BUTTON VISIBILITY FIX */
-        .categories {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .categories button {
-            background: rgba(255, 255, 255, 0.8); /* Higher opacity for better contrast */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: #333333; /* Dark text for high visibility */
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        /* Standardized Image Sizing - Hover Effect Removed */
+        .product-image {
+            width: 100%;
+            max-width: 220px;
+            height: 160px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin: 0 auto 15px auto;
+            display: block;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .categories button:hover {
@@ -66,20 +52,192 @@
             padding: 20px;
         }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(0, 212, 255, 0.5);
+        /* --- Search & Filter UI --- */
+        .search-filter-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin: 30px 0 50px 0;
         }
 
-        /* 3. SEARCH & EMPTY STATE */
-        #no-results {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 16px 25px;
+            padding-right: 65px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            border-color: #2193b0;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .search-icon-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #2193b0;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .search-icon-btn:hover {
+            background: #1a748c;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .pill {
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(33, 147, 176, 0.5);
+            background: transparent;
+            color: #2193b0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .pill.active {
+            background: #2193b0;
+            color: white;
+        }
+
+        /* --- CART UI --- */
+        #cart {
+            margin-top: 60px;
             padding: 40px;
-            margin: 20px auto;
-            max-width: 400px;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #cart h3 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            font-size: 1.1rem;
+        }
+
+        .cart-item-price {
+            color: #6dd5ed;
+            font-weight: 700;
+        }
+
+        .remove-btn {
+            background: rgba(255, 77, 77, 0.2);
+            border: none;
+            color: #ff4d4d;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #ff4d4d;
+            color: white;
+        }
+
+        .cart-summary {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-amount {
+            font-size: 2.2rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            /* Brighter color */
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(33, 147, 176, 0.3);
+        }
+
+        .btn-checkout:hover {
+            filter: brightness(1.1);
+        }
+
+        #no-results {
             text-align: center;
+            padding: 40px;
+            color: #ccc;
         }
     </style>
     
@@ -93,8 +251,8 @@
         <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
         <div class="nav-links">
             <a href="index.html" class="text-link">Home</a>
-            <a href="support.html" class="text-link">Support</a>
-            <a href="signup.html" class="btn-signup">Sign Up</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+            <a href="signup.html" class="btn-signup" style="text-decoration: none;">Sign Up</a>
         </div>
     </header>
 
@@ -104,14 +262,18 @@
             <p>View and manage your selected items.</p>
         </section>
 
-        <input type="text" id="searchInput" placeholder="Search for electronics (e.g. MacBook)"
-            onkeyup="searchProducts()" class="search-bar">
-
-        <div class="categories">
-            <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
-            <button class="filter-btn" onclick="filterCategory('laptop', this)">Laptops</button>
-            <button class="filter-btn" onclick="filterCategory('phone', this)">Phones</button>
-            <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
+        <div class="search-filter-container">
+            <div class="search-wrapper">
+                <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search for electronics..." onkeyup="searchProducts()"
+                                                        class="search-bar">
+                <button class="search-icon-btn">🔍</button>
+            </div>
+            <div class="filter-pills">
+                <button class="pill active" onclick="handleFilter(this, 'all')">All</button>
+                <button class="pill" onclick="handleFilter(this, 'laptop')">Laptops</button>
+                <button class="pill" onclick="handleFilter(this, 'phone')">Phones</button>
+                <button class="pill" onclick="handleFilter(this, 'gaming')">Gaming</button>
+            </div>
         </div>
 
         <div class="content-wrapper" id="products-grid">
@@ -138,20 +300,46 @@
         </div>
 
         <div id="no-results" style="display: none;">
-            <p style="color: #00d4ff; font-size: 1.2rem;">🔍 No products found</p>
-            <p style="color: #888;">Try searching for something else</p>
+            <p>No products found matching your search.</p>
         </div>
 
         <div id="cart" class="glass" style="margin-top: 50px; padding: 25px;">
             <h3>Your Cart</h3>
-            <ul id="cart-items" style="list-style: none; padding: 0;"></ul>
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;">
-            <p style="font-size: 1.2rem;"><strong>Total: $<span id="total">0</span></strong></p>
+            <div id="cart-items"></div>
+            <div class="cart-summary">
+                <span class="total-label">Subtotal</span>
+                <span class="total-amount">$<span id="total">0</span></span>
+            </div>
+            <button class="btn-checkout">Proceed to Checkout</button>
         </div>
     </main>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Our Team</h4>
+                <ul class="collaborators" style="list-style: none; padding: 0;">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Magnetic Background Effect
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 25;
             const y = (window.innerHeight / 2 - e.pageY) / 25;
@@ -159,63 +347,7 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // Search Logic
-        function searchProducts() {
-            let input = document.getElementById("searchInput").value.toLowerCase();
-            let products = document.querySelectorAll(".product-card");
-            let found = false;
-
-            products.forEach(product => {
-                let name = product.querySelector(".product-name").innerText.toLowerCase();
-                if (name.includes(input)) {
-                    product.style.display = "flex";
-                    found = true;
-                } else {
-                    product.style.display = "none";
-                }
-            });
-            document.getElementById("no-results").style.display = found ? "none" : "block";
-        }
-
-        // Filtering Logic
-        function filterCategory(category, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-
-            let products = document.querySelectorAll(".product-card");
-            let found = false;
-
-            products.forEach(product => {
-                if (category === "all" || product.dataset.category === category) {
-                    product.style.display = "flex";
-                    found = true;
-                } else {
-                    product.style.display = "none";
-                }
-            });
-            document.getElementById("no-results").style.display = found ? "none" : "block";
-        }
-
-        // Cart Data Management
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-        function updateCart() {
-            let cartList = document.getElementById("cart-items");
-            let total = 0;
-            cartList.innerHTML = "";
-            cart.forEach((item, index) => {
-                total += item.price;
-                let li = document.createElement("li");
-                li.style.display = "flex";
-                li.style.justifyContent = "space-between";
-                li.style.padding = "10px 0";
-                li.innerHTML = `<span>${item.name} - $${item.price}</span> 
-                <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-weight:bold;">✕</button>`;
-                cartList.appendChild(li);
-            });
-            document.getElementById("total").innerText = total;
-            localStorage.setItem("cart", JSON.stringify(cart));
-        }
+        let cart = [];
 
         function addToCart(name, price) {
             cart.push({ name, price });
@@ -227,7 +359,69 @@
             updateCart();
         }
 
-        window.onload = updateCart;
+        function updateCart() {
+            let cartList = document.getElementById("cart-items");
+            let total = 0;
+            cartList.innerHTML = "";
+            if (cart.length === 0) {
+                cartList.innerHTML = `<p style="text-align:center; color:#ccc; padding:20px;">Your cart is empty.</p>`;
+            } else {
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    let div = document.createElement("div");
+                    div.className = "cart-item";
+                    div.innerHTML = `
+                        <div>
+                            <span class="cart-item-name">${item.name}</span><br>
+                            <span class="cart-item-price">$${item.price}</span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">✕</button>
+                    `;
+                    cartList.appendChild(div);
+                });
+            }
+            document.getElementById("total").innerText = total;
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        function handleFilter(element, category) {
+            document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterCategory(category);
+        }
+
+        function searchProducts() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let products = document.querySelectorAll(".product-card");
+            let found = false;
+            products.forEach(product => {
+                let name = product.querySelector(".product-name").innerText.toLowerCase();
+                product.style.display = name.includes(input) ? "flex" : "none";
+                if (name.includes(input)) found = true;
+            });
+            document.getElementById("no-results").style.display = found ? "none" : "block";
+        }
+
+        function filterCategory(category) {
+            let products = document.querySelectorAll(".product-card");
+            let found = false;
+
+            products.forEach(product => {
+                const visible = category === "all" || product.dataset.category === category;
+                product.style.display = visible ? "flex" : "none";
+                if (visible) found = true;
+            });
+            document.getElementById("no-results").style.display = found ? "none" : "block";
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem("cart");
+            if (saved) {
+                cart = JSON.parse(saved);
+                updateCart();
+            }
+        };
     </script>
 </body>
+
 </html>

@@ -97,21 +97,40 @@
     </style>
     <link rel="stylesheet" href="style.css">
 </head>
+<div id="restockModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
+    <div
+        style="background: white; padding: 30px; border-radius: 16px; width: 350px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; border: 1px solid #eee;">
+        <h3 id="modalTitle" style="margin-top: 0; color: #2c3e50;">Restock Item</h3>
+        <p id="modalSub" style="font-size: 0.9rem; color: #7f8c8d;"></p>
+
+        <div style="margin: 20px 0;">
+            <input type="number" id="restockInput" placeholder="Enter amount to add"
+                style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; text-align: center; outline: none; transition: 0.3s; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button onclick="closeModal()"
+                style="flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; background: #f1f3f5; color: #495057; font-weight: 600;">Cancel</button>
+            <button onclick="confirmRestock()"
+                style="flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; background: #000; color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">Update
+                Stock</button>
+        </div>
+    </div>
+</div>
 
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 
     <header class="navbar">
-        <div class="logo">
-            JSEK <span class="logo-accent">Marketplace</span>
-        </div>
+        <div class="logo">JSEK <span class="logo-accent">Vendor Portal</span></div>
         <div class="nav-links">
-            <a href="index.html" class="text-link" style="margin-left: 20px;">Home Page</a>
-            <a href="vendor_portal.html" class="text-link" style="margin-left: 20px;">Back to Vendor's Portal</a>
+            <a href="index.html" class="text-link">Home Page</a>
             <a href="support.html" class="text-link">Technical Support</a>
-            <a href="login.html" class="btn-signup"
-                style="text-decoration: none; display: inline-block; text-align: center; margin-left: 20px;">Log Out</a>
+            <a href="vendor_dashboard.html" class="text-link">Back to Vendor's Dashboard</a>
+            <span id="user-display" style="font-weight: 600; color: #2c3e50; margin: 0 15px;"></span>
+            <a href="#" onclick="logout()" class="btn-signup" style="margin-left: 20px; cursor: pointer;">Log Out</a>
         </div>
     </header>
 
@@ -155,7 +174,9 @@
                             <span id="pill-1" class="status-pill">Checking...</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <button class="btn-edit" onclick="alert('Editing: iPhone 15 Pro...')">Edit</button>
+                            <button class="btn-edit" onclick="restockItem(1, 'iPhone 15 Pro')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(1)">Clear</button>
                         </td>
                     </tr>
 
@@ -168,7 +189,9 @@
                             <span id="pill-2" class="status-pill">Checking...</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <button class="btn-edit" onclick="alert('Editing: MacBook Air M3...')">Edit</button>
+                            <button class="btn-edit" onclick="restockItem(2, 'MacBook Air M3')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(2)">Clear</button>
                         </td>
                     </tr>
                     <tr data-status="active" style="border-bottom: 1px solid #eee;">
@@ -180,7 +203,9 @@
                             <span id="pill-3" class="status-pill">Checking...</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <button class="btn-edit" onclick="alert('Editing: PlayStation 5...')">Edit</button>
+                            <button class="btn-edit" onclick="restockItem(3, 'PlayStation 5')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(3)">Clear</button>
                         </td>
                     </tr>
 
@@ -193,7 +218,9 @@
                             <span id="pill-4" class="status-pill">Checking...</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <button class="btn-edit" onclick="alert('Editing: Logitech G-Pro Mouse...')">Edit</button>
+                            <button class="btn-edit" onclick="restockItem(4, 'Logitech G-Pro Mouse')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(4)">Clear</button>
                         </td>
                     </tr>
 
@@ -206,7 +233,9 @@
                             <span id="pill-5" class="status-pill">Checking...</span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <button class="btn-edit" onclick="alert('Editing: Sony WH-1000XM5...')">Edit</button>
+                            <button class="btn-edit" onclick="restockItem(5, 'Sony WH-1000XM5')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(5)">Clear</button>
                         </td>
                     </tr>
                 </tbody>
@@ -250,55 +279,158 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // 2. Inventory Status Logic
-        function updateInventoryPills() {
-            for (let i = 1; i <= 5; i++) {
-                const stockElement = document.getElementById(`stock-val-${i}`);
-                const pillElement = document.getElementById(`pill-${i}`);
+        // 2. Global State & Persistence
+        let currentEditingId = null;
 
-                if (stockElement && pillElement) {
-                    const count = parseInt(stockElement.innerText);
-                    pillElement.classList.remove('high', 'low', 'out');
+        // This function saves the table data into localStorage so the Dashboard can see it
+        function saveInventoryToStorage() {
+            const inventoryData = [];
+            const rows = document.querySelectorAll("tbody tr");
 
-                    if (count >= 10) {
-                        pillElement.innerText = "In Stock";
-                        pillElement.classList.add('high');
-                    } else if (count > 0) {
-                        pillElement.innerText = "Low Stock";
-                        pillElement.classList.add('low');
-                    } else {
-                        pillElement.innerText = "Out of Stock";
-                        pillElement.classList.add('out');
+            rows.forEach((row, index) => {
+                const id = index + 1; // Unique ID based on row order
+                const name = row.cells[0].innerText;
+                const stockVal = parseInt(document.getElementById(`stock-val-${id}`).innerText);
+
+                inventoryData.push({
+                    id: id,
+                    name: name,
+                    units: stockVal
+                });
+            });
+
+            localStorage.setItem('jsek_inventory_data', JSON.stringify(inventoryData));
+        }
+
+        // This function loads the data from localStorage so it doesn't reset on refresh
+        function loadInventoryFromStorage() {
+            const savedData = JSON.parse(localStorage.getItem('jsek_inventory_data'));
+
+            if (savedData) {
+                savedData.forEach(item => {
+                    const stockElement = document.getElementById(`stock-val-${item.id}`);
+                    if (stockElement) {
+                        stockElement.innerText = item.units;
                     }
-                }
+                });
             }
         }
 
-        // 3. Updated Filter Function with Visual Toggle
+        function updateInventoryPills() {
+            const rows = document.querySelectorAll("tbody tr");
+
+            rows.forEach((row) => {
+                const stockElement = row.querySelector('td[id^="stock-val"]');
+                const pillElement = row.querySelector('span[id^="pill"]');
+
+                if (stockElement && pillElement) {
+                    const count = parseInt(stockElement.innerText);
+                    pillElement.className = 'status-pill';
+
+                    if (count > 20) {
+                        pillElement.innerText = "Adequate Stock";
+                        pillElement.classList.add('high');
+                        row.dataset.status = "active";
+                    } else if (count > 0) {
+                        pillElement.innerText = (count <= 5) ? "⚠️ Critical Low" : "Low Stock";
+                        pillElement.classList.add('low');
+                        row.dataset.status = "active";
+                    } else {
+                        pillElement.innerText = "Out of Stock";
+                        pillElement.classList.add('out');
+                        row.dataset.status = "sold";
+                    }
+                }
+            });
+
+            // CRITICAL: Save to storage every time a pill is updated
+            saveInventoryToStorage();
+        }
+
+        // --- NEW CLEAR STOCK LOGIC ---
+        function clearStock(id) {
+            const stockElement = document.getElementById(`stock-val-${id}`);
+            if (stockElement) {
+                stockElement.innerText = "0";
+                updateInventoryPills();
+            }
+        }
+
+        // 3. Restock Modal Logic
+        function restockItem(id, productName) {
+            currentEditingId = id;
+            const stockElement = document.getElementById(`stock-val-${id}`);
+            const currentStock = stockElement.innerText;
+
+            document.getElementById('modalTitle').innerText = productName;
+            document.getElementById('modalSub').innerText = `Current inventory: ${currentStock} units`;
+            document.getElementById('restockInput').value = "";
+            document.getElementById('restockModal').style.display = "flex";
+
+            setTimeout(() => document.getElementById('restockInput').focus(), 100);
+        }
+
+        function closeModal() {
+            document.getElementById('restockModal').style.display = "none";
+        }
+
+        function confirmRestock() {
+            const input = document.getElementById('restockInput');
+            const amountToAdd = parseInt(input.value);
+
+            if (isNaN(amountToAdd) || amountToAdd <= 0) {
+                input.style.borderColor = "#fa5252";
+                return;
+            }
+
+            const stockElement = document.getElementById(`stock-val-${currentEditingId}`);
+            const newTotal = parseInt(stockElement.innerText) + amountToAdd;
+
+            stockElement.innerText = newTotal;
+            updateInventoryPills();
+            closeModal();
+        }
+
+        // 4. Filtering
         function filterStatus(type) {
             const rows = document.querySelectorAll("tbody tr");
             const buttons = document.querySelectorAll(".filter-btn");
 
-            // Update button active states
-            buttons.forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.id === `btn-${type}`) {
-                    btn.classList.add('selected');
-                }
-            });
+            buttons.forEach(btn => btn.classList.toggle('selected', btn.id === `btn-${type}`));
 
-            // Filter the table rows
             rows.forEach(row => {
                 const status = row.dataset.status;
-                if (type === "all" || status === type) {
-                    row.style.display = "table-row";
-                } else {
-                    row.style.display = "none";
-                }
+                row.style.display = (type === "all" || status === type) ? "table-row" : "none";
             });
         }
 
-        window.onload = updateInventoryPills;
+        // 5. Auth & Initialization
+        function logout() {
+            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.removeItem('currentUser');
+            window.location.assign("login.html");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const displayElement = document.getElementById('user-display');
+
+            if (isLoggedIn !== 'true' || !currentUser || currentUser.role.toLowerCase() !== 'vendor') {
+                window.location.assign("login.html");
+                return;
+            }
+
+            if (displayElement) {
+                const roleFixed = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                displayElement.innerHTML = `${roleFixed}: <span style="color: #2193b0;">${currentUser.fullName}</span>`;
+            }
+
+            // 1. Load saved numbers first
+            loadInventoryFromStorage();
+            // 2. Update the colors/pills based on those numbers
+            updateInventoryPills();
+        });
     </script>
 </body>
 

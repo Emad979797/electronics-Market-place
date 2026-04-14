@@ -130,11 +130,12 @@
     <div class="blob blob-2"></div>
 
     <header class="navbar">
-        <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+        <div class="logo">JSEK <span class="logo-accent">Admin Portal</span></div>
         <div class="nav-links">
-            <a href="index.html" class="text-link" style="margin-left: 20px;">Home Page</a>
-            <a href="support.html" class="text-link" style="margin-left: 20px;">Technical Support</a>
-            <span id="adminGreeting" style="margin-left: 20px; font-weight: 600; font-size: 14px; color: #666;"></span>
+            <a href="index.html" class="text-link">Home Page</a>
+            <a href="support.html" class="text-link">Technical Support</a>
+
+            <span id="user-display" style="font-weight: 600; color: #2c3e50; margin: 0 15px;"></span>
             <a href="#" onclick="logout()" class="btn-signup" style="margin-left: 20px; cursor: pointer;">Log Out</a>
         </div>
     </header>
@@ -193,8 +194,35 @@
             <tbody id="userTableBody" style="color: #444;">
             </tbody>
         </table>
-    </main>
 
+<!-- Marketplace Listings Moderation -->
+<section style="margin-top:50px; text-align:left;">
+
+<h2 style="font-size:28px; margin-bottom:10px;">Marketplace Listings</h2>
+<p style="color:#666; margin-bottom:20px;">
+Admin can review listings and block those that violate safety rules.
+</p>
+
+<table style="width:100%; border-collapse:collapse; background:white;
+box-shadow:0 4px 20px rgba(0,0,0,0.05); border-radius:8px; overflow:hidden;">
+
+<thead>
+<tr style="background:#f8f9fa; border-bottom:2px solid #eee;">
+<th style="padding:15px;">Product</th>
+<th style="padding:15px;">Seller</th>
+<th style="padding:15px;">Price</th>
+<th style="padding:15px;">Status</th>
+<th style="padding:15px;">Action</th>
+</tr>
+</thead>
+
+<tbody id="listingTable"></tbody>
+
+</table>
+
+</section>
+    </main>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
     <footer class="main-footer" style="width: 100%; margin-top: auto;">
         <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
             <div class="footer-section">
@@ -221,7 +249,26 @@
     </footer>
 
     <script>
-        // Magnetic background logic
+                /* INITIAL PRODUCT LIST */
+
+        if(!localStorage.getItem("jsek_products")){
+
+        const defaultProducts = [
+
+        { name:"Laptop", price:800, seller:"Marketplace", status:"active" },
+
+        { name:"Smart Phone", price:500, seller:"Marketplace", status:"active" },
+
+        { name:"Headphones", price:120, seller:"Marketplace", status:"active" },
+
+        { name:"Smart Watch", price:200, seller:"Marketplace", status:"active" }
+
+        ];
+
+        localStorage.setItem("jsek_products", JSON.stringify(defaultProducts));
+
+        }
+        // 1. Magnetic background logic
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -229,15 +276,29 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // Authentication & Data Loading
+        // 2. Authentication & Data Loading
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
+        // Check if authorized
         if (isLoggedIn !== 'true' || !currentUser || currentUser.role.toLowerCase() !== 'admin') {
             window.location.assign("login.html");
         } else {
-            document.getElementById('adminGreeting').textContent = `Admin: ${currentUser.fullName}`;
-            loadUsers();
+            // Run this once the page is ready
+            window.addEventListener('load', () => {
+                displayUserHeader();
+                loadUsers();
+                loadListings();
+            });
+        }
+
+        // Displays the "Admin: Admin 1" logic in the navbar
+        function displayUserHeader() {
+            const displayElement = document.getElementById('user-display');
+            if (currentUser && displayElement) {
+                const roleFixed = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                displayElement.innerHTML = `${roleFixed}: <span style="color: #2193b0;">${currentUser.fullName}</span>`;
+            }
         }
 
         function loadUsers() {
@@ -248,19 +309,19 @@
 
             users.forEach(user => {
                 tableBody.innerHTML += `
-                    <tr style="border-bottom: 1px solid #eee;" data-role="${user.role.toLowerCase()}">
-                        <td style="padding: 15px; text-align: center;"><strong>${user.fullName || 'User'}</strong></td>
-                        <td style="padding: 15px; text-align: center;">${user.email}</td>
-                        <td style="padding: 15px; text-align: center;">
-                            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666;">${user.role}</span>
-                        </td>
-                        <td style="padding: 15px; text-align: center;">
-                            <span class="status-pill status-online">Online</span>
-                        </td>
-                        <td style="padding: 15px; text-align: center;">
-                            <button class="btn-inspect" onclick="alert('Viewing: ${user.fullName}')">Inspect</button>
-                        </td>
-                    </tr>`;
+                <tr style="border-bottom: 1px solid #eee;" data-role="${user.role.toLowerCase()}">
+                    <td style="padding: 15px; text-align: center;"><strong>${user.fullName || 'User'}</strong></td>
+                    <td style="padding: 15px; text-align: center;">${user.email}</td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666;">${user.role}</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span class="status-pill status-online">Online</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <button class="btn-inspect" onclick="alert('Viewing: ${user.fullName}')">Inspect</button>
+                    </td>
+                </tr>`;
             });
         }
 
@@ -284,11 +345,103 @@
             });
         }
 
+        // Logout Function
         function logout() {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
             window.location.assign("login.html");
         }
+                // Delete listing
+function deleteListing(index){
+
+    if(confirm("Delete this listing?")){
+
+        let listings = JSON.parse(localStorage.getItem("jsek_cart")) || [];
+
+        listings.splice(index,1);
+
+        localStorage.setItem("jsek_cart", JSON.stringify(listings));
+
+        loadListings();
+    }
+
+}
+        // Load listings- for Admind to moderate and delete if necessary
+/* LOAD MARKETPLACE LISTINGS */
+function loadListings(){
+
+const listings = JSON.parse(localStorage.getItem("jsek_products")) || [];
+
+const table = document.getElementById("listingTable");
+
+table.innerHTML="";
+
+if(listings.length===0){
+
+table.innerHTML=`
+<tr>
+<td colspan="5" style="padding:20px;text-align:center;color:#888;">
+No listings available
+</td>
+</tr>`;
+
+return;
+}
+
+listings.forEach((item,index)=>{
+
+const statusColor = item.status==="blocked" ? "#fa5252" : "#0ca678";
+
+table.innerHTML += `
+
+<tr style="border-bottom:1px solid #eee">
+
+<td style="padding:15px">${item.name}</td>
+
+<td style="padding:15px">${item.seller}</td>
+
+<td style="padding:15px">$${item.price}</td>
+
+<td style="padding:15px">
+<span class="status-pill" style="background:#eee;color:${statusColor}">
+${item.status}
+</span>
+</td>
+
+<td style="padding:15px">
+
+<button onclick="toggleListing(${index})"
+style="background:#000;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer">
+
+${item.status==="blocked" ? "Activate" : "Block"}
+
+</button>
+
+</td>
+
+</tr>
+`;
+});
+
+}
+function toggleListing(index){
+
+let listings = JSON.parse(localStorage.getItem("jsek_products")) || [];
+
+if(listings[index].status === "blocked"){
+
+listings[index].status = "active";
+
+}else{
+
+listings[index].status = "blocked";
+
+}
+
+localStorage.setItem("jsek_products", JSON.stringify(listings));
+
+loadListings();
+}
     </script>
 </body>
 

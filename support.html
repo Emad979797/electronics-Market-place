@@ -26,6 +26,27 @@
         <section class="hero">
             <h1>Technical Support</h1>
             <p>How can we help you today? Our team is available 24/7.</p>
+
+            <div id="lockout-container" class="glass"
+                style="display: none; margin: 30px auto; max-width: 600px; padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 77, 77, 0.3); background: rgba(20, 0, 0, 0.4); text-align: center; box-shadow: 0 8px 32px rgba(255, 77, 77, 0.15); backdrop-filter: blur(10px);">
+
+                <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px;">
+                    <span style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255, 77, 77, 0.5));">⚠️</span>
+                    <h3
+                        style="color: #fff; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                        Access Restricted
+                    </h3>
+                </div>
+
+                <p id="lockout-message" style="margin-bottom: 5px; color: #fff; font-size: 1rem; line-height: 1.5;">
+                    You account was temporary blocked. You can submit your enquiery in the following form or try to
+                    login in
+                    <span id="timer"
+                        style="font-weight: 700; font-size: 1.4rem; color: #6dd5ed; text-shadow: 0 0 10px rgba(109, 213, 237, 0.5);">10</span>
+                    seconds.
+                </p>
+            </div>
         </section>
 
         <div class="support-grid">
@@ -34,35 +55,33 @@
                     <h3>Send a Message</h3>
                     <form class="auth-form" id="supportTicket">
                         <div class="input-group">
-                            <input type="text" placeholder="Full Name" required>
+                            <label><input type="text" placeholder="Full Name" required></label>
                         </div>
                         <div class="input-group">
-                            <input type="email" placeholder="Email Address" required>
+                            <label><input type="email" placeholder="Email Address" required></label>
                         </div>
-
                         <div class="input-group">
-                            <select required>
-                                <option value="" disabled selected>Select Issue Category</option>
-                                <option value="account">Account Access</option>
-                                <option value="order">Order/Refund Issue</option>
-                                <option value="technical">Technical Support</option>
-                                <option value="other">Other</option>
-                            </select>
+                            <label>
+                                <select required>
+                                    <option value="" disabled selected>Select Issue Category</option>
+                                    <option value="account">Account Access</option>
+                                    <option value="order">Order/Refund Issue</option>
+                                    <option value="technical">Technical Support</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </label>
                         </div>
-
                         <div class="input-group">
-                            <textarea placeholder="Describe your issue in detail..." required></textarea>
+                            <label><textarea placeholder="Describe your issue in detail..." required></textarea></label>
                         </div>
-
                         <button type="submit" class="btn-glow">Submit Ticket</button>
                     </form>
                 </div>
 
                 <div id="success-message" style="display: none; text-align: center; padding: 20px 0;">
-                    <div class="success-icon">✓</div>
+                    <div class="success-icon" style="font-size: 3rem; color: #2ecc71; margin-bottom: 10px;">✓</div>
                     <h2>Help is on the way!</h2>
-                    <p>Thank you for reaching out. Our team has received your ticket and will get back to you shortly.
-                    </p>
+                    <p>Our team has received your ticket and will get back to you shortly.</p>
                     <a href="index.html" class="btn-signup"
                         style="display: inline-block; text-decoration: none; margin-top: 20px;">Return Home</a>
                 </div>
@@ -78,10 +97,6 @@
                     <h4>Is my data secure?</h4>
                     <p>We use industry-standard encryption for all transactions and user data.</p>
                 </div>
-                <div class="faq-item">
-                    <h4>Can I sell used items?</h4>
-                    <p>Yes! Sellers can list both new and pre-owned electronics easily.</p>
-                </div>
             </div>
         </div>
     </main>
@@ -92,41 +107,65 @@
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
-
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home Page</a></li>
-                    <li><a href="support.html">Technical Support</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h4>Our Team</h4>
-                <ul class="collaborators">
-                    <li>Emad Al Nounou</li>
-                    <li>Julia Cameron</li>
-                    <li>Khaled Al Akili</li>
-                    <li>Shefaa Alaghawani</li>
-                </ul>
-            </div>
         </div>
     </footer>
-
     <script>
-        document.getElementById('supportTicket').addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevents page reload/redirect
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isBlocked = urlParams.get('blocked');
+            const userEmail = decodeURIComponent(urlParams.get('user') || 'your account');
 
-            // Hide the entire form content block
-            const formContent = document.getElementById('form-content');
-            if (formContent) {
-                formContent.style.display = 'none';
-            }
+            if (isBlocked === 'true') {
+                // 1. Create the alert box (Matching your design)
+                const blockContainer = document.createElement('div');
+                blockContainer.id = "blockAlert";
+                blockContainer.style.cssText = `
+                background: #fff5f5;
+                border: 2px solid #ff4d4d;
+                color: #d63031;
+                padding: 25px;
+                border-radius: 15px;
+                margin: 20px auto;
+                max-width: 600px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                font-family: 'Inter', sans-serif;
+                animation: slideDown 0.5s ease-out;
+            `;
 
-            // Show the success message and icon
-            const successMsg = document.getElementById('success-message');
-            if (successMsg) {
-                successMsg.style.display = 'block';
+                blockContainer.innerHTML = `
+                <div style="font-size: 1.4rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span>⚠️</span> Access Restricted
+                </div>
+                <p style="font-size: 1rem; color: #444; line-height: 1.5; margin-bottom: 20px;">
+                    Too many failed login attempts for <br>
+                    <strong style="color: #ff4d4d;">${userEmail}</strong>. <br>
+                    You can submit the inquiry form below, or wait to be redirected.
+                </p>
+                <div style="background: white; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 1px solid #ff4d4d;">
+                    <span style="font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; display: block;">Redirecting in</span>
+                    <span id="countdownTimer" style="font-size: 2rem; font-weight: 600; color: #ff4d4d;">10s</span>
+                </div>
+            `;
+
+                const target = document.querySelector('main') || document.body;
+                target.prepend(blockContainer);
+
+                // 2. Countdown Logic
+                let timeLeft = 10;
+                const timerDisplay = document.getElementById('countdownTimer');
+
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = timeLeft + "s";
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        // Clear the block status and redirect
+                        localStorage.removeItem(`jsek_attempts_${userEmail.toLowerCase()}`);
+                        window.location.href = "login.html?unlocked=true";
+                    }
+                }, 1000);
             }
         });
     </script>

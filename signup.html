@@ -6,17 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | JSEK Marketplace</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Hidden labels for accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Standardize Box Sizing */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* FIX: Standardizing the border color to match standard inputs */
+        #roleDropdown {
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Dropdown Options Container */
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: none;
+            overflow: hidden;
+        }
+
+        .custom-options.show {
+            display: block;
+        }
+
+        /* Hover effect for the options */
+        .option:hover {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+    </style>
 </head>
 
-<body class="auth-page" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<body class="auth-page">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 
     <header class="navbar">
-        <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
+        <div class="logo">
+            JSEK <span class="logo-accent">Marketplace</span>
+        </div>
         <div class="nav-links">
             <a href="index.html" class="text-link">Home Page</a>
+            <a href="login.html" class="text-link">Login</a>
             <a href="support.html" class="text-link">Technical Support</a>
         </div>
     </header>
@@ -29,53 +81,73 @@
             <form id="signupForm" class="auth-form" autocomplete="off">
 
                 <div class="input-group">
-                    <input type="text" id="fullName" placeholder="Full Name" autocomplete="off" required>
+                    <input type="text" id="fullName" placeholder="Full Name" required>
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="email" placeholder="Email Address" autocomplete="one-time-code" required>
+                    <input type="email" id="email" placeholder="Email Address" required>
                 </div>
 
                 <div class="input-group">
                     <input type="password" id="password" placeholder="Create Password (min. 8 chars)" minlength="8"
-                        autocomplete="new-password" required>
+                        required>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="confirmPassword" placeholder="Confirm Password"
-                        autocomplete="new-password" required>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
                 </div>
 
-                <div class="input-group">
-                    <select id="role" name="role" required>
-                        <option value="">Select your role</option>
-                        <option value="buyer">Buyer</option>
-                        <option value="seller">Seller</option>
-                        <option value="vendor">Vendor</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                <div class="input-group" style="position: relative; width: 100%;">
+                    <div id="roleDropdown" onclick="toggleDropdown()"
+                        style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 55px; padding: 0 22px; background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+
+                        <span id="selected-text"
+                            style="font-family: 'Inter', sans-serif !important; color: #7f8c8d !important; font-size: 1rem;">Select
+                            your role</span>
+
+                        <svg id="drop-arrow" width="12" height="12" viewBox="0 0 1024 1024"
+                            style="fill: #7f8c8d; transition: transform 0.3s ease;">
+                            <path
+                                d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <div class="custom-options" id="dropdownOptions">
+                        <div class="option" onclick="selectOption('Buyer')"
+                            style="padding: 14px 22px; color: #333 !important; font-family: 'Inter', sans-serif !important; font-size: 0.95rem; cursor: pointer; text-align: left;">
+                            Buyer</div>
+                        <div class="option" onclick="selectOption('Seller')"
+                            style="padding: 14px 22px; color: #333 !important; font-family: 'Inter', sans-serif !important; font-size: 0.95rem; cursor: pointer; text-align: left;">
+                            Seller</div>
+                        <div class="option" onclick="selectOption('Vendor')"
+                            style="padding: 14px 22px; color: #333 !important; font-family: 'Inter', sans-serif !important; font-size: 0.95rem; cursor: pointer; text-align: left;">
+                            Vendor</div>
+                        <div class="option" onclick="selectOption('Admin')"
+                            style="padding: 14px 22px; color: #333 !important; font-family: 'Inter', sans-serif !important; font-size: 0.95rem; cursor: pointer; text-align: left;">
+                            Admin</div>
+                    </div>
+
+                    <input type="hidden" name="role" id="roleInput" required>
                 </div>
 
                 <button type="submit" class="btn-glow">Register Now</button>
+                <div id="error-message"
+                    style="color: #e74c3c; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; font-family: 'Inter', sans-serif;">
+                </div>
             </form>
 
-            <div id="message" style="margin-top: 15px; font-weight: 600; font-size: 0.9rem;"></div>
-
             <div class="auth-footer">
-                <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
+                <p>Already have an account? <a href="index.html" class="text-link">Login here</a></p>
             </div>
         </div>
     </main>
-
-    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
-
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
-
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
@@ -83,10 +155,9 @@
                     <li><a href="support.html">Technical Support</a></li>
                 </ul>
             </div>
-
             <div class="footer-section">
                 <h4>Our Team</h4>
-                <ul class="collaborators">
+                <ul class="collaborators" style="list-style: none; padding: 0;">
                     <li>Emad Al Nounou</li>
                     <li>Julia Cameron</li>
                     <li>Khaled Al Akili</li>
@@ -95,49 +166,121 @@
             </div>
         </div>
     </footer>
-
     <script>
         document.getElementById('signupForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
+            // 1. Capture Form Data
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const role = document.getElementById('role').value;
-            const message = document.getElementById('message');
+            const role = document.getElementById('roleInput').value;
+            const errorDiv = document.getElementById('error-message');
 
-            // Check if passwords match
+            // 2. Clear previous errors
+            errorDiv.style.display = 'none';
+            errorDiv.innerText = '';
+
+            // 3. DATABASE CHECK
+            let users = [];
+            try {
+                const storedUsers = localStorage.getItem('jsek_users');
+                users = storedUsers ? JSON.parse(storedUsers) : [];
+            } catch (err) {
+                users = [];
+            }
+
+            // 4. THE STRICTURE CHECK
+            const emailExists = users.some(u => u.email.toLowerCase().trim() === email);
+
+            if (emailExists) {
+                errorDiv.innerText = "This email address is already registered.";
+                errorDiv.style.display = 'block';
+                errorDiv.style.color = "#ff4d4d";
+                document.getElementById('email').style.borderColor = "#ff4d4d";
+                return;
+            }
+
+            // 5. Password Match Check
+            if (password.length < 8) {
+                errorDiv.innerText = "Password must be at least 8 characters.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
             if (password !== confirmPassword) {
-                message.textContent = "Error: Passwords do not match.";
-                message.style.color = "#ff4d4d"; // Red color
-                return; // Stop the registration process
+                errorDiv.innerText = "Passwords do not match.";
+                errorDiv.style.display = 'block';
+                return;
             }
 
-            // Get existing users
-            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-
-            // Check if email is already registered
-            const userExists = users.some(user => user.email === email);
-
-            if (userExists) {
-                message.textContent = "Error: This email is already registered.";
-                message.style.color = "#ff4d4d"; // Red color
-            } else {
-                // Save new user (including role)
-                const newUser = { fullName, email, password, role };
-                users.push(newUser);
-                localStorage.setItem('jsek_users', JSON.stringify(users));
-
-                message.textContent = "Registration successful! Redirecting to login...";
-                message.style.color = "#2ecc71"; // Green color
-
-                // Redirect to login page after 2 seconds
-                setTimeout(() => {
-                    window.location.href = "login.html";
-                }, 2000);
+            // 6. Role Selection Check
+            if (!role) {
+                errorDiv.innerText = "Please select your role.";
+                errorDiv.style.display = 'block';
+                return;
             }
+
+            // 7. FINAL SAVE (Updated with Saved Accounts Fix)
+            const newUser = {
+                fullName: fullName,
+                email: email,
+                password: password,
+                role: role,
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to main user database
+            users.push(newUser);
+            localStorage.setItem('jsek_users', JSON.stringify(users));
+
+            // --- OPTION 1 FIX: ADD TO SAVED ACCOUNTS ---
+            let savedAccounts = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
+            if (!savedAccounts.includes(email)) {
+                savedAccounts.push(email);
+                localStorage.setItem('jsek_saved_accounts', JSON.stringify(savedAccounts));
+            }
+            // --------------------------------------------
+
+            // 8. Redirect
+            errorDiv.innerText = "Registration successful! Redirecting...";
+            errorDiv.style.color = "#2ecc71";
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = `login.html?role=${role}`;
+            }, 1200);
         });
+
+        // --- UI HELPER FUNCTIONS ---
+        function toggleDropdown() {
+            const options = document.getElementById('dropdownOptions');
+            const arrow = document.getElementById('drop-arrow');
+            const trigger = document.getElementById('roleDropdown');
+            const isShowing = options.style.display === 'block';
+
+            options.style.display = isShowing ? 'none' : 'block';
+            arrow.style.transform = isShowing ? 'rotate(0deg)' : 'rotate(180deg)';
+            trigger.style.borderColor = isShowing ? 'rgba(0,0,0,0.1)' : '#7f8c8d';
+        }
+
+        function selectOption(val) {
+            document.getElementById('selected-text').innerText = val;
+            document.getElementById('selected-text').style.color = '#333';
+            document.getElementById('roleInput').value = val.toLowerCase();
+            document.getElementById('dropdownOptions').style.display = 'none';
+            document.getElementById('drop-arrow').style.transform = 'rotate(0deg)';
+        }
+
+        window.onclick = function (event) {
+            if (!event.target.closest('#roleDropdown') && !event.target.classList.contains('option')) {
+                const options = document.getElementById('dropdownOptions');
+                if (options) options.style.display = 'none';
+                const arrow = document.getElementById('drop-arrow');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
+        }
     </script>
 </body>
 
