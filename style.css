@@ -128,10 +128,9 @@ body {
     display: grid;
     /* This tells the grid: "Fit as many cards as you can, 
        but don't make them smaller than 300px." */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    width: 100%;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    
 }
 
 .role-card {
@@ -1294,4 +1293,45 @@ border-radius:50%;
 position:absolute;
 top:-5px;
 right:-10px;
+}
+/* ===== PRODUCT CARD FIX ===== */
+
+/* Override earlier role-card style */
+.portal-grid .role-card{
+background:white;
+padding:20px;
+border-radius:16px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+text-align:center;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+/* Image wrapper */
+.product-image{
+width:100%;
+height:200px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#f5f7fa;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:15px;
+}
+
+/* Actual image */
+.product-image img{
+width:100%;
+height:100%;
+object-fit:contain;
+display:block;
+}
+.portal-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
+max-width:1000px;
+margin:auto;
 }
