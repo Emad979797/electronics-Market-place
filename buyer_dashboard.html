@@ -84,6 +84,11 @@
             border-radius: 12px;
             border: 1px solid #eee;
             text-align: left;
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
         }
 
         .btn-add {
@@ -98,16 +103,28 @@
             margin-top: 10px;
         }
 
+        .btn-save {
+            width: 100%;
+            background: #f1f3f5;
+            color: #495057;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
         #cart-sidebar {
             position: fixed;
-            right: -350px;
+            right: -380px;
             top: 0;
-            width: 320px;
+            width: 350px;
             height: 100%;
             background: white;
             box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
             z-index: 2000;
-            /* Higher than help button */
             transition: 0.3s;
             padding: 25px;
             display: flex;
@@ -120,11 +137,14 @@
             right: 0;
         }
 
-        .cart-item {
+        .cart-item,
+        .saved-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid #eee;
+            font-size: 14px;
         }
 
         .cart-badge {
@@ -138,7 +158,12 @@
             right: -10px;
         }
 
-        /* FIX: Adjusted the Help Button so it doesn't block the Proceed button */
+        .tax-disclaimer {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
         .quick-help-trigger {
             position: fixed;
             bottom: 20px;
@@ -152,15 +177,11 @@
             font-size: 14px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            /* Lower than cart sidebar */
         }
     </style>
 </head>
 
 <body>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-
     <header class="navbar">
         <div class="logo">JSEK <span class="logo-accent">Buyer Portal</span></div>
         <div class="nav-links">
@@ -196,17 +217,37 @@
             </div>
         </div>
 
+        <div id="saved-section"
+            style="display:none; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 40px;">
+            <h2 style="margin-top:0;">Saved for Later</h2>
+            <div id="saved-items-container"></div>
+        </div>
+
         <h2 style="text-align: left; margin-bottom: 20px;">Marketplace Items</h2>
         <div class="product-grid">
             <div class="product-card">
                 <h3>Wireless Headphones</h3>
                 <p style="color: #2193b0; font-weight: 600;">$59.99</p>
                 <button class="btn-add" onclick="addToCart('Wireless Headphones', 59.99)">Add to Cart</button>
+                <button class="btn-save" onclick="saveForLater('Wireless Headphones', 59.99)">Save for Later</button>
             </div>
             <div class="product-card">
                 <h3>Smart Watch v4</h3>
                 <p style="color: #2193b0; font-weight: 600;">$129.00</p>
                 <button class="btn-add" onclick="addToCart('Smart Watch v4', 129.00)">Add to Cart</button>
+                <button class="btn-save" onclick="saveForLater('Smart Watch v4', 129.00)">Save for Later</button>
+            </div>
+            <div class="product-card">
+                <h3>Mechanical Keyboard</h3>
+                <p style="color: #2193b0; font-weight: 600;">$85.50</p>
+                <button class="btn-add" onclick="addToCart('Mechanical Keyboard', 85.50)">Add to Cart</button>
+                <button class="btn-save" onclick="saveForLater('Mechanical Keyboard', 85.50)">Save for Later</button>
+            </div>
+            <div class="product-card">
+                <h3>HD Webcam 1080p</h3>
+                <p style="color: #2193b0; font-weight: 600;">$45.00</p>
+                <button class="btn-add" onclick="addToCart('HD Webcam 1080p', 45.00)">Add to Cart</button>
+                <button class="btn-save" onclick="saveForLater('HD Webcam 1080p', 45.00)">Save for Later</button>
             </div>
         </div>
 
@@ -241,8 +282,11 @@
                 style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
         </div>
         <div id="cart-items-container" style="flex: 1; overflow-y: auto;"></div>
-        <div style="border-top: 2px solid #eee; padding-top: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+
+        <div style="border-top: 2px solid #eee; padding-top: 15px;">
+            <div class="tax-disclaimer">Subtotal: <span id="cart-subtotal" style="float:right;">$0.00</span></div>
+            <div class="tax-disclaimer">Tax (13%): <span id="cart-tax" style="float:right;">$0.00</span></div>
+            <div style="display: flex; justify-content: space-between; margin: 10px 0; font-size: 18px;">
                 <strong>Total:</strong><strong id="cart-total" style="color: #2193b0;">$0.00</strong>
             </div>
             <button onclick="goToCheckout()"
@@ -273,37 +317,123 @@
 
     <script>
         let cart = JSON.parse(localStorage.getItem('jsek_cart')) || [];
+        let savedItems = JSON.parse(localStorage.getItem('jsek_saved')) || [];
+        const TAX_RATE = 0.13;
 
         function addToCart(name, price) {
             cart.push({ name, price });
             updateCartUI();
-            saveCart();
+            saveData();
             if (!document.getElementById('cart-sidebar').classList.contains('active')) toggleCart();
+        }
+
+        function saveForLater(name, price) {
+            // Check if already saved
+            if (!savedItems.find(item => item.name === name)) {
+                savedItems.push({ name, price });
+                saveData();
+                updateSavedUI();
+            }
         }
 
         function updateCartUI() {
             const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const taxEl = document.getElementById('cart-tax');
             const totalEl = document.getElementById('cart-total');
             const countEl = document.getElementById('cart-count');
+
             container.innerHTML = '';
-            let total = 0;
+            let subtotal = 0;
+
             cart.forEach((item, index) => {
-                total += item.price;
-                container.innerHTML += `<div class="cart-item"><span>${item.name}</span><span>$${item.price.toFixed(2)}</span><button onclick="removeFromCart(${index})" style="color:red; background:none; border:none; cursor:pointer;">&times;</button></div>`;
+                subtotal += item.price;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <div>
+                            <span>$${item.price.toFixed(2)}</span>
+                            <button onclick="removeFromCart(${index})" style="color:red; background:none; border:none; cursor:pointer; margin-left:10px;">&times;</button>
+                        </div>
+                    </div>`;
             });
+
+            let tax = subtotal * TAX_RATE;
+            let total = subtotal + tax;
+
+            subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+            taxEl.innerText = `$${tax.toFixed(2)}`;
             totalEl.innerText = `$${total.toFixed(2)}`;
             countEl.innerText = cart.length;
         }
 
-        function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); saveCart(); }
+        function updateSavedUI() {
+            const container = document.getElementById('saved-items-container');
+            const section = document.getElementById('saved-section');
+
+            if (savedItems.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = '';
+            savedItems.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="saved-item">
+                        <span><strong>${item.name}</strong> - $${item.price.toFixed(2)}</span>
+                        <div>
+                            <button onclick="moveFromSavedToCart(${index})" style="background:#2193b0; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Move to Cart</button>
+                            <button onclick="removeSaved(${index})" style="color:#888; background:none; border:none; cursor:pointer; margin-left:10px;">Remove</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function moveFromSavedToCart(index) {
+            const item = savedItems.splice(index, 1)[0];
+            addToCart(item.name, item.price);
+            updateSavedUI();
+            saveData();
+        }
+
+        function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); saveData(); }
+        function removeSaved(index) { savedItems.splice(index, 1); updateSavedUI(); saveData(); }
+
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('active'); }
-        function saveCart() { localStorage.setItem('jsek_cart', JSON.stringify(cart)); }
-        function goToCheckout() { if (cart.length > 0) window.location.href = "checkout.html"; else alert("Cart is empty!"); }
+
+        function saveData() {
+            localStorage.setItem('jsek_cart', JSON.stringify(cart));
+            localStorage.setItem('jsek_saved', JSON.stringify(savedItems));
+        }
+
+        function goToCheckout() {
+            if (cart.length > 0) {
+                // Prepare receipt data for checkout.html
+                const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+                const tax = subtotal * TAX_RATE;
+                const total = subtotal + tax;
+
+                const receipt = {
+                    items: cart,
+                    subtotal: subtotal.toFixed(2),
+                    tax: tax.toFixed(2),
+                    total: total.toFixed(2),
+                    orderDate: new Date().toLocaleDateString()
+                };
+
+                localStorage.setItem('jsek_pending_receipt', JSON.stringify(receipt));
+                window.location.href = "checkout.html";
+            } else {
+                alert("Cart is empty!");
+            }
+        }
 
         function logout() { localStorage.removeItem('currentUser'); window.location.href = "login.html"; }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCartUI();
+            updateSavedUI();
             const userData = localStorage.getItem('currentUser');
             if (userData) {
                 const user = JSON.parse(userData);

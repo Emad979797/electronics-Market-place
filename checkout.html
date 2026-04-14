@@ -35,7 +35,35 @@
             margin-bottom: 20px;
         }
 
-        /* Status Messaging */
+        /* Order Summary Styling */
+        .order-summary {
+            background: #f9fafb;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #eee;
+            color: #000;
+        }
+
         #status-msg {
             padding: 15px;
             border-radius: 8px;
@@ -71,7 +99,6 @@
             }
         }
 
-        /* FIXED: Card Icons (Full Color Restored) */
         .card-icon-container {
             display: flex;
             gap: 15px;
@@ -86,7 +113,6 @@
             transform: scale(1);
         }
 
-        /* Added Styling for the Cancel Button */
         .btn-cancel {
             margin-top: 10px;
             width: 100%;
@@ -110,16 +136,13 @@
 
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif;">
 
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-
     <header class="navbar">
         <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
         <div class="nav-links">
             <a href="index.html" class="text-link">Home Page</a>
             <a href="support.html" class="text-link">Technical Support</a>
-            <a href="login.html" class="btn-signup"
-                style="text-decoration: none; display: inline-block; margin-left: 20px;">Log Out</a>
+            <a href="#" onclick="logout()" class="btn-signup" style="text-decoration: none; margin-left: 20px;">Log
+                Out</a>
         </div>
     </header>
 
@@ -127,7 +150,15 @@
         style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
         <div class="auth-card" style="width: 100%; max-width: 500px;">
             <h2 style="margin-bottom: 10px;">Secure Checkout</h2>
-            <p style="margin-bottom: 25px; color: #666;">Select your payment method and enter details.</p>
+
+            <div class="order-summary" id="order-summary-box">
+                <h4 style="margin-top: 0; margin-bottom: 15px;">Order Summary</h4>
+                <div id="summary-items"></div>
+                <div class="summary-total">
+                    <span>Total (incl. 13% Tax)</span>
+                    <span id="summary-total-amount">$0.00</span>
+                </div>
+            </div>
 
             <div id="status-msg"></div>
 
@@ -152,117 +183,108 @@
                     </div>
 
                     <div class="input-group">
-                        <label><input type="text" placeholder="Cardholder Name" required
-                                style="width: 100%; box-sizing: border-box;"></label>
+                        <input type="text" placeholder="Cardholder Name" required
+                            style="width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
                     </div>
                     <div class="input-group">
-                        <label><input type="text" id="card-number" placeholder="Card Number" required
-                                style="width: 100%; box-sizing: border-box;"></label>
+                        <input type="text" id="card-number" placeholder="Card Number" required
+                            style="width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
                     </div>
                     <div class="card-row">
                         <div class="input-group" style="flex: 2; margin-bottom: 0;">
-                            <label><input type="text" id="card-expiry" placeholder="MM/YY" required
-                                    style="width: 100%; box-sizing: border-box;"></label>
+                            <input type="text" id="card-expiry" placeholder="MM/YY" required
+                                style="width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
                         </div>
                         <div class="input-group" style="flex: 1; margin-bottom: 0;">
-                            <label><input type="text" id="card-cvv" placeholder="CVV" required
-                                    style="width: 100%; box-sizing: border-box;"></label>
+                            <input type="text" id="card-cvv" placeholder="CVV" required
+                                style="width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
                         </div>
                     </div>
                 </div>
 
                 <div id="paypal-info" style="display: none; text-align: center; padding: 30px 0;">
-                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">You will be redirected to PayPal to
-                        complete your payment securely.</p>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Redirect to PayPal to complete
+                        payment.</p>
                     <div
                         style="background: rgba(0, 0, 0, 0.03); padding: 20px; border-radius: 12px; border: 1px dashed #bbb;">
-                        <span style="color: #003087; font-weight: 600;">PayPal Express Checkout</span>
+                        <span style="color: #003087; font-weight: 600;">PayPal Express</span>
                     </div>
                 </div>
 
                 <button type="submit" id="submit-btn" class="btn-glow" style="margin-top: 25px; width: 100%;">Pay
                     Now</button>
-
-                <button type="button" class="btn-cancel" onclick="returnToDashboard()">Cancel & Return to
-                    Dashboard</button>
+                <button type="button" class="btn-cancel" onclick="returnToDashboard()">Cancel & Return</button>
             </form>
         </div>
     </main>
-    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
-    <footer class="main-footer" style="width: 100%; margin-top: auto; background: white; border-top: 1px solid #eee;">
-        <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
-            <div class="footer-section">
-                <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home Page</a></li>
-                    <li><a href="support.html">Technical Support</a></li>
-                </ul>
-            </div>
+
+    <footer class="main-footer"
+        style="width: 100%; margin-top: auto; background: white; border-top: 1px solid #eee; padding: 20px 0;">
+        <div style="max-width: 1100px; margin: 0 auto; text-align: center; color: #666; font-size: 0.85rem;">
+            &copy; 2026 JSEK Electronics. All rights reserved.
         </div>
     </footer>
 
     <script>
-        // Added the logic to return to dashboard without processing
-        function returnToDashboard() {
-            window.location.href = "buyer_dashboard.html";
-        }
+        function returnToDashboard() { window.location.href = "buyer_dashboard.html"; }
+        function logout() { localStorage.removeItem('currentUser'); window.location.href = "login.html"; }
 
+        // 1. Load Receipt Data and Populate Summary
+        document.addEventListener('DOMContentLoaded', () => {
+            const receiptData = JSON.parse(localStorage.getItem('jsek_pending_receipt'));
+            if (!receiptData) {
+                window.location.href = "buyer_dashboard.html";
+                return;
+            }
+
+            const itemsContainer = document.getElementById('summary-items');
+            receiptData.items.forEach(item => {
+                itemsContainer.innerHTML += `
+                <div class="summary-item">
+                    <span>${item.name}</span>
+                    <span>$${item.price.toFixed(2)}</span>
+                </div>`;
+            });
+
+            itemsContainer.innerHTML += `
+            <div class="summary-item" style="margin-top:10px; font-style: italic;">
+                <span>Subtotal</span>
+                <span>$${receiptData.subtotal}</span>
+            </div>
+            <div class="summary-item" style="font-style: italic;">
+                <span>Tax (13%)</span>
+                <span>$${receiptData.tax}</span>
+            </div>
+        `;
+            document.getElementById('summary-total-amount').innerText = `$${receiptData.total}`;
+        });
+
+        // 2. Input Formatting (Cleave.js)
         const cleave = new Cleave('#card-number', {
             creditCard: true,
-            onCreditCardTypeChanged: function (type) {
-                updateCardIcons(type);
-            }
+            onCreditCardTypeChanged: (type) => updateCardIcons(type)
         });
         new Cleave('#card-expiry', { date: true, datePattern: ['m', 'y'] });
         new Cleave('#card-cvv', { blocks: [4], numericOnly: true });
 
         const statusBox = document.getElementById('status-msg');
 
-        function updateCardIcons(type) {
-            const visa = document.getElementById('icon-visa');
-            const master = document.getElementById('icon-mastercard');
-            const amex = document.getElementById('icon-amex');
-            const allIcons = [visa, master, amex];
-
-            if (type === 'unknown') {
-                allIcons.forEach(img => {
-                    img.style.opacity = "0.5";
-                    img.style.transform = "scale(1)";
-                });
-                return;
-            }
-
-            let target = (type === 'visa') ? visa : (type === 'mastercard') ? master : (type === 'amex') ? amex : null;
-
-            if (target) {
-                allIcons.forEach(img => {
-                    if (img !== target) {
-                        img.style.opacity = "0.1";
-                        img.style.transform = "scale(0.9)";
-                    }
-                });
-                target.style.opacity = "1";
-                target.style.transform = "scale(1.2)";
-            }
+        // 3. Expiry Date Validation Logic
+        function validateExpiry(val) {
+            if (!val || !val.includes('/')) return false;
+            const parts = val.split('/');
+            const month = parseInt(parts[0], 10);
+            const year = parseInt("20" + parts[1], 10);
+            if (month < 1 || month > 12) return false;
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            if (year < currentYear) return false;
+            if (year === currentYear && month < currentMonth) return false;
+            return true;
         }
 
-        function togglePayment(method) {
-            document.getElementById('card-fields').style.display = method === 'card' ? 'block' : 'none';
-            document.getElementById('paypal-info').style.display = method === 'card' ? 'none' : 'block';
-            document.getElementById('submit-btn').innerText = method === 'card' ? "Pay Now" : "Continue to PayPal";
-            statusBox.style.display = 'none';
-        }
-
-        function showStatus(text, type) {
-            statusBox.innerText = text;
-            statusBox.className = type === 'error' ? 'msg-error' : 'msg-success';
-            statusBox.style.display = 'block';
-        }
-
+        // 4. Luhn Algorithm for Card Number Validation
         function validateLuhn(number) {
             let sum = 0, shouldDouble = false;
             number = number.replace(/\s+/g, '');
@@ -274,16 +296,34 @@
             return (sum % 10) === 0;
         }
 
-        function validateExpiry(val) {
-            if (!val || !val.includes('/')) return false;
-            const parts = val.split('/');
-            const month = parseInt(parts[0], 10);
-            const year = parseInt("20" + parts[1], 10);
-            const now = new Date();
-            const lastDayOfExpMonth = new Date(year, month, 0);
-            return lastDayOfExpMonth >= now;
+        function updateCardIcons(type) {
+            const visa = document.getElementById('icon-visa');
+            const master = document.getElementById('icon-mastercard');
+            const amex = document.getElementById('icon-amex');
+            const allIcons = [visa, master, amex];
+            allIcons.forEach(img => { img.style.opacity = "0.2"; img.style.transform = "scale(1)"; });
+            let target = (type === 'visa') ? visa : (type === 'mastercard') ? master : (type === 'amex') ? amex : null;
+            if (target) {
+                target.style.opacity = "1";
+                target.style.transform = "scale(1.2)";
+            } else if (type === 'unknown') {
+                allIcons.forEach(img => img.style.opacity = "0.5");
+            }
         }
 
+        function togglePayment(method) {
+            document.getElementById('card-fields').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('paypal-info').style.display = method === 'card' ? 'none' : 'block';
+            document.getElementById('submit-btn').innerText = method === 'card' ? "Pay Now" : "Continue to PayPal";
+        }
+
+        function showStatus(text, type) {
+            statusBox.innerText = text;
+            statusBox.className = type === 'error' ? 'msg-error' : 'msg-success';
+            statusBox.style.display = 'block';
+        }
+
+        // 5. UPDATED: Final Form Submission (No Redirect)
         document.getElementById('payment-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const method = document.querySelector('input[name="payment"]:checked').value;
@@ -296,15 +336,15 @@
                 const cvv = document.getElementById('card-cvv').value;
 
                 if (!validateLuhn(cardNum)) {
-                    showStatus("❌ Invalid Card Number. Please check the digits.", "error");
+                    showStatus("❌ Invalid Card Number.", "error");
                     return;
                 }
                 if (!validateExpiry(expiry)) {
-                    showStatus("❌ This card has expired. Please use a valid card.", "error");
+                    showStatus("❌ This card has expired or the date is invalid.", "error");
                     return;
                 }
                 if (cvv.length < 3) {
-                    showStatus("❌ Please enter a valid 3 or 4 digit CVV.", "error");
+                    showStatus("❌ Please enter a valid CVV.", "error");
                     return;
                 }
             }
@@ -312,24 +352,38 @@
             btn.innerText = "Processing Securely...";
             btn.disabled = true;
 
+            // Simulate processing
             setTimeout(() => {
-                showStatus("✅ Payment Successful! Your receipt has been sent to your email.", "success");
+                // Get user email from local storage (assuming it's stored under currentUser)
+                const user = JSON.parse(localStorage.getItem('currentUser')) || { email: 'your email' };
+                const userEmail = user.email || "your registered email";
 
-                // 1. Clear the cart from localStorage
+                // 1. Clear shopping cart
                 localStorage.removeItem('jsek_cart');
+                localStorage.removeItem('jsek_pending_receipt');
 
-                // 2. Go to the receipt page first
-                setTimeout(() => {
-                    window.location.href = "receipt.html";
-                }, 2500);
-            }, 1500);
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            const x = (window.innerWidth / 2 - e.pageX) / 10;
-            const y = (window.innerHeight / 2 - e.pageY) / 10;
-            document.documentElement.style.setProperty('--mouse-x', x + 'px');
-            document.documentElement.style.setProperty('--mouse-y', y + 'px');
+                // 2. Transform the UI into a Success Screen
+                const authCard = document.querySelector('.auth-card');
+                authCard.innerHTML = `
+                <div style="text-align: center; padding: 20px; animation: fadeIn 0.6s ease;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+                    <h2 style="margin-bottom: 10px; color: #166534;">Payment Successful!</h2>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
+                        Thank you for your purchase. A digital receipt has been sent to:<br>
+                        <strong style="color: #333;">${userEmail}</strong>
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button onclick="window.location.href='index.html'" class="btn-glow" style="width: 100%;">
+                            Return to Home
+                        </button>
+                        <button onclick="window.location.href='buyer_dashboard.html'" class="btn-cancel" style="border: 1px solid #ddd;">
+                            Go to Buyer Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+            }, 2000);
         });
     </script>
 </body>
