@@ -42,7 +42,7 @@
             <h2>Electronics Store</h2>
             <p id="userInfo"></p>
 
-            <div class="portal-grid">
+            <div class="portal-grid" id="marketplaceProducts">
 
                 <div class="role-card">
                     <img src="laptop.jpg" style="width:100%;height:140px;object-fit:cover;border-radius:8px">
@@ -188,19 +188,28 @@
         /* CART LOGIC */
        let cart = JSON.parse(localStorage.getItem("jsek_cart")) || [];
 
-function addToCart(name, price) {
+function addToCart(name,price){
 
-    cart.push({
-        name: name,
-        price: price,
-        seller: loggedUser.fullName,
-        status: "active"
-    });
+let products = JSON.parse(localStorage.getItem("jsek_products")) || [];
 
-    
+let product = products.find(p => p.name === name);
+
+if(!product || product.status === "blocked"){
+cart.splice(index,1);
+localStorage.setItem("jsek_cart", JSON.stringify(cart));
+return;
+}
+
+cart.push({
+name:name,
+price:price,
+seller:loggedUser.fullName,
+status:"active"
+});
+
 localStorage.setItem("jsek_cart", JSON.stringify(cart));
 
-    updateCart();
+updateCart();
 }
 
 function removeItem(index){
@@ -214,80 +223,90 @@ function removeItem(index){
 
 function updateCart(){
 
-    const cartList = document.getElementById("cartItems");
-    const sidebarContainer = document.getElementById("cart-items-container");
+let products = JSON.parse(localStorage.getItem("jsek_products")) || [];
 
-    const totalDisplay = document.getElementById("totalPrice");
-    const sidebarTotal = document.getElementById("cart-total");
+const cartList = document.getElementById("cartItems");
+const sidebarContainer = document.getElementById("cart-items-container");
 
-    const cartCount = document.getElementById("cart-count");
+const totalDisplay = document.getElementById("totalPrice");
+const sidebarTotal = document.getElementById("cart-total");
 
-    cartList.innerHTML = "";
-    sidebarContainer.innerHTML = "";
+const cartCount = document.getElementById("cart-count");
 
-    let total = 0;
-    let count = 0;
+cartList.innerHTML="";
+sidebarContainer.innerHTML="";
 
-    cart.forEach((item,index)=>{
+let total=0;
+let count=0;
 
-        if(item.status === "blocked") return;
+cart.forEach((item,index)=>{
 
-        total += item.price;
-        count++;
+/* FIND PRODUCT IN MARKETPLACE */
 
-        /* -------- MAIN CART LIST -------- */
+let product = products.find(p => p.name === item.name);
 
-        const li = document.createElement("li");
+/* IF PRODUCT DOES NOT EXIST OR IS BLOCKED → SKIP */
 
-        li.style.marginBottom="10px";
-        li.style.listStyle="none";
-        li.style.display="flex";
-        li.style.justifyContent="space-between";
-        li.style.alignItems="center";
-        li.style.padding="10px";
-        li.style.background="#f8f9fa";
-        li.style.borderRadius="8px";
+if(!product || product.status === "blocked"){
+return;
+}
 
-        li.innerHTML = `
-        <span>${item.name} - <strong>$${item.price}</strong></span>
+total += item.price;
+count++;
 
-        <button onclick="removeItem(${index})"
-        style="color:#fa5252;border:none;background:none;cursor:pointer">
-        Remove
-        </button>
-        `;
+/* -------- MAIN CART LIST -------- */
 
-        cartList.appendChild(li);
+const li=document.createElement("li");
 
-        /* -------- SIDEBAR CART -------- */
+li.style.marginBottom="10px";
+li.style.listStyle="none";
+li.style.display="flex";
+li.style.justifyContent="space-between";
+li.style.alignItems="center";
+li.style.padding="10px";
+li.style.background="#f8f9fa";
+li.style.borderRadius="8px";
 
-        const sidebarItem = document.createElement("div");
+li.innerHTML=`
+<span>${item.name} - <strong>$${item.price}</strong></span>
 
-        sidebarItem.className = "cart-item";
+<button onclick="removeItem(${index})"
+style="color:#fa5252;border:none;background:none;cursor:pointer">
+Remove
+</button>
+`;
 
-        sidebarItem.innerHTML = `
-        <span>${item.name}</span>
+cartList.appendChild(li);
 
-        <span>$${item.price}</span>
+/* -------- SIDEBAR CART -------- */
 
-        <button onclick="removeItem(${index})"
-        style="background:none;border:none;color:red;cursor:pointer">
-        ×
-        </button>
-        `;
+const sidebarItem=document.createElement("div");
 
-        sidebarContainer.appendChild(sidebarItem);
+sidebarItem.className="cart-item";
 
-    });
+sidebarItem.innerHTML=`
+<span>${item.name}</span>
+<span>$${item.price}</span>
 
-    /* TOTAL PRICE */
+<button onclick="removeItem(${index})"
+style="background:none;border:none;color:red;cursor:pointer">
+×
+</button>
+`;
 
-    totalDisplay.textContent = total;
-    sidebarTotal.textContent = "$" + total;
+sidebarContainer.appendChild(sidebarItem);
 
-    /* CART ICON COUNT */
+});
 
-    cartCount.textContent = count;
+/* TOTAL */
+
+totalDisplay.textContent=total;
+sidebarTotal.textContent="$"+total;
+
+/* CART COUNT */
+
+cartCount.textContent=count;
+
 }
 function goToCheckout(){
 
@@ -300,6 +319,7 @@ function goToCheckout(){
 }
 document.addEventListener("DOMContentLoaded", function(){
     updateCart();
+    loadMarketplace();
 });
 function toggleCart(){
 
@@ -310,6 +330,44 @@ function toggleCart(){
     }else{
         sidebar.style.right = "0px";
     }
+
+}
+
+function loadMarketplace(){
+
+let products = JSON.parse(localStorage.getItem("jsek_products")) || [];
+
+const container = document.getElementById("marketplaceProducts");
+
+container.innerHTML="";
+
+products.forEach(product=>{
+
+if(product.status === "blocked") return;
+
+container.innerHTML += `
+
+<div class="role-card">
+
+<img src="${product.name.toLowerCase().replace(' ','')}.jpg"
+style="width:100%;height:140px;object-fit:cover;border-radius:8px">
+
+<h3>${product.name}</h3>
+
+<p>$${product.price}</p>
+
+<button class="btn-glow"
+onclick="addToCart('${product.name}',${product.price})">
+
+Add to Cart
+
+</button>
+
+</div>
+
+`;
+
+});
 
 }
     </script>
