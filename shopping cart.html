@@ -20,19 +20,36 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px 0;
+        .categories button:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Active state for the selected category */
+        .categories button.active {
+            background: #00d4ff;
+            color: #ffffff; /* White text for the blue active button */
+            border-color: #00d4ff;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        /* 2. IMAGE FORMATTING */
+        .product-image {
+            width: 100%;
+            height: 180px; 
+            object-fit: contain; 
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
         }
 
         .product-card {
-            text-align: center;
-            padding: 25px;
+            transition: all 0.4s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
         }
 
         /* --- Search & Filter UI --- */
@@ -223,6 +240,7 @@
             color: #ccc;
         }
     </style>
+    
 </head>
 
 <body>
@@ -258,25 +276,25 @@
             </div>
         </div>
 
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="products-grid">
             <div class="product-card glass" data-category="laptop">
                 <img src="MacBook Pro.jpg" alt="MacBook Pro" class="product-image">
                 <h3 class="product-name">MacBook Pro</h3>
-                <p>$2000</p>
+                <p class="price">$2000</p>
                 <button class="btn-glow" onclick="addToCart('MacBook Pro', 2000)">Add to Cart</button>
             </div>
 
             <div class="product-card glass" data-category="phone">
                 <img src="phones.jpg" alt="iPhone 15" class="product-image">
                 <h3 class="product-name">iPhone 15</h3>
-                <p>$1200</p>
+                <p class="price">$1200</p>
                 <button class="btn-glow" onclick="addToCart('iPhone 15', 1200)">Add to Cart</button>
             </div>
 
             <div class="product-card glass" data-category="gaming">
                 <img src="samsung.jpg" alt="Samsung TV" class="product-image">
                 <h3 class="product-name">Samsung TV</h3>
-                <p>$800</p>
+                <p class="price">$800</p>
                 <button class="btn-glow" onclick="addToCart('Samsung TV', 800)">Add to Cart</button>
             </div>
         </div>
@@ -285,7 +303,7 @@
             <p>No products found matching your search.</p>
         </div>
 
-        <div id="cart" class="glass">
+        <div id="cart" class="glass" style="margin-top: 50px; padding: 25px;">
             <h3>Your Cart</h3>
             <div id="cart-items"></div>
             <div class="cart-summary">
@@ -387,6 +405,7 @@
         function filterCategory(category) {
             let products = document.querySelectorAll(".product-card");
             let found = false;
+
             products.forEach(product => {
                 const visible = category === "all" || product.dataset.category === category;
                 product.style.display = visible ? "flex" : "none";
