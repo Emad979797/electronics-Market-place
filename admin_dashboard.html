@@ -194,6 +194,33 @@
             <tbody id="userTableBody" style="color: #444;">
             </tbody>
         </table>
+
+<!-- Marketplace Listings Moderation -->
+<section style="margin-top:50px; text-align:left;">
+
+<h2 style="font-size:28px; margin-bottom:10px;">Marketplace Listings</h2>
+<p style="color:#666; margin-bottom:20px;">
+Admin can review listings and block those that violate safety rules.
+</p>
+
+<table style="width:100%; border-collapse:collapse; background:white;
+box-shadow:0 4px 20px rgba(0,0,0,0.05); border-radius:8px; overflow:hidden;">
+
+<thead>
+<tr style="background:#f8f9fa; border-bottom:2px solid #eee;">
+<th style="padding:15px;">Product</th>
+<th style="padding:15px;">Seller</th>
+<th style="padding:15px;">Price</th>
+<th style="padding:15px;">Status</th>
+<th style="padding:15px;">Action</th>
+</tr>
+</thead>
+
+<tbody id="listingTable"></tbody>
+
+</table>
+
+</section>
     </main>
     <a href="support.html" class="quick-help-trigger">? Quick Help</a>
     <footer class="main-footer" style="width: 100%; margin-top: auto;">
@@ -242,6 +269,7 @@
             window.addEventListener('load', () => {
                 displayUserHeader();
                 loadUsers();
+                loadListings();
             });
         }
 
@@ -304,7 +332,95 @@
             localStorage.removeItem('currentUser');
             window.location.assign("login.html");
         }
+                // Delete listing
+function deleteListing(index){
 
+    if(confirm("Delete this listing?")){
+
+        let listings = JSON.parse(localStorage.getItem("jsek_cart")) || [];
+
+        listings.splice(index,1);
+
+        localStorage.setItem("jsek_cart", JSON.stringify(listings));
+
+        loadListings();
+    }
+
+}
+        // Load listings- for Admind to moderate and delete if necessary
+/* LOAD MARKETPLACE LISTINGS */
+function loadListings() {
+
+    const listings = JSON.parse(localStorage.getItem("jsek_cart")) || [];
+
+    const table = document.getElementById("listingTableBody");
+
+    table.innerHTML = "";
+
+    if (listings.length === 0) {
+        table.innerHTML = `
+        <tr>
+            <td colspan="5" style="padding:20px;text-align:center;color:#888;">
+                No listings available
+            </td>
+        </tr>`;
+        return;
+    }
+
+    listings.forEach((item, index) => {
+
+        table.innerHTML += `
+        <tr style="border-bottom:1px solid #eee">
+
+            <td style="padding:15px">
+                ${item.name}
+            </td>
+
+            <td style="padding:15px">
+                ${item.seller || "Marketplace"}
+            </td>
+
+            <td style="padding:15px">
+                $${item.price}
+            </td>
+
+            <td style="padding:15px">
+                <span class="status-pill" style="background:#e6fcf5;color:#0ca678">
+                    Active
+                </span>
+            </td>
+
+            <td style="padding:15px">
+
+                <button onclick="deleteListing(${index})"
+                style="background:#fa5252;color:white;border:none;
+                padding:6px 12px;border-radius:6px;cursor:pointer">
+
+                Remove
+
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+    });
+
+}
+function toggleListing(index){
+
+    const listings = JSON.parse(localStorage.getItem("jsek_cart")) || [];
+
+    if(listings[index].status === "blocked"){
+        listings[index].status = "active";
+    } else {
+        listings[index].status = "blocked";
+    }
+
+    localStorage.setItem("jsek_cart", JSON.stringify(listings));
+
+    loadListings();
+}
     </script>
 </body>
 

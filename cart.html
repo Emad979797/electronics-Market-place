@@ -18,11 +18,21 @@
     <header class="navbar">
         <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
 
-        <div class="nav-links">
-            <a href="index.html" class="text-link">Home Page</a>
-            <a href="support.html" class="text-link">Technical Support</a>
-            <button class="btn-signup" onclick="logout()">Log Out</button>
-        </div>
+       <div class="nav-links">
+
+    <a href="index.html" class="text-link">Home Page</a>
+    <a href="support.html" class="text-link">Technical Support</a>
+
+    <div style="position:relative; display:inline-block; margin:0 15px;">
+        <a href="#" onclick="toggleCart()" class="text-link">
+            🛒 Cart
+            <span id="cart-count" class="cart-badge">0</span>
+        </a>
+    </div>
+
+    <button class="btn-signup" onclick="logout()">Log Out</button>
+
+</div>
     </header>
 
     <main class="auth-container">
@@ -101,6 +111,36 @@
                 </ul>
             </div>
         </div>
+        <div id="cart-sidebar">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h2>Your Cart</h2>
+
+        <button onclick="toggleCart()" 
+        style="background:none;border:none;font-size:24px;cursor:pointer;">
+        &times;
+        </button>
+
+    </div>
+
+    <div id="cart-items-container" style="flex:1;overflow-y:auto;"></div>
+
+    <div style="border-top:2px solid #eee;padding-top:20px;">
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+            <strong>Total:</strong>
+            <strong id="cart-total" style="color:#2193b0;">$0.00</strong>
+        </div>
+
+        <button onclick="goToCheckout()"
+        style="width:100%;background:#2c3e50;color:white;border:none;
+        padding:12px;border-radius:8px;cursor:pointer;font-weight:600;">
+        Proceed to Checkout
+        </button>
+
+    </div>
+
+</div>
     </footer>
 
     <script>
@@ -146,46 +186,132 @@
         }
 
         /* CART LOGIC */
-        let cart = [];
+       let cart = JSON.parse(localStorage.getItem("jsek_cart")) || [];
 
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            updateCart();
-        }
+function addToCart(name, price) {
 
-        function removeItem(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
+    cart.push({
+        name: name,
+        price: price,
+        seller: loggedUser.fullName,
+        status: "active"
+    });
 
-        function updateCart() {
-            const cartList = document.getElementById("cartItems");
-            const totalDisplay = document.getElementById("totalPrice");
+    
+localStorage.setItem("jsek_cart", JSON.stringify(cart));
 
-            cartList.innerHTML = "";
-            let total = 0;
+    updateCart();
+}
 
-            cart.forEach((item, index) => {
-                total += item.price;
-                const li = document.createElement("li");
-                li.style.marginBottom = "10px";
-                li.style.listStyle = "none";
-                li.style.display = "flex";
-                li.style.justifyContent = "space-between";
-                li.style.alignItems = "center";
-                li.style.padding = "10px";
-                li.style.background = "#f8f9fa";
-                li.style.borderRadius = "8px";
+function removeItem(index){
 
-                li.innerHTML =
-                    `<span>${item.name} - <strong>$${item.price}</strong></span>
-                    <button class="btn-edit" style="color: #fa5252; border-color: #fa5252; cursor: pointer;" onclick="removeItem(${index})">Remove</button>`;
+    cart.splice(index,1);
 
-                cartList.appendChild(li);
-            });
+    localStorage.setItem("jsek_cart", JSON.stringify(cart));
 
-            totalDisplay.textContent = total;
-        }
+    updateCart();
+}
+
+function updateCart(){
+
+    const cartList = document.getElementById("cartItems");
+    const sidebarContainer = document.getElementById("cart-items-container");
+
+    const totalDisplay = document.getElementById("totalPrice");
+    const sidebarTotal = document.getElementById("cart-total");
+
+    const cartCount = document.getElementById("cart-count");
+
+    cartList.innerHTML = "";
+    sidebarContainer.innerHTML = "";
+
+    let total = 0;
+    let count = 0;
+
+    cart.forEach((item,index)=>{
+
+        if(item.status === "blocked") return;
+
+        total += item.price;
+        count++;
+
+        /* -------- MAIN CART LIST -------- */
+
+        const li = document.createElement("li");
+
+        li.style.marginBottom="10px";
+        li.style.listStyle="none";
+        li.style.display="flex";
+        li.style.justifyContent="space-between";
+        li.style.alignItems="center";
+        li.style.padding="10px";
+        li.style.background="#f8f9fa";
+        li.style.borderRadius="8px";
+
+        li.innerHTML = `
+        <span>${item.name} - <strong>$${item.price}</strong></span>
+
+        <button onclick="removeItem(${index})"
+        style="color:#fa5252;border:none;background:none;cursor:pointer">
+        Remove
+        </button>
+        `;
+
+        cartList.appendChild(li);
+
+        /* -------- SIDEBAR CART -------- */
+
+        const sidebarItem = document.createElement("div");
+
+        sidebarItem.className = "cart-item";
+
+        sidebarItem.innerHTML = `
+        <span>${item.name}</span>
+
+        <span>$${item.price}</span>
+
+        <button onclick="removeItem(${index})"
+        style="background:none;border:none;color:red;cursor:pointer">
+        ×
+        </button>
+        `;
+
+        sidebarContainer.appendChild(sidebarItem);
+
+    });
+
+    /* TOTAL PRICE */
+
+    totalDisplay.textContent = total;
+    sidebarTotal.textContent = "$" + total;
+
+    /* CART ICON COUNT */
+
+    cartCount.textContent = count;
+}
+function goToCheckout(){
+
+    if(cart.length === 0){
+        alert("Your cart is empty.");
+        return;
+    }
+
+    window.location.href = "checkout.html";
+}
+document.addEventListener("DOMContentLoaded", function(){
+    updateCart();
+});
+function toggleCart(){
+
+    const sidebar = document.getElementById("cart-sidebar");
+
+    if(sidebar.style.right === "0px"){
+        sidebar.style.right = "-350px";
+    }else{
+        sidebar.style.right = "0px";
+    }
+
+}
     </script>
 
 </body>
