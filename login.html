@@ -8,6 +8,71 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
+        /* --- FIXES START HERE --- */
+
+        .custom-dropdown-container {
+            position: relative !important;
+            z-index: 100 !important;
+        }
+
+        #customOptions {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            border: 1px solid #ddd !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+            z-index: 9999 !important;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .auth-card,
+        .auth-form {
+            overflow: visible !important;
+        }
+
+        #loginBtn {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- PASSWORD TOGGLE STYLES --- */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 45px !important;
+            /* Make room for the button */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 5px;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #2193b0;
+        }
+
+        /* --- EXISTING STYLES --- */
+
         .delete-btn {
             background: rgba(255, 77, 77, 0.1);
             border: none;
@@ -92,10 +157,13 @@
                 <div class="input-group">
                     <input type="email" id="loginEmail" placeholder="Email Address" required autocomplete="off">
                 </div>
-                <div class="input-group">
+
+                <div class="input-group password-container">
                     <input type="password" id="loginPassword" placeholder="Password" required
                         autocomplete="current-password">
+                    <button type="button" id="togglePassword" class="toggle-password">Show</button>
                 </div>
+
                 <div class="input-group custom-dropdown-container">
                     <div id="customSelect" class="custom-select-trigger">Confirm Login Role</div>
                     <div id="customOptions" class="custom-options">
@@ -106,6 +174,7 @@
                     </div>
                     <input type="hidden" id="loginRole" value="">
                 </div>
+
                 <button type="submit" id="loginBtn" class="btn-glow">Login Now</button>
             </form>
 
@@ -138,26 +207,23 @@
         </div>
     </div>
 
-    <footer class="main-footer">
-        <div class="footer-content">
+    <footer class="main-footer" style="width: 100%; margin-top: auto;">
+        <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
             <div class="footer-section">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
                 <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
             </div>
             <div class="footer-section">
-                <h4>Our Team</h4>
-                <ul class="collaborators" style="list-style: none; padding: 0;">
-                    <li>Emad Al Nounou</li>
-                    <li>Julia Cameron</li>
-                    <li>Khaled Al Akili</li>
-                    <li>Shefaa Alaghawani</li>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home Page</a></li>
+                    <li><a href="support.html">Technical Support</a></li>
                 </ul>
             </div>
         </div>
     </footer>
 
     <script>
-        // 1. Magnetic Background Animation
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -165,36 +231,37 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
+        // --- PASSWORD TOGGLE LOGIC ---
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('loginPassword');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+
         const MAX_ATTEMPTS = 3;
         let userToDelete = null;
-
-        // --- NEW: Brute Force Tracking ---
         let loginAttempts = 0;
 
         window.onload = function () {
             const hiddenRoleInput = document.getElementById('loginRole');
             const portalLabel = document.getElementById('portalLabel');
             const customTrigger = document.getElementById('customSelect');
-
             document.getElementById('loginForm').reset();
-
             const urlParams = new URLSearchParams(window.location.search);
             let urlRole = urlParams.get('role');
             if (urlRole) sessionStorage.setItem('requiredPortal', urlRole.toLowerCase().trim());
-
             let targetRole = sessionStorage.getItem('requiredPortal');
-
             renderAccountList(targetRole || 'all');
-
             if (targetRole) {
                 targetRole = targetRole.toLowerCase().trim();
                 hiddenRoleInput.value = targetRole;
                 customTrigger.textContent = targetRole.charAt(0).toUpperCase() + targetRole.slice(1);
-
                 const saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
                 const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
                 const hasSaved = users.some(u => saved.includes(u.email) && u.role.toLowerCase() === targetRole);
-
                 if (hasSaved) {
                     customTrigger.style.pointerEvents = "none";
                     customTrigger.style.background = "#f9f9f9";
@@ -218,24 +285,20 @@
             const listContainer = document.getElementById('accountsList');
             const allUsers = JSON.parse(localStorage.getItem('jsek_users')) || [];
             let savedEmails = JSON.parse(localStorage.getItem('jsek_saved_accounts'));
-
             if (!savedEmails) {
                 savedEmails = allUsers.map(u => u.email);
                 localStorage.setItem('jsek_saved_accounts', JSON.stringify(savedEmails));
             }
-
             listContainer.innerHTML = "";
             const filtered = allUsers.filter(u =>
                 savedEmails.includes(u.email) &&
                 (filterRole === 'all' || u.role.toLowerCase().trim() === filterRole)
             );
-
             if (filtered.length === 0) {
                 listContainer.parentElement.style.display = "none";
                 unlockDropdown();
                 return;
             }
-
             listContainer.parentElement.style.display = "block";
             filtered.forEach((user) => {
                 const chip = document.createElement('div');
@@ -243,7 +306,6 @@
                 chip.style.display = "flex";
                 chip.style.alignItems = "center";
                 chip.style.justifyContent = "space-between";
-
                 chip.onclick = () => {
                     const emailField = document.getElementById('loginEmail');
                     emailField.value = user.email;
@@ -251,13 +313,11 @@
                     emailField.readOnly = true;
                     emailField.style.background = "#f4f7f6";
                     emailField.style.letterSpacing = "3px";
-
                     document.getElementById('loginRole').value = user.role.toLowerCase().trim();
                     document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
                     document.getElementById('customSelect').style.pointerEvents = "none";
                     document.getElementById('loginPassword').focus();
                 };
-
                 chip.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">${user.fullName.charAt(0)}</div>
@@ -285,7 +345,6 @@
                 let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
                 saved = saved.filter(email => email !== userToDelete);
                 localStorage.setItem('jsek_saved_accounts', JSON.stringify(saved));
-
                 const targetRole = sessionStorage.getItem('requiredPortal') || 'all';
                 renderAccountList(targetRole);
                 document.getElementById('deleteModal').style.display = 'none';
@@ -319,7 +378,6 @@
             unlockDropdown();
         }
 
-        // 5. Final Login Logic with Brute Force Protection
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -335,13 +393,27 @@
             }
 
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const user = users.find(u => u.email.toLowerCase() === email && u.role.toLowerCase() === role);
 
-            if (user && user.password === pass) {
-                // Reset attempts on successful login
+            const userWithCorrectRole = users.find(u =>
+                u.email.toLowerCase() === email &&
+                u.role.toLowerCase() === role
+            );
+
+            if (!userWithCorrectRole) {
+                const emailExistsAnywhere = users.some(u => u.email.toLowerCase() === email);
+                if (emailExistsAnywhere) {
+                    msg.textContent = "Incorrect role for this email. Try another role.";
+                } else {
+                    msg.textContent = "Account not found.";
+                }
+                msg.style.color = "#f39c12";
+                return;
+            }
+
+            if (userWithCorrectRole.password === pass) {
                 loginAttempts = 0;
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', JSON.stringify(user));
+                localStorage.setItem('currentUser', JSON.stringify(userWithCorrectRole));
 
                 let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
                 if (!saved.includes(email)) {
@@ -355,32 +427,20 @@
             } else {
                 loginAttempts++;
                 const remaining = MAX_ATTEMPTS - loginAttempts;
-
                 if (loginAttempts >= MAX_ATTEMPTS) {
                     loginBtn.disabled = true;
                     msg.innerHTML = `Redirecting to support...`;
                     msg.style.color = "#ff4d4d";
-
                     setTimeout(() => {
-                        // Pass the email to the support page via URL
                         window.location.href = `support.html?blocked=true&user=${encodeURIComponent(email)}`;
                     }, 1000);
                 } else {
-                    // Logic for "1 attempt" vs "2 attempts"
                     const attemptWord = remaining === 1 ? "attempt" : "attempts";
-                    msg.textContent = `Invalid credentials. ${remaining} ${attemptWord} remaining.`;
+                    msg.textContent = `Invalid password. ${remaining} ${attemptWord} remaining.`;
                     msg.style.color = "#ff4d4d";
                 }
             }
         });
-
-        // --- NEW: Lockout Countdown Logic for Support Page (handled if user was redirected back) ---
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('unlocked')) {
-            const msg = document.getElementById('loginMessage');
-            msg.textContent = "You can now try to log in again.";
-            msg.style.color = "#2193b0";
-        }
     </script>
 </body>
 
