@@ -183,7 +183,6 @@
             errorDiv.innerText = '';
 
             // 3. DATABASE CHECK
-            // Fetch users and ensure it's always an array
             let users = [];
             try {
                 const storedUsers = localStorage.getItem('jsek_users');
@@ -192,17 +191,15 @@
                 users = [];
             }
 
-            // 4. THE STRICTURE CHECK (REINFORCED)
-            // We use some() for a quick boolean check and ensure we compare lowercase to lowercase
+            // 4. THE STRICTURE CHECK
             const emailExists = users.some(u => u.email.toLowerCase().trim() === email);
 
             if (emailExists) {
                 errorDiv.innerText = "This email address is already registered.";
                 errorDiv.style.display = 'block';
                 errorDiv.style.color = "#ff4d4d";
-                // Highlight the email box to show where the error is
                 document.getElementById('email').style.borderColor = "#ff4d4d";
-                return; // STOP EVERYTHING
+                return;
             }
 
             // 5. Password Match Check
@@ -225,7 +222,7 @@
                 return;
             }
 
-            // 7. FINAL SAVE
+            // 7. FINAL SAVE (Updated with Saved Accounts Fix)
             const newUser = {
                 fullName: fullName,
                 email: email,
@@ -234,10 +231,19 @@
                 createdAt: new Date().toISOString()
             };
 
+            // Save to main user database
             users.push(newUser);
             localStorage.setItem('jsek_users', JSON.stringify(users));
 
-            // 8. Redirect with a slight delay to ensure storage completes
+            // --- OPTION 1 FIX: ADD TO SAVED ACCOUNTS ---
+            let savedAccounts = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
+            if (!savedAccounts.includes(email)) {
+                savedAccounts.push(email);
+                localStorage.setItem('jsek_saved_accounts', JSON.stringify(savedAccounts));
+            }
+            // --------------------------------------------
+
+            // 8. Redirect
             errorDiv.innerText = "Registration successful! Redirecting...";
             errorDiv.style.color = "#2ecc71";
             errorDiv.style.display = 'block';
@@ -267,7 +273,6 @@
             document.getElementById('drop-arrow').style.transform = 'rotate(0deg)';
         }
 
-        // Close on outside click
         window.onclick = function (event) {
             if (!event.target.closest('#roleDropdown') && !event.target.classList.contains('option')) {
                 const options = document.getElementById('dropdownOptions');

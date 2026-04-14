@@ -175,6 +175,8 @@
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <button class="btn-edit" onclick="restockItem(1, 'iPhone 15 Pro')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(1)">Clear</button>
                         </td>
                     </tr>
 
@@ -188,6 +190,8 @@
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <button class="btn-edit" onclick="restockItem(2, 'MacBook Air M3')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(2)">Clear</button>
                         </td>
                     </tr>
                     <tr data-status="active" style="border-bottom: 1px solid #eee;">
@@ -200,6 +204,8 @@
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <button class="btn-edit" onclick="restockItem(3, 'PlayStation 5')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(3)">Clear</button>
                         </td>
                     </tr>
 
@@ -213,6 +219,8 @@
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <button class="btn-edit" onclick="restockItem(4, 'Logitech G-Pro Mouse')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(4)">Clear</button>
                         </td>
                     </tr>
 
@@ -226,6 +234,8 @@
                         </td>
                         <td style="padding: 15px; text-align: center;">
                             <button class="btn-edit" onclick="restockItem(5, 'Sony WH-1000XM5')">Restock</button>
+                            <button class="btn-edit" style="color: #fa5252; border-color: #ffc9c9; margin-left: 5px;"
+                                onclick="clearStock(5)">Clear</button>
                         </td>
                     </tr>
                 </tbody>
@@ -269,13 +279,45 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // 2. Global State & UI Updates
+        // 2. Global State & Persistence
         let currentEditingId = null;
+
+        // This function saves the table data into localStorage so the Dashboard can see it
+        function saveInventoryToStorage() {
+            const inventoryData = [];
+            const rows = document.querySelectorAll("tbody tr");
+
+            rows.forEach((row, index) => {
+                const id = index + 1; // Unique ID based on row order
+                const name = row.cells[0].innerText;
+                const stockVal = parseInt(document.getElementById(`stock-val-${id}`).innerText);
+
+                inventoryData.push({
+                    id: id,
+                    name: name,
+                    units: stockVal
+                });
+            });
+
+            localStorage.setItem('jsek_inventory_data', JSON.stringify(inventoryData));
+        }
+
+        // This function loads the data from localStorage so it doesn't reset on refresh
+        function loadInventoryFromStorage() {
+            const savedData = JSON.parse(localStorage.getItem('jsek_inventory_data'));
+
+            if (savedData) {
+                savedData.forEach(item => {
+                    const stockElement = document.getElementById(`stock-val-${item.id}`);
+                    if (stockElement) {
+                        stockElement.innerText = item.units;
+                    }
+                });
+            }
+        }
 
         function updateInventoryPills() {
             const rows = document.querySelectorAll("tbody tr");
-            // We also want to update the localStorage based on the table values on load
-            let lowStockAlerts = JSON.parse(localStorage.getItem('jsek_low_stock_alerts')) || {};
 
             rows.forEach((row) => {
                 const stockElement = row.querySelector('td[id^="stock-val"]');
@@ -283,30 +325,35 @@
 
                 if (stockElement && pillElement) {
                     const count = parseInt(stockElement.innerText);
-                    const itemId = stockElement.id.replace('stock-val-', '');
-
-                    pillElement.className = 'status-pill'; // Reset classes
+                    pillElement.className = 'status-pill';
 
                     if (count > 20) {
                         pillElement.innerText = "Adequate Stock";
                         pillElement.classList.add('high');
-                        delete lowStockAlerts[itemId];
+                        row.dataset.status = "active";
                     } else if (count > 0) {
                         pillElement.innerText = (count <= 5) ? "⚠️ Critical Low" : "Low Stock";
                         pillElement.classList.add('low');
-
-                        // Trigger alert if 5 or less
-                        if (count <= 5) lowStockAlerts[itemId] = true;
-                        else delete lowStockAlerts[itemId];
+                        row.dataset.status = "active";
                     } else {
                         pillElement.innerText = "Out of Stock";
                         pillElement.classList.add('out');
                         row.dataset.status = "sold";
-                        delete lowStockAlerts[itemId]; // Out of stock isn't "low", it's empty
                     }
                 }
             });
-            localStorage.setItem('jsek_low_stock_alerts', JSON.stringify(lowStockAlerts));
+
+            // CRITICAL: Save to storage every time a pill is updated
+            saveInventoryToStorage();
+        }
+
+        // --- NEW CLEAR STOCK LOGIC ---
+        function clearStock(id) {
+            const stockElement = document.getElementById(`stock-val-${id}`);
+            if (stockElement) {
+                stockElement.innerText = "0";
+                updateInventoryPills();
+            }
         }
 
         // 3. Restock Modal Logic
@@ -340,7 +387,7 @@
             const newTotal = parseInt(stockElement.innerText) + amountToAdd;
 
             stockElement.innerText = newTotal;
-            updateInventoryPills(); // This now also updates localStorage
+            updateInventoryPills();
             closeModal();
         }
 
@@ -379,7 +426,10 @@
                 displayElement.innerHTML = `${roleFixed}: <span style="color: #2193b0;">${currentUser.fullName}</span>`;
             }
 
-            updateInventoryPills(); // Initialize colors and alerts on load
+            // 1. Load saved numbers first
+            loadInventoryFromStorage();
+            // 2. Update the colors/pills based on those numbers
+            updateInventoryPills();
         });
     </script>
 </body>

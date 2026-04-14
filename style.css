@@ -1246,3 +1246,16 @@ select#loginRole option {
     background: #fdfdfd;
     border-color: #d1d1d1;
 }
+
+/* Moves the help bubble further to the right or up */
+#quick-help-button {
+    bottom: 20px;
+    right: 10px;
+    z-index: 1000;
+}
+
+/* Or, ensure the checkout button is always on top */
+.btn-glow {
+    position: relative;
+    z-index: 1001;
+}

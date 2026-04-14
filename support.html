@@ -116,7 +116,7 @@
             const userEmail = decodeURIComponent(urlParams.get('user') || 'your account');
 
             if (isBlocked === 'true') {
-                // 1. Create the alert box
+                // 1. Create the alert box (Matching your design)
                 const blockContainer = document.createElement('div');
                 blockContainer.id = "blockAlert";
                 blockContainer.style.cssText = `
@@ -130,28 +130,28 @@
                 text-align: center;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
                 font-family: 'Inter', sans-serif;
+                animation: slideDown 0.5s ease-out;
             `;
 
                 blockContainer.innerHTML = `
                 <div style="font-size: 1.4rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <span>⚠️</span> Account Temporarily Blocked
+                    <span>⚠️</span> Access Restricted
                 </div>
                 <p style="font-size: 1rem; color: #444; line-height: 1.5; margin-bottom: 20px;">
                     Too many failed login attempts for <br>
                     <strong style="color: #ff4d4d;">${userEmail}</strong>. <br>
-                    You can submit the inquiry form below, or wait for the security lockout to expire.
+                    You can submit the inquiry form below, or wait to be redirected.
                 </p>
                 <div style="background: white; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 1px solid #ff4d4d;">
-                    <span style="font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; display: block;">Try again in</span>
+                    <span style="font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; display: block;">Redirecting in</span>
                     <span id="countdownTimer" style="font-size: 2rem; font-weight: 600; color: #ff4d4d;">10s</span>
                 </div>
             `;
 
-                // 2. Insert it at the very top of the <main> or <body>
                 const target = document.querySelector('main') || document.body;
                 target.prepend(blockContainer);
 
-                // 3. Countdown Logic
+                // 2. Countdown Logic
                 let timeLeft = 10;
                 const timerDisplay = document.getElementById('countdownTimer');
 
@@ -161,12 +161,9 @@
 
                     if (timeLeft <= 0) {
                         clearInterval(countdown);
-                        // Reset the attempt counter in local storage so they can actually log in
+                        // Clear the block status and redirect
                         localStorage.removeItem(`jsek_attempts_${userEmail.toLowerCase()}`);
-
-                        // Update the UI to show they can leave
-                        timerDisplay.innerHTML = `<a href="login.html" style="color: #2ecc71; text-decoration: none; font-size: 1.2rem;">Return to Login →</a>`;
-                        timerDisplay.parentElement.style.borderColor = "#2ecc71";
+                        window.location.href = "login.html?unlocked=true";
                     }
                 }, 1000);
             }

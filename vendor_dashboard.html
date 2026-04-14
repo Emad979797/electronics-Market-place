@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Buyer Dashboard | JSEK Marketplace</title>
+    <title>Vendor Dashboard | JSEK Marketplace</title>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
@@ -21,9 +21,10 @@
 
         .admin-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1.5fr 1fr;
             gap: 25px;
             margin-bottom: 30px;
+            align-items: stretch;
         }
 
         .stat-card {
@@ -32,8 +33,10 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             text-align: left;
-            position: relative;
-            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px solid #eee;
         }
 
         .stat-number {
@@ -41,6 +44,19 @@
             font-weight: 600;
             color: #000;
             margin: 10px 0;
+        }
+
+        .alert-banner-container {
+            background: #fff5f5;
+            border: 1px solid #fa5252;
+            padding: 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            animation: slideIn 0.5s ease;
         }
 
         .status-pill {
@@ -51,10 +67,31 @@
             text-transform: uppercase;
         }
 
+        /* Status Colors */
         .status-online {
             background: #e6fcf5;
             color: #0ca678;
         }
+
+        /* Delivered */
+        .status-pending {
+            background: #fff9db;
+            color: #f08c00;
+        }
+
+        /* Pending */
+        .status-transit {
+            background: #e7f5ff;
+            color: #1971c2;
+        }
+
+        /* In Transit */
+        .status-cancelled {
+            background: #fff5f5;
+            color: #fa5252;
+        }
+
+        /* Cancelled */
 
         .btn-inspect {
             padding: 6px 15px;
@@ -69,6 +106,41 @@
             background: #f8f9fa;
             border-color: #bbb;
         }
+
+        .btn-manage {
+            text-decoration: none;
+            font-size: 0.85rem;
+            background: white;
+            color: #000;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid #fa5252;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-manage:hover {
+            background: #fa5252;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -82,7 +154,6 @@
             <a href="index.html" class="text-link">Home Page</a>
             <a href="support.html" class="text-link">Technical Support</a>
             <a href="vendor_inventory.html" class="text-link">Inventory Management</a>
-
             <span id="user-display" style="font-weight: 600; color: #2c3e50; margin: 0 15px;"></span>
             <a class="btn-signup" href="#" onclick="logout()" style="margin-left: 20px; cursor: pointer;">Log Out</a>
         </div>
@@ -90,6 +161,7 @@
 
     <main
         style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center; flex: 1; width: 100%; box-sizing: border-box; position: relative; z-index: 1;">
+
         <section class="inventory-header">
             <h1 style="font-size: 36px; margin-bottom: 10px; color: #000;">Vendor Dashboard</h1>
             <p style="font-size: 18px; color: #666; margin-bottom: 30px;">Bulk Inventory Oversight & Supply Logistics
@@ -97,43 +169,28 @@
         </section>
 
         <div class="admin-grid">
+            <div id="lowStockWrapper" style="display: none;">
+                <div class="alert-banner-container">
+                    <div
+                        style="background: #fa5252; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 20px;">
+                        !</div>
+                    <div style="flex: 1; text-align: left;">
+                        <strong style="color: #c92a2a; display: block; font-size: 1.1rem;">Inventory Alert</strong>
+                        <span style="color: #fa5252; font-size: 0.95rem;">Some items in your inventory are running low
+                            (5 units or less).</span>
+                    </div>
+                    <a href="vendor_inventory.html" class="btn-manage">Manage Stock</a>
+                </div>
+            </div>
+
             <div class="stat-card">
                 <h3 style="font-size: 16px; color: #888; margin: 0;">Warehouse Stock</h3>
                 <div class="stat-number">8,421</div>
-                <p style="font-size: 13px; color: #aaa;">Total units available</p>
-            </div>
-            <div class="flag-card">
-                <h3 style="font-size: 16px; color: #888; margin-bottom: 15px;">Supply Chain Flags</h3>
-                <div id="lowStockBanner"
-                    style="display: none; margin-bottom: 25px; background: #fff5f5; border: 1px solid #fa5252; padding: 15px; border-radius: 12px; align-items: center; gap: 15px; animation: slideIn 0.5s ease;">
-                    <div
-                        style="background: #fa5252; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                        !</div>
-                    <div style="flex: 1; text-align: left;">
-                        <strong style="color: #c92a2a; display: block;">Inventory Alert</strong>
-                        <span style="color: #fa5252; font-size: 0.9rem;">Some items in your inventory are running low (5
-                            units or less).</span>
-                    </div>
-                    <a href="vendor_inventory.html" class="btn-edit"
-                        style="text-decoration: none; font-size: 0.8rem; background: white;">Manage Stock</a>
-                </div>
-
-                <style>
-                    @keyframes slideIn {
-                        from {
-                            opacity: 0;
-                            transform: translateY(-10px);
-                        }
-
-                        to {
-                            opacity: 1;
-                            transform: translateY(0);
-                        }
-                    }
-                </style>
+                <p style="font-size: 13px; color: #aaa; margin: 0;">Total units available</p>
             </div>
         </div>
 
+        <h2 style="text-align: left; font-size: 20px; margin-bottom: 15px;">Recent Supply Orders</h2>
         <table
             style="margin: 0 auto; width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
             <thead>
@@ -152,14 +209,46 @@
                     <td style="padding: 15px; text-align: center;">$120.00</td>
                     <td style="padding: 15px; text-align: center;"><span
                             class="status-pill status-online">Delivered</span></td>
-                    <td style="padding: 15px; text-align: center;">
-                        <button class="btn-inspect">View Invoice</button>
+                    <td style="padding: 15px; text-align: center;"><button class="btn-inspect">View Invoice</button>
                     </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px; text-align: center;"><strong>#88304</strong></td>
+                    <td style="padding: 15px; text-align: center;">Oct 14, 2023</td>
+                    <td style="padding: 15px; text-align: center;">$2,450.00</td>
+                    <td style="padding: 15px; text-align: center;"><span class="status-pill status-transit">In
+                            Transit</span></td>
+                    <td style="padding: 15px; text-align: center;"><button class="btn-inspect">Track</button></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px; text-align: center;"><strong>#88312</strong></td>
+                    <td style="padding: 15px; text-align: center;">Oct 15, 2023</td>
+                    <td style="padding: 15px; text-align: center;">$899.99</td>
+                    <td style="padding: 15px; text-align: center;"><span
+                            class="status-pill status-pending">Pending</span></td>
+                    <td style="padding: 15px; text-align: center;"><button class="btn-inspect">Review</button></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px; text-align: center;"><strong>#88315</strong></td>
+                    <td style="padding: 15px; text-align: center;">Oct 15, 2023</td>
+                    <td style="padding: 15px; text-align: center;">$45.50</td>
+                    <td style="padding: 15px; text-align: center;"><span
+                            class="status-pill status-online">Delivered</span></td>
+                    <td style="padding: 15px; text-align: center;"><button class="btn-inspect">View Invoice</button>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px; text-align: center;"><strong>#88320</strong></td>
+                    <td style="padding: 15px; text-align: center;">Oct 16, 2023</td>
+                    <td style="padding: 15px; text-align: center;">$1,120.00</td>
+                    <td style="padding: 15px; text-align: center;"><span
+                            class="status-pill status-cancelled">Cancelled</span></td>
+                    <td style="padding: 15px; text-align: center;"><button class="btn-inspect">Details</button></td>
                 </tr>
             </tbody>
         </table>
     </main>
-    <a class="quick-help-trigger" href="support.html">? Quick Help</a>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
     <footer class="main-footer" style="width: 100%; margin-top: auto;">
         <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
             <div class="footer-section">
@@ -186,7 +275,7 @@
     </footer>
 
     <script>
-        // 1. Mouse Animation
+        // 1. Mouse Movement Parallax Effect
         document.addEventListener('mousemove', (e) => {
             const x = (window.innerWidth / 2 - e.pageX) / 10;
             const y = (window.innerHeight / 2 - e.pageY) / 10;
@@ -194,44 +283,62 @@
             document.documentElement.style.setProperty('--mouse-y', y + 'px');
         });
 
-        // 2. Auth & User Display Logic
+        // 2. Main Initialization
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             const displayElement = document.getElementById('user-display');
 
-            // Check if logged in and is a vendor
+            // Login Protection
             if (isLoggedIn !== 'true' || !currentUser || currentUser.role.toLowerCase() !== 'vendor') {
                 window.location.assign("login.html");
                 return;
             }
 
-            // Display user name and role
+            // Display User Name
             if (displayElement) {
                 const roleFixed = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
                 displayElement.innerHTML = `${roleFixed}: <span style="color: #2193b0;">${currentUser.fullName}</span>`;
             }
 
-            // Run Low Stock check
+            // Run the Inventory Logic
             checkLowStockAlerts();
         });
 
-        // 3. Low Stock Alert Logic
+        // 3. Logic to Sync with Inventory Page
         function checkLowStockAlerts() {
-            const alerts = JSON.parse(localStorage.getItem('jsek_low_stock_alerts')) || {};
-            const banner = document.getElementById('lowStockBanner');
+            // Retrieve the inventory data from localStorage
+            const inventory = JSON.parse(localStorage.getItem('jsek_inventory_data'));
+            const wrapper = document.getElementById('lowStockWrapper');
+            const statNumber = document.querySelector('.stat-number');
 
-            // Show banner if any item is flagged as low stock
-            if (banner) {
-                if (Object.keys(alerts).length > 0) {
-                    banner.style.display = "flex";
+            // If no data exists yet (user hasn't visited inventory page), use default warehouse number
+            if (!inventory) {
+                if (wrapper) wrapper.style.display = "none";
+                return;
+            }
+
+            // Calculate Total Warehouse Stock dynamically
+            const totalUnits = inventory.reduce((sum, item) => sum + item.units, 0);
+            if (statNumber) {
+                statNumber.textContent = totalUnits.toLocaleString();
+            }
+
+            // Check if ANY item in the inventory array is 5 units or less
+            const hasLowStock = inventory.some(item => item.units <= 5);
+
+            if (wrapper) {
+                if (hasLowStock) {
+                    // If there's low stock, show the red alert banner
+                    wrapper.style.display = "block";
                 } else {
-                    banner.style.display = "none";
+                    // If everything is restocked, hide the red alert banner!
+                    wrapper.style.display = "none";
                 }
             }
         }
 
-        // 4. Logout Function
+        // 4. Logout Logic
         function logout() {
             localStorage.setItem('isLoggedIn', 'false');
             localStorage.removeItem('currentUser');

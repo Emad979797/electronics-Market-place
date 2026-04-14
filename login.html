@@ -54,6 +54,10 @@
             justify-content: center;
             z-index: 9999;
         }
+
+        .custom-options.show {
+            display: block !important;
+        }
     </style>
 </head>
 
@@ -164,6 +168,9 @@
         const MAX_ATTEMPTS = 3;
         let userToDelete = null;
 
+        // --- NEW: Brute Force Tracking ---
+        let loginAttempts = 0;
+
         window.onload = function () {
             const hiddenRoleInput = document.getElementById('loginRole');
             const portalLabel = document.getElementById('portalLabel');
@@ -176,29 +183,56 @@
             if (urlRole) sessionStorage.setItem('requiredPortal', urlRole.toLowerCase().trim());
 
             let targetRole = sessionStorage.getItem('requiredPortal');
+
+            renderAccountList(targetRole || 'all');
+
             if (targetRole) {
                 targetRole = targetRole.toLowerCase().trim();
                 hiddenRoleInput.value = targetRole;
                 customTrigger.textContent = targetRole.charAt(0).toUpperCase() + targetRole.slice(1);
-                customTrigger.style.pointerEvents = "none";
-                customTrigger.style.background = "#f9f9f9";
-                portalLabel.textContent = `Continue as ${targetRole}:`;
-                renderAccountList(targetRole);
+
+                const saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
+                const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+                const hasSaved = users.some(u => saved.includes(u.email) && u.role.toLowerCase() === targetRole);
+
+                if (hasSaved) {
+                    customTrigger.style.pointerEvents = "none";
+                    customTrigger.style.background = "#f9f9f9";
+                    portalLabel.textContent = `Continue as ${targetRole}:`;
+                } else {
+                    unlockDropdown();
+                }
             } else {
                 portalLabel.textContent = "Select a saved account:";
-                renderAccountList('all');
+                unlockDropdown();
             }
         };
 
-        // 2. Render Saved Accounts & Account Selection
+        function unlockDropdown() {
+            const customTrigger = document.getElementById('customSelect');
+            customTrigger.style.pointerEvents = "auto";
+            customTrigger.style.background = "#fff";
+        }
+
         function renderAccountList(filterRole) {
             const listContainer = document.getElementById('accountsList');
-            const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            const allUsers = JSON.parse(localStorage.getItem('jsek_users')) || [];
+            let savedEmails = JSON.parse(localStorage.getItem('jsek_saved_accounts'));
+
+            if (!savedEmails) {
+                savedEmails = allUsers.map(u => u.email);
+                localStorage.setItem('jsek_saved_accounts', JSON.stringify(savedEmails));
+            }
+
             listContainer.innerHTML = "";
-            const filtered = users.filter(u => filterRole === 'all' || u.role.toLowerCase().trim() === filterRole);
+            const filtered = allUsers.filter(u =>
+                savedEmails.includes(u.email) &&
+                (filterRole === 'all' || u.role.toLowerCase().trim() === filterRole)
+            );
 
             if (filtered.length === 0) {
                 listContainer.parentElement.style.display = "none";
+                unlockDropdown();
                 return;
             }
 
@@ -213,17 +247,15 @@
                 chip.onclick = () => {
                     const emailField = document.getElementById('loginEmail');
                     emailField.value = user.email;
-                    emailField.type = "password"; // Hides email as DOTS
+                    emailField.type = "password";
                     emailField.readOnly = true;
                     emailField.style.background = "#f4f7f6";
                     emailField.style.letterSpacing = "3px";
 
                     document.getElementById('loginRole').value = user.role.toLowerCase().trim();
                     document.getElementById('customSelect').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-
+                    document.getElementById('customSelect').style.pointerEvents = "none";
                     document.getElementById('loginPassword').focus();
-                    document.getElementById('loginMessage').textContent = "Account selected. Password required.";
-                    document.getElementById('loginMessage').style.color = "#2193b0";
                 };
 
                 chip.innerHTML = `
@@ -239,33 +271,40 @@
             });
         }
 
-        // 3. Delete Account Logic
         function openDeleteModal(email, event) {
             event.stopPropagation();
             userToDelete = email;
             document.getElementById('deleteModalMsg').textContent = `Remove ${email} from this device?`;
             document.getElementById('deleteModal').style.display = 'flex';
         }
+
         document.getElementById('cancelDelete').onclick = () => document.getElementById('deleteModal').style.display = 'none';
+
         document.getElementById('confirmDelete').onclick = () => {
             if (userToDelete) {
-                let users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-                users = users.filter(u => u.email !== userToDelete);
-                localStorage.setItem('jsek_users', JSON.stringify(users));
-                renderAccountList(sessionStorage.getItem('requiredPortal') || 'all');
+                let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
+                saved = saved.filter(email => email !== userToDelete);
+                localStorage.setItem('jsek_saved_accounts', JSON.stringify(saved));
+
+                const targetRole = sessionStorage.getItem('requiredPortal') || 'all';
+                renderAccountList(targetRole);
                 document.getElementById('deleteModal').style.display = 'none';
+                resetEmailField();
             }
         };
 
-        // 4. Role Selection Logic
         document.getElementById('customSelect').onclick = function () {
-            if (this.style.pointerEvents !== "none") document.getElementById('customOptions').classList.toggle('show');
+            if (this.style.pointerEvents !== "none") {
+                const options = document.getElementById('customOptions');
+                options.style.display = (options.style.display === 'block') ? 'none' : 'block';
+            }
         };
+
         document.querySelectorAll('.option').forEach(opt => {
             opt.onclick = function () {
                 document.getElementById('loginRole').value = this.dataset.value;
                 document.getElementById('customSelect').textContent = this.textContent;
-                document.getElementById('customOptions').classList.remove('show');
+                document.getElementById('customOptions').style.display = 'none';
                 resetEmailField();
             };
         });
@@ -276,16 +315,18 @@
             emailField.readOnly = false;
             emailField.style.background = "#fff";
             emailField.style.letterSpacing = "normal";
+            emailField.value = "";
+            unlockDropdown();
         }
 
-        // 5. Final Login & Redirect Logic with COUNTER and GRAMMAR FIX
+        // 5. Final Login Logic with Brute Force Protection
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
             const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
+            const loginBtn = document.getElementById('loginBtn');
 
             if (!role || role === "" || role === "confirm login role") {
                 msg.textContent = "Please select your role.";
@@ -293,38 +334,53 @@
                 return;
             }
 
-            const attemptKey = `jsek_attempts_${email}`;
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
-            const user = users.find(u =>
-                u.email.toLowerCase().trim() === email &&
-                u.role.toLowerCase().trim() === role
-            );
+            const user = users.find(u => u.email.toLowerCase() === email && u.role.toLowerCase() === role);
 
             if (user && user.password === pass) {
+                // Reset attempts on successful login
+                loginAttempts = 0;
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                localStorage.removeItem(attemptKey);
+
+                let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
+                if (!saved.includes(email)) {
+                    saved.push(email);
+                    localStorage.setItem('jsek_saved_accounts', JSON.stringify(saved));
+                }
 
                 msg.textContent = "Login successful!";
                 msg.style.color = "#2ecc71";
                 setTimeout(() => { window.location.assign(role + "_dashboard.html"); }, 800);
             } else {
-                let attempts = (parseInt(localStorage.getItem(attemptKey)) || 0) + 1;
-                localStorage.setItem(attemptKey, attempts);
+                loginAttempts++;
+                const remaining = MAX_ATTEMPTS - loginAttempts;
 
-                if (attempts >= MAX_ATTEMPTS) {
-                    // Added blocked flag for support page
-                    window.location.replace("support.html?user=" + encodeURIComponent(email) + "&blocked=true");
-                } else {
-                    const remaining = MAX_ATTEMPTS - attempts;
-                    // Grammar fix: "attempt" vs "attempts"
-                    const attemptWord = remaining === 1 ? "attempt" : "attempts";
-                    msg.textContent = `Invalid password. ${remaining} ${attemptWord} left.`;
+                if (loginAttempts >= MAX_ATTEMPTS) {
+                    loginBtn.disabled = true;
+                    msg.innerHTML = `Redirecting to support...`;
                     msg.style.color = "#ff4d4d";
-                    resetEmailField();
+
+                    setTimeout(() => {
+                        // Pass the email to the support page via URL
+                        window.location.href = `support.html?blocked=true&user=${encodeURIComponent(email)}`;
+                    }, 1000);
+                } else {
+                    // Logic for "1 attempt" vs "2 attempts"
+                    const attemptWord = remaining === 1 ? "attempt" : "attempts";
+                    msg.textContent = `Invalid credentials. ${remaining} ${attemptWord} remaining.`;
+                    msg.style.color = "#ff4d4d";
                 }
             }
         });
+
+        // --- NEW: Lockout Countdown Logic for Support Page (handled if user was redirected back) ---
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('unlocked')) {
+            const msg = document.getElementById('loginMessage');
+            msg.textContent = "You can now try to log in again.";
+            msg.style.color = "#2193b0";
+        }
     </script>
 </body>
 
