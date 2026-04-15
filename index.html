@@ -7,6 +7,43 @@
     <title>JSEK Marketplace | Home</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Vertical Grid Integration */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Forces a single column */
+            gap: 20px;
+            max-width: 500px;
+            /* Prevents cards from being too wide */
+            margin: 40px auto;
+            /* Centers the vertical list */
+            padding: 0 20px;
+        }
+
+        .role-card {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            /* Optional: added a slight hover effect for better UX */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Ensure the hero section is centered above the vertical list */
+        .hero {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -95,7 +132,7 @@
                 <h4 style="color: #5a7d9a;">Sprint Demo Links</h4>
                 <ul style="font-size: 13px; list-style: none; padding: 0;">
                     <li><a href="shopping cart.html"><strong> MP-10:</strong> Open Cart (Shefaa)</a></li>
-                     <li><a href="profile.html"><strong> MP-9:</strong> user profile (Shefaa)</a></li>
+                    <li><a href="profile.html"><strong> MP-9:</strong> user profile (Shefaa)</a></li>
                     <li><a href="cart.html"><strong>MP-18:</strong> Shopping Cart View</a></li>
                     <li><a href="admin-dashboard.html"><strong>MP-21:</strong> Admin (Delete Listings)</a></li>
                     <li><a href="profile-settings.html"><strong>MP-9:</strong> User Profile & Uploads</a></li>
