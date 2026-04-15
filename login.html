@@ -207,18 +207,67 @@
         </div>
     </div>
 
-    <footer class="main-footer" style="width: 100%; margin-top: auto;">
-        <div class="footer-content" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
-            <div class="footer-section">
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-col brand-col">
                 <div class="logo">JSEK <span class="logo-accent">Marketplace</span></div>
-                <p>&copy; 2026 JSEK Electronics. All rights reserved.</p>
+                <p class="footer-tagline">Providing high-performance electronics and verified marketplace solutions
+                    since 2024.</p>
+                <p class="footer-copyright" style="font-size: 0.8rem; color: #bdc3c7;">&copy; 2026 JSEK Electronics.</p>
             </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
+
+            <div class="footer-col">
+                <h4>Support & FAQ</h4>
                 <ul>
-                    <li><a href="index.html">Home Page</a></li>
-                    <li><a href="support.html">Technical Support</a></li>
+                    <li><a href="#faq-delivery">Shipping Policy</a></li>
+                    <li><a href="#faq-returns">Returns & Refunds</a></li>
+                    <li><a href="#faq-payments">Payment Methods</a></li>
+                    <li><a href="#faq-buyer-protection">Buyer Protection</a></li>
                 </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Legal & Policies</h4>
+                <ul>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="cookies.html">Cookie Settings</a></li>
+                    <li><a href="compliance.html">GDPR Compliance</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Collaborators</h4>
+                <ul class="collaborator-list">
+                    <li>Emad Al Nounou</li>
+                    <li>Julia Cameron</li>
+                    <li>Khaled Al Akili</li>
+                    <li>Shefaa Alaghawani</li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>System Status</h4>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">All Systems Operational</span>
+                </div>
+                <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 15px; line-height: 1.5;">
+                    Need urgent help?<br>
+                    <a href="mailto:support@jsek.com" class="text-link"
+                        style="color: #2193b0; text-decoration: none; font-weight: 600;">support@jsek.com</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>Designed for excellence. Performance-driven marketplace architecture.</p>
+                <div class="social-links">
+                    <a href="#">LinkedIn</a>
+                    <a href="#">GitHub</a>
+                    <a href="#">X</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -380,40 +429,52 @@
 
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
+
+            // --- 1. INPUTS & CONFIG ---
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
             const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
             const loginBtn = document.getElementById('loginBtn');
 
-            if (!role || role === "" || role === "confirm login role") {
-                msg.textContent = "Please select your role.";
+            // Regex for basic email format validation
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            // --- 2. FORMAT VALIDATION (Does not count as attempt) ---
+            if (!emailPattern.test(email)) {
+                msg.textContent = "Please enter a valid email address.";
                 msg.style.color = "#ff4d4d";
                 return;
             }
 
+            if (!role || role === "" || role === "confirm login role") {
+                msg.textContent = "Please select your login role.";
+                msg.style.color = "#ff4d4d";
+                return;
+            }
+
+            // --- 3. IDENTITY MATCH (Does not count as attempt) ---
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
 
-            const userWithCorrectRole = users.find(u =>
+            // Find a user that matches BOTH email and role
+            const userRecord = users.find(u =>
                 u.email.toLowerCase() === email &&
                 u.role.toLowerCase() === role
             );
 
-            if (!userWithCorrectRole) {
-                const emailExistsAnywhere = users.some(u => u.email.toLowerCase() === email);
-                if (emailExistsAnywhere) {
-                    msg.textContent = "Incorrect role for this email. Try another role.";
-                } else {
-                    msg.textContent = "Account not found.";
-                }
-                msg.style.color = "#f39c12";
+            if (!userRecord) {
+                // Specific mismatch message as requested
+                msg.textContent = "Incorrect email or user role.";
+                msg.style.color = "#ff4d4d";
                 return;
             }
 
-            if (userWithCorrectRole.password === pass) {
+            // --- 4. PASSWORD AUTHENTICATION (Counts as attempt) ---
+            if (userRecord.password === pass) {
+                // SUCCESS
                 loginAttempts = 0;
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', JSON.stringify(userWithCorrectRole));
+                localStorage.setItem('currentUser', JSON.stringify(userRecord));
 
                 let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
                 if (!saved.includes(email)) {
@@ -424,19 +485,22 @@
                 msg.textContent = "Login successful!";
                 msg.style.color = "#2ecc71";
                 setTimeout(() => { window.location.assign(role + "_dashboard.html"); }, 800);
+
             } else {
+                // INCORRECT PASSWORD
                 loginAttempts++;
                 const remaining = MAX_ATTEMPTS - loginAttempts;
+
                 if (loginAttempts >= MAX_ATTEMPTS) {
                     loginBtn.disabled = true;
-                    msg.innerHTML = `Redirecting to support...`;
+                    msg.innerHTML = `Security lockout. Redirecting to support...`;
                     msg.style.color = "#ff4d4d";
                     setTimeout(() => {
                         window.location.href = `support.html?blocked=true&user=${encodeURIComponent(email)}`;
                     }, 1000);
                 } else {
                     const attemptWord = remaining === 1 ? "attempt" : "attempts";
-                    msg.textContent = `Invalid password. ${remaining} ${attemptWord} remaining.`;
+                    msg.textContent = `Incorrect password. ${remaining} ${attemptWord} remaining.`;
                     msg.style.color = "#ff4d4d";
                 }
             }
