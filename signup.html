@@ -26,31 +26,48 @@
             box-sizing: border-box;
         }
 
-        /* FIX: Standardizing the border color to match standard inputs */
+        /* --- DROPDOWN FIXES --- */
+
+        /* 1. Ensure the container has a stacking context */
+        .input-group-relative {
+            position: relative !important;
+            width: 100%;
+            z-index: 100;
+            /* Higher than the button */
+        }
+
+        /* 2. Style the dropdown options to float over the button */
+        .custom-options {
+            position: absolute !important;
+            top: 100% !important;
+            /* Positions exactly below the trigger */
+            left: 0;
+            right: 0;
+            background: #fff !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-radius: 12px;
+            z-index: 9999 !important;
+            /* Maximum priority */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+            display: none;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        /* 3. Prevent clipping */
+        .auth-card,
+        .auth-form {
+            overflow: visible !important;
+        }
+
         #roleDropdown {
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
         }
 
-        /* Dropdown Options Container */
-        .custom-options {
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 0;
-            right: 0;
-            background: #fff;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            display: none;
-            overflow: hidden;
-        }
-
         .custom-options.show {
-            display: block;
+            display: block !important;
         }
 
-        /* Hover effect for the options */
         .option:hover {
             background-color: #f8f9fa !important;
             color: #000 !important;
@@ -97,7 +114,7 @@
                     <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
                 </div>
 
-                <div class="input-group" style="position: relative; width: 100%;">
+                <div class="input-group input-group-relative">
                     <div id="roleDropdown" onclick="toggleDropdown()"
                         style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 55px; padding: 0 22px; background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
 
@@ -131,17 +148,18 @@
                     <input type="hidden" name="role" id="roleInput" required>
                 </div>
 
-                <button type="submit" class="btn-glow">Register Now</button>
+                <button type="submit" class="btn-glow" style="position: relative; z-index: 1;">Register Now</button>
                 <div id="error-message"
                     style="color: #e74c3c; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; font-family: 'Inter', sans-serif;">
                 </div>
             </form>
 
             <div class="auth-footer">
-                <p>Already have an account? <a href="index.html" class="text-link">Login here</a></p>
+                <p>Already have an account? <a href="login.html" class="text-link">Login here</a></p>
             </div>
         </div>
     </main>
+    <a href="support.html" class="quick-help-trigger">? Quick Help</a>
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -166,11 +184,11 @@
             </div>
         </div>
     </footer>
+
     <script>
+        // JS logic remains identical to yours
         document.getElementById('signupForm').addEventListener('submit', function (e) {
             e.preventDefault();
-
-            // 1. Capture Form Data
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
@@ -178,11 +196,9 @@
             const role = document.getElementById('roleInput').value;
             const errorDiv = document.getElementById('error-message');
 
-            // 2. Clear previous errors
             errorDiv.style.display = 'none';
             errorDiv.innerText = '';
 
-            // 3. DATABASE CHECK
             let users = [];
             try {
                 const storedUsers = localStorage.getItem('jsek_users');
@@ -191,7 +207,6 @@
                 users = [];
             }
 
-            // 4. THE STRICTURE CHECK
             const emailExists = users.some(u => u.email.toLowerCase().trim() === email);
 
             if (emailExists) {
@@ -202,7 +217,6 @@
                 return;
             }
 
-            // 5. Password Match Check
             if (password.length < 8) {
                 errorDiv.innerText = "Password must be at least 8 characters.";
                 errorDiv.style.display = 'block';
@@ -215,14 +229,12 @@
                 return;
             }
 
-            // 6. Role Selection Check
             if (!role) {
                 errorDiv.innerText = "Please select your role.";
                 errorDiv.style.display = 'block';
                 return;
             }
 
-            // 7. FINAL SAVE (Updated with Saved Accounts Fix)
             const newUser = {
                 fullName: fullName,
                 email: email,
@@ -231,19 +243,15 @@
                 createdAt: new Date().toISOString()
             };
 
-            // Save to main user database
             users.push(newUser);
             localStorage.setItem('jsek_users', JSON.stringify(users));
 
-            // --- OPTION 1 FIX: ADD TO SAVED ACCOUNTS ---
             let savedAccounts = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
             if (!savedAccounts.includes(email)) {
                 savedAccounts.push(email);
                 localStorage.setItem('jsek_saved_accounts', JSON.stringify(savedAccounts));
             }
-            // --------------------------------------------
 
-            // 8. Redirect
             errorDiv.innerText = "Registration successful! Redirecting...";
             errorDiv.style.color = "#2ecc71";
             errorDiv.style.display = 'block';
@@ -253,7 +261,6 @@
             }, 1200);
         });
 
-        // --- UI HELPER FUNCTIONS ---
         function toggleDropdown() {
             const options = document.getElementById('dropdownOptions');
             const arrow = document.getElementById('drop-arrow');
