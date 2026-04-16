@@ -368,14 +368,14 @@
                     document.getElementById('loginPassword').focus();
                 };
                 chip.innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">${user.fullName.charAt(0)}</div>
-                <div>
-                    <div style="font-weight: 600; font-size: 0.9rem;">${user.fullName}</div>
-                    <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase;">${user.role}</div>
-                </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width: 36px; height: 36px; background: #2193b0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600;">${user.fullName.charAt(0)}</div>
+            <div>
+                <div style="font-weight: 600; font-size: 0.9rem;">${user.fullName}</div>
+                <div style="font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase;">${user.role}</div>
             </div>
-            <button class="delete-btn" type="button" onclick="openDeleteModal('${user.email}', event)">&times;</button>`;
+        </div>
+        <button class="delete-btn" type="button" onclick="openDeleteModal('${user.email}', event)">&times;</button>`;
                 listContainer.appendChild(chip);
             });
         }
@@ -430,17 +430,16 @@
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // --- 1. INPUTS & CONFIG ---
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
             const role = document.getElementById('loginRole').value.toLowerCase().trim();
             const msg = document.getElementById('loginMessage');
             const loginBtn = document.getElementById('loginBtn');
-
-            // Regex for basic email format validation
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            // --- 2. FORMAT VALIDATION (Does not count as attempt) ---
+            msg.textContent = "";
+
+            // 1. FORMAT & REQUIRED CHECK
             if (!emailPattern.test(email)) {
                 msg.textContent = "Please enter a valid email address.";
                 msg.style.color = "#ff4d4d";
@@ -453,28 +452,32 @@
                 return;
             }
 
-            // --- 3. IDENTITY MATCH (Does not count as attempt) ---
             const users = JSON.parse(localStorage.getItem('jsek_users')) || [];
 
-            // Find a user that matches BOTH email and role
-            const userRecord = users.find(u =>
-                u.email.toLowerCase() === email &&
-                u.role.toLowerCase() === role
-            );
+            // 2. IDENTITY CHECK (Does not count as attempt)
+            const emailMatch = users.find(u => u.email.toLowerCase() === email);
+            const roleMatch = users.find(u => u.email.toLowerCase() === email && u.role.toLowerCase() === role);
 
-            if (!userRecord) {
-                // Specific mismatch message as requested
-                msg.textContent = "Incorrect email or user role.";
+            // Specific Mismatch: Account exists, but chosen role is wrong
+            if (emailMatch && !roleMatch) {
+                msg.textContent = "Ooops... looks like you selected the wrong role for this account.";
                 msg.style.color = "#ff4d4d";
                 return;
             }
 
-            // --- 4. PASSWORD AUTHENTICATION (Counts as attempt) ---
-            if (userRecord.password === pass) {
+            // Generic Mismatch: Account doesn't exist at all
+            if (!roleMatch) {
+                msg.textContent = "Invalid credentials.";
+                msg.style.color = "#ff4d4d";
+                return;
+            }
+
+            // 3. PASSWORD AUTHENTICATION (Counts as attempt)
+            if (roleMatch.password === pass) {
                 // SUCCESS
                 loginAttempts = 0;
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', JSON.stringify(userRecord));
+                localStorage.setItem('currentUser', JSON.stringify(roleMatch));
 
                 let saved = JSON.parse(localStorage.getItem('jsek_saved_accounts')) || [];
                 if (!saved.includes(email)) {
@@ -485,7 +488,6 @@
                 msg.textContent = "Login successful!";
                 msg.style.color = "#2ecc71";
                 setTimeout(() => { window.location.assign(role + "_dashboard.html"); }, 800);
-
             } else {
                 // INCORRECT PASSWORD
                 loginAttempts++;
@@ -500,7 +502,7 @@
                     }, 1000);
                 } else {
                     const attemptWord = remaining === 1 ? "attempt" : "attempts";
-                    msg.textContent = `Incorrect password. ${remaining} ${attemptWord} remaining.`;
+                    msg.textContent = `Invalid credentials. ${remaining} ${attemptWord} remaining.`;
                     msg.style.color = "#ff4d4d";
                 }
             }

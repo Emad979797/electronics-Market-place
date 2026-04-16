@@ -284,10 +284,37 @@
     </footer>
 
     <script>
-        function returnToDashboard() { window.location.href = "buyer_dashboard.html"; }
+        // 1. UPDATED: Custom Styled Cancellation Logic
+        function returnToDashboard() {
+            const authCard = document.querySelector('.auth-card');
+            // Save the current form HTML in case they want to stay
+            const originalContent = authCard.innerHTML;
+
+            authCard.innerHTML = `
+            <div style="text-align: center; padding: 30px 10px; animation: fadeIn 0.4s ease;">
+                <div style="font-size: 50px; margin-bottom: 20px;">⚠️</div>
+                <h2 style="margin-bottom: 15px;">Abandon Checkout?</h2>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+                    Are you sure you want to leave? <br>
+                    <strong>Your progress and order details will not be saved.</strong>
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button onclick="window.location.href='buyer_dashboard.html'" 
+                            style="width: 100%; padding: 14px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;"
+                            onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        Yes, Cancel Payment
+                    </button>
+                    <button onclick="location.reload()" class="btn-cancel" style="border: 1px solid #ddd; padding: 12px;">
+                        No, Stay & Pay
+                    </button>
+                </div>
+            </div>`;
+        }
+
         function logout() { localStorage.removeItem('currentUser'); window.location.href = "login.html"; }
 
-        // 1. Load Receipt Data and Populate Summary
+        // 2. Load Receipt Data and Populate Summary
         document.addEventListener('DOMContentLoaded', () => {
             const receiptData = JSON.parse(localStorage.getItem('jsek_pending_receipt'));
             if (!receiptData) {
@@ -298,26 +325,26 @@
             const itemsContainer = document.getElementById('summary-items');
             receiptData.items.forEach(item => {
                 itemsContainer.innerHTML += `
-                <div class="summary-item">
-                    <span>${item.name}</span>
-                    <span>$${item.price.toFixed(2)}</span>
-                </div>`;
+            <div class="summary-item">
+                <span>${item.name}</span>
+                <span>$${item.price.toFixed(2)}</span>
+            </div>`;
             });
 
             itemsContainer.innerHTML += `
-            <div class="summary-item" style="margin-top:10px; font-style: italic;">
-                <span>Subtotal</span>
-                <span>$${receiptData.subtotal}</span>
-            </div>
-            <div class="summary-item" style="font-style: italic;">
-                <span>Tax (13%)</span>
-                <span>$${receiptData.tax}</span>
-            </div>
-        `;
+        <div class="summary-item" style="margin-top:10px; font-style: italic;">
+            <span>Subtotal</span>
+            <span>$${receiptData.subtotal}</span>
+        </div>
+        <div class="summary-item" style="font-style: italic;">
+            <span>Tax (13%)</span>
+            <span>$${receiptData.tax}</span>
+        </div>
+    `;
             document.getElementById('summary-total-amount').innerText = `$${receiptData.total}`;
         });
 
-        // 2. Input Formatting (Cleave.js)
+        // 3. Input Formatting (Cleave.js)
         const cleave = new Cleave('#card-number', {
             creditCard: true,
             onCreditCardTypeChanged: (type) => updateCardIcons(type)
@@ -327,7 +354,7 @@
 
         const statusBox = document.getElementById('status-msg');
 
-        // 3. Expiry Date Validation Logic
+        // 4. Expiry Date Validation Logic
         function validateExpiry(val) {
             if (!val || !val.includes('/')) return false;
             const parts = val.split('/');
@@ -342,7 +369,7 @@
             return true;
         }
 
-        // 4. Luhn Algorithm for Card Number Validation
+        // 5. Luhn Algorithm for Card Number Validation
         function validateLuhn(number) {
             let sum = 0, shouldDouble = false;
             number = number.replace(/\s+/g, '');
@@ -381,7 +408,7 @@
             statusBox.style.display = 'block';
         }
 
-        // 5. UPDATED: Final Form Submission with Funds/Decline Logic
+        // 6. Final Form Submission with Funds/Decline Logic
         document.getElementById('payment-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const method = document.querySelector('input[name="payment"]:checked').value;
@@ -437,23 +464,23 @@
 
                     const authCard = document.querySelector('.auth-card');
                     authCard.innerHTML = `
-                    <div style="text-align: center; padding: 20px; animation: fadeIn 0.6s ease;">
-                        <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
-                        <h2 style="margin-bottom: 10px; color: #166534;">Payment Successful!</h2>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
-                            Thank you for your purchase. A digital receipt has been sent to:<br>
-                            <strong style="color: #333;">${userEmail}</strong>
-                        </p>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <button onclick="window.location.href='index.html'" class="btn-glow" style="width: 100%;">
-                                Return to Home
-                            </button>
-                            <button onclick="window.location.href='buyer_dashboard.html'" class="btn-cancel" style="border: 1px solid #ddd;">
-                                Go to Buyer Dashboard
-                            </button>
-                        </div>
-                    </div>`;
+                <div style="text-align: center; padding: 20px; animation: fadeIn 0.6s ease;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+                    <h2 style="margin-bottom: 10px; color: #166534;">Payment Successful!</h2>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
+                        Thank you for your purchase. A digital receipt has been sent to:<br>
+                        <strong style="color: #333;">${userEmail}</strong>
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button onclick="window.location.href='index.html'" class="btn-glow" style="width: 100%;">
+                            Return to Home
+                        </button>
+                        <button onclick="window.location.href='buyer_dashboard.html'" class="btn-cancel" style="border: 1px solid #ddd;">
+                            Go to Buyer Dashboard
+                        </button>
+                    </div>
+                </div>`;
                 }, 2000);
             } else {
                 // PayPal Logic (Basic simulation)
